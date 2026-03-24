@@ -5,36 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Adders Film School</title>
     <style>
-        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background-color: black; color: white; }
-        header { background: #333; color: white; text-align: center; padding: 1em 0; }
-        main { padding: 20px; }
+        body { font-family: 'Space Mono', monospace; margin: 0; padding: 0; background-color: black; color: white; }
+        header { font-family: 'Space Mono', monospace; font-weight: bold; text-align: center; padding: 1em 0; }
+        main { padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .logo { width: 150px; height: auto; }
-        .modules-list { list-style-type: none; padding: 0; margin: 0; }
+        .modules-list { list-style-type: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; justify-content: space-around; align-items: center; }
+        .modules-list li { background: #ff6f61; color: black; padding: 10px; border-radius: 5px; margin: 5px; width: calc((100% / 3) - 10px); text-align: center; }
         footer { background: #333; color: white; text-align: center; padding: 1em 0; position: fixed; width: 100%; bottom: 0; }
 
         /* Button hover effect */
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #ff6f61; /* Orange color for the button */
-            color: black; /* Black text color, adjust as needed */
-            border: none;
-            border-radius: 5px; /* Optional: rounded corners */
-            transition: box-shadow 0.3s ease; /* Smooth transition for shadow effect */
-        }
-
-        .btn:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Adding a subtle shadow on hover */
-        }
+        .btn { font-family: 'Space Mono', monospace; display: inline-block; padding: 10px 20px; background-color: #ff6f61; color: black; border: none; border-radius: 5px; transition: box-shadow 0.3s ease; }
+        .btn:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
         
         /* Carousel Styles */
-        .carousel-container { overflow: hidden; width: 100%; position: relative; }
+        .carousel-container { overflow: hidden; width: 100%; position: relative; display: flex; justify-content: center; align-items: center; }
         .carousel { display: flex; transition: transform 0.5s ease-in-out; }
-        .carousel-image { min-width: 100%; height: auto; width: 300px; /* Fixed size for carousel images */ }
+        .carousel-image { min-width: 100%; height: auto; width: 300px; }
         
         /* Updated CSS for Font and Color */
-        .btn { font-weight: bold; color: white; background-color: orange; }
-        main p, footer div { font-weight: bold; color: orange; }
+        body, footer div { font-family: 'Space Mono', monospace; color: orange; font-weight: bold; }
+        header h1, main p { color: orange; }
     </style>
 </head>
 <body>
@@ -45,32 +35,10 @@
     </header>
     <main>
         <section>
-            <p>The home of filmmaking right in the heart of Milton Keynes. We provide a 3-month film production cycle where you create, film and produce your own films with us across the year.</p>
-            <ul class="modules-list">
-                <li>Acting for Screen</li>
-                <li>Acting for Musical Performance</li>
-                <li>Improvisation & Devised Screen Performance</li>
-                <li>Scriptwriting</li>
-                <li>Directing & Production</li>
-                <li>Leadership</li>
-                <li>Cinematography & Audiovisual Production</li>
-                <li>Editing & Digital Mastering</li>
-            </ul>
-            This is where the start of your storytelling journey begins.
+            <img src="module_photo1.jpg" alt="Module 1 Photo" style="width: 200px; height: auto; margin-right: 20px;">
+            <p>Explanation of Module 1 goes here.</p>
         </section>
-        <!-- Membership Buttons Section -->
-        <div style="text-align: center; margin: 20px;">
-            <button onclick="location.href='standard-membership.html'" class="btn">Standard Membership</button>
-            <button onclick="location.href='premium-membership.html'" class="btn">Premium Membership</button>
-        </div>
-        <!-- Image Carousel Section -->
-        <div class="carousel-container">
-            <div class="carousel" id="carousel">
-                <img src="btsshot1.jpg" alt="Image 1" class="carousel-image" style="width: 300px; height: auto;">
-                <img src="btsshot2.jpg" alt="Image 2" class="carousel-image" style="width: 300px; height: auto;">
-                <img src="btsshot3.jpg" alt="Image 3" class="carousel-image" style="width: 300px; height: auto;">
-            </div>
-        </div>
+        <!-- Add more sections as needed -->
     </main>
     <script>
         let currentIndex = 0;

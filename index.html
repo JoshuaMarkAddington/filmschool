@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Adders Film School</title>
     <style>
-    body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; }
-    header { background: #333; color: white; text-align: center; padding: 1em 0; }
-    main { padding: 20px; }
+    body { background-color: black; color: white; }
+    header, main, footer { background-color: transparent; }
+    main p { padding: 10px; border: 2px solid white; }
     .logo { width: 150px; height: auto; }
     .modules-list { list-style-type: none; padding: 0; margin: 0; }
     footer { background: #333; color: white; text-align: center; padding: 1em 0; position: fixed; width: 100%; bottom: 0; }
@@ -63,13 +63,14 @@
             <button onclick="location.href='premium-membership.html'">Premium Membership</button>
         </div>
         <!-- Image Carousel Section -->
-        <div class="images-container">
-            <img src="btsshot1.jpg" alt="Image 1" class="image" style="min-width: 100%;">
-            <img src="btsshot2.jpg" alt="Image 2" class="image" style="min-width: 100%;">
-            <img src="btsshot3.jpg" alt="Image 2" class="image" style="min-width: 100%;">
-            <img src="btsshot4.jpg" alt="Image 2" class="image" style="min-width: 100%;">
-            <img src="btsshot5.jpg" alt="Image 2" class="image" style="min-width: 100%;">
-            <img src="btsshot6.jpg" alt="Image 2" class="image" style="min-width: 100%;">
+        <div class="carousel-container">
+        <div class="carousel">
+        <img src="btsshot1.jpg" alt="Image 1" class="carousel-image">
+        <img src="btsshot2.jpg" alt="Image 2" class="carousel-image">
+        <img src="btsshot3.jpg" alt="Image 3" class="carousel-image">
+        <img src="btsshot3.jpg" alt="Image 4" class="carousel-image">
+        <img src="btsshot3.jpg" alt="Image 5" class="carousel-image">
+        <img src="btsshot3.jpg" alt="Image 6" class="carousel-image">
         </div>
     </main>
     <script>

@@ -5,35 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Adders Film School</title>
     <style>
-    body { background-color: black; color: white; }
-    header, main, footer { background-color: transparent; }
-    main p { padding: 10px; border: 2px solid white; }
-    .logo { width: 150px; height: auto; }
-    .modules-list { list-style-type: none; padding: 0; margin: 0; }
-    footer { background: #333; color: white; text-align: center; padding: 1em 0; position: fixed; width: 100%; bottom: 0; }
-    
-    /* Button hover effect */
-    .btn {
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #ff6f61; /* Orange color for the button */
-        color: black; /* Black text color, adjust as needed */
-        border: none;
-        border-radius: 5px; /* Optional: rounded corners */
-        transition: box-shadow 0.3s ease; /* Smooth transition for shadow effect */
-    }
-    
-    .btn:hover {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Adding a subtle shadow on hover */
-    }
-</style>
-
-        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; }
+        body { font-family: 'Arial', sans-serif; margin: 0; padding: 0; background-color: black; color: white; }
         header { background: #333; color: white; text-align: center; padding: 1em 0; }
         main { padding: 20px; }
         .logo { width: 150px; height: auto; }
         .modules-list { list-style-type: none; padding: 0; margin: 0; }
         footer { background: #333; color: white; text-align: center; padding: 1em 0; position: fixed; width: 100%; bottom: 0; }
+
+        /* Button hover effect */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #ff6f61; /* Orange color for the button */
+            color: black; /* Black text color, adjust as needed */
+            border: none;
+            border-radius: 5px; /* Optional: rounded corners */
+            transition: box-shadow 0.3s ease; /* Smooth transition for shadow effect */
+        }
+
+        .btn:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Adding a subtle shadow on hover */
+        }
+        
+        /* Carousel Styles */
+        .carousel-container { overflow: hidden; width: 100%; position: relative; }
+        .carousel { display: flex; transition: transform 0.5s ease-in-out; }
+        .carousel-image { min-width: 100%; height: auto; }
     </style>
 </head>
 <body>
@@ -59,26 +56,24 @@
         </section>
         <!-- Membership Buttons Section -->
         <div style="text-align: center; margin: 20px;">
-            <button onclick="location.href='standard-membership.html'">Standard Membership</button>
-            <button onclick="location.href='premium-membership.html'">Premium Membership</button>
+            <button onclick="location.href='standard-membership.html'" class="btn">Standard Membership</button>
+            <button onclick="location.href='premium-membership.html'" class="btn">Premium Membership</button>
         </div>
         <!-- Image Carousel Section -->
         <div class="carousel-container">
-        <div class="carousel">
-        <img src="btsshot1.jpg" alt="Image 1" class="carousel-image">
-        <img src="btsshot2.jpg" alt="Image 2" class="carousel-image">
-        <img src="btsshot3.jpg" alt="Image 3" class="carousel-image">
-        <img src="btsshot3.jpg" alt="Image 4" class="carousel-image">
-        <img src="btsshot3.jpg" alt="Image 5" class="carousel-image">
-        <img src="btsshot3.jpg" alt="Image 6" class="carousel-image">
+            <div class="carousel" id="carousel">
+                <img src="btsshot1.jpg" alt="Image 1" class="carousel-image">
+                <img src="btsshot2.jpg" alt="Image 2" class="carousel-image">
+                <img src="btsshot3.jpg" alt="Image 3" class="carousel-image">
+            </div>
         </div>
     </main>
     <script>
         let currentIndex = 0;
-        const images = ['btsshot1.jpg', 'btsshot2.jpg', 'btsshot3.jpg', 'btsshot4.jpg', 'btsshot5.jpg', 'btsshot6.jpg']
+        const images = ['btsshot1.jpg', 'btsshot2.jpg', 'btsshot3.jpg']; // Add more as needed
         setInterval(() => {
+            document.getElementById('carousel').style.transform = `translateX(-${currentIndex * 100}%)`;
             currentIndex = (currentIndex + 1) % images.length;
-            document.querySelector('.images-container .image').style.transform = `translateX(-${currentIndex * 100}%)`;
         }, 4000);
     </script>
     <!-- Staff Section -->

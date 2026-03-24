@@ -30,7 +30,11 @@
         /* Carousel Styles */
         .carousel-container { overflow: hidden; width: 100%; position: relative; }
         .carousel { display: flex; transition: transform 0.5s ease-in-out; }
-        .carousel-image { min-width: 100%; height: auto; }
+        .carousel-image { min-width: 100%; height: auto; width: 300px; /* Fixed size for carousel images */ }
+        
+        /* Updated CSS for Font and Color */
+        .btn { font-weight: bold; color: white; background-color: orange; }
+        main p, footer div { font-weight: bold; color: orange; }
     </style>
 </head>
 <body>
@@ -62,9 +66,9 @@
         <!-- Image Carousel Section -->
         <div class="carousel-container">
             <div class="carousel" id="carousel">
-                <img src="btsshot1.jpg" alt="Image 1" class="carousel-image">
-                <img src="btsshot2.jpg" alt="Image 2" class="carousel-image">
-                <img src="btsshot3.jpg" alt="Image 3" class="carousel-image">
+                <img src="btsshot1.jpg" alt="Image 1" class="carousel-image" style="width: 300px; height: auto;">
+                <img src="btsshot2.jpg" alt="Image 2" class="carousel-image" style="width: 300px; height: auto;">
+                <img src="btsshot3.jpg" alt="Image 3" class="carousel-image" style="width: 300px; height: auto;">
             </div>
         </div>
     </main>
@@ -86,3 +90,4 @@
     </footer>
 </body>
 </html>
+

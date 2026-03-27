@@ -27,7 +27,20 @@ header {
         section img { width: 50%; height: auto; margin-right: 20px; }
         section p { flex: 1; color: white; padding: 10px; background-color: rgba(255, 255, 255, 0.1); border-radius: 5px; }
         footer { background: #333; color: white; text-align: center; padding: 1em 0; position: fixed; width: 100%; bottom: 0; }
-        
+        /* Basic styling for the logo */
+.logo {
+    width: 200px; /* Adjust size as needed */
+    height: auto;
+}
+/* Keyframes for spinning animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+/* Apply the animation to the maze section of the logo */
+.logo .maze-section {
+    animation: spin 5s linear infinite; /* Adjust duration and timing function as needed */
+}
         /* Carousel Styles */
         .carousel-container { overflow: hidden; width: 100%; position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
         .carousel { display: flex; transition: transform 0.5s ease-in-out; }

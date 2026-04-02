@@ -1,81 +1,420 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Adders Film School</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Space Mono', monospace;
-            margin: 0;
-            padding: 0;
-            background-color: #f9f9fe; /* Updated light grey background */
-            color: black; /* Black text for better readability on light background */
-        }
-        header {
-            font-family: 'Cabin Sketch', cursive;
-            background: linear-gradient(to right, #ff6b6b, #f0e130); /* Gradient header for a modern look */
-            color: white;
-            text-align: center;
-            padding: 2em 0;
-        }
-        main {
-            padding: 40px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .logo {
-            width: 200px;
-            height: auto;
-        }
-        .school-intro {
-            text-align: center;
-            padding-bottom: 40px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        section {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            width: 100%;
-            padding: 0 20px;
-            box-sizing: border-box;
-        }
-        .membership-columns {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 1200px;
-            padding: 20px 0;
-        }
-        .membership-column {
-            flex: 1;
-            padding: 20px;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 10px;
-            line-height: 1.6;
-        }
-        button {
-            background-color: #4CAF50; /* Default green color */
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            transition: all 0.3s ease; /* Smooth transition for hover effect */
-        }
-        button:hover {
-            background-color: #45a049; /* Slightly darker green on hover */
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2); /* Adding a shadow effect on hover */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to Adders Film School</title>
+<!-- Tailwind CSS -->
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Manrope:wght@500&display=swap" rel="stylesheet">
+<!-- Framer Motion -->
+<script src="https://unpkg.com/framer-motion@6.5.1/dist/framer-motion.umd.js"></script>
+<style>
+  body {
+    font-family: 'Manrope', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #b3e5fc; /* Light ocean blue background */
+    color: #333;
+  }
+  .dark-mode {
+    background-color: #1a202c;
+    color: #e2e8f0;
+  }
+  .dark-mode header {
+    background: #2d3748;
+    color: #ff8400;
+  }
+  .dark-mode .logo {
+    filter: brightness(0.8);
+  }
+  .dark-mode .membership-card {
+    background-color: #2d3748;
+    border-color: #4a5568;
+  }
+  .dark-mode .membership-card h3 {
+    color: #ff8400;
+  }
+  .dark-mode .membership-card ul li {
+    color: #e2e8f0;
+  }
+  .dark-mode .membership-card button {
+    background-color: #48bb78;
+    color: white;
+  }
+  .dark-mode .membership-card button:hover {
+    background-color: #38a169;
+  }
+  .dark-mode .membership-card .tick {
+    color: #48bb78;
+  }
+  .dark-mode .membership-card .no-tick {
+    color: #718096;
+  }
+  .dark-mode .membership-card .standard {
+    border-left: 4px solid #ff8400;
+  }
+  .dark-mode .membership-card .premium {
+    border-left: 4px solid #48bb78;
+  }
+  .membership-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid #e2e8f0;
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+  }
+  .membership-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  }
+  .membership-card h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+  }
+  .membership-card ul {
+    list-style: none;
+    padding: 0;
+    flex-grow: 1;
+  }
+  .membership-card ul li {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+  }
+  .membership-card .tick {
+    color: #48bb78;
+    font-weight: bold;
+    margin-right: 10px;
+    font-size: 1.2em;
+  }
+  .membership-card .no-tick {
+    color: #e53e3e;
+    margin-right: 10px;
+    font-size: 1.2em;
+  }
+  .membership-card button {
+    @apply bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-4 rounded;
+    width: 100%;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border: none;
+    padding: 12px;
+    font-size: 1rem;
+  }
+  .membership-card button:hover {
+    background-color: #45a049;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  .dark-mode .membership-card button {
+    background-color: #48bb78;
+  }
+  .dark-mode .membership-card button:hover {
+    background-color: #38a169;
+  }
+  header {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    background: #333;
+    color: #ff8400;
+    text-align: center;
+    padding: 2.5em 0;
+    position: relative;
+  }
+  main {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .logo {
+    width: 200px;
+    height: auto;
+    margin-bottom: 15px;
+  }
+  .school-intro {
+    text-align: center;
+    padding-bottom: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+    font-size: 1.1rem;
+    line-height: 1.7;
+  }
+  .section {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    flex-wrap: wrap;
+    gap: 30px;
+    width: 100%;
+    margin-bottom: 60px;
+  }
+  .dark-mode-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #333;
+    color: #ff8400;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  .dark-mode-toggle:hover {
+    background: #ff8400;
+    color: #333;
+    transform: rotate(15deg);
+  }
+  .dark-mode .dark-mode-toggle {
+    background: #ff8400;
+    color: #333;
+  }
+  .dark-mode .dark-mode-toggle:hover {
+    background: #333;
+    color: #ff8400;
+    transform: rotate(-15deg);
+  }
+  .membership-card.standard {
+    border-left: 4px solid #ff8400;
+  }
+  .membership-card.premium {
+    border-left: 4px solid #48bb78;
+  }
+  .staff-bio {
+    background-color: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    margin-top: 40px;
+    width: 100%;
+    max-width: 1200px;
+  }
+  .staff-bio h2 {
+    color: #333;
+    margin-bottom: 25px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    text-align: center;
+  }
+  .staff-bio p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin-bottom: 20px;
+  }
+  .dark-mode .staff-bio {
+    background-color: #2d3748;
+  }
+  .dark-mode .staff-bio h2 {
+    color: #ff8400;
+  }
+  .dark-mode .staff-bio p {
+    color: #e2e8f0;
+  }
+  .module-section {
+    margin: 40px 0;
+    text-align: center;
+  }
+  .module-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  .module-description {
+    max-width: 800px;
+    margin: 0 auto 30px;
+    font-size: 1.1rem;
+    line-height: 1.7;
+  }
+  .module-image {
+    max-width: 600px;
+    margin: 0 auto;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+  .dark-mode .module-title {
+    color: #ff8400;
+  }
+  .dark-mode .module-description {
+    color: #e2e8f0;
+  }
+  @media (max-width: 768px) {
+    .section {
+      flex-direction: column;
+      align-items: center;
+    }
+    .membership-card {
+      width: 100%;
+      max-width: 500px;
+    }
+    .school-intro {
+      padding: 0 15px;
+    }
+    header {
+      padding: 1.5em 0;
+    }
+    .logo {
+      width: 150px;
+    }
+  }
+</style>
+</head>
+<body class="flex flex-col min-h-screen">
+<button id="dark-mode-toggle" class="dark-mode-toggle">🌙</button>
+<header>
+<img src="logo1.jpg" alt="Adders Film School Logo" class="logo">
+<h1>Welcome to Adders Film School!</h1>
+<p>Opening in Milton Keynes in July</p>
+</header>
+<main class="container mx-auto p-6 flex-grow">
+<!-- School Introduction -->
+<div class="school-intro">
+<h2>Adders Film School: Where Your Story Begins</h2>
+<p>Embark on an extraordinary filmmaking journey with Adders Film School! At Adders Film School, we're redefining film education—preparing you for a career in the industry without the hefty price tag or time commitment of university. With hands-on training from industry professionals and access to 4K HDR equipment, you'll be ready to stand out in the film industry. Ready to take your first steps? Explore our memberships below and start your journey toward becoming a filmmaker!</p>
+</div>
+    
+<!-- Membership Options -->
+<section class="mb-8">
+<h2 class="text-xl font-bold mb-4 text-center">Membership Types</h2>
+<div class="section">
+<!-- Standard Membership -->
+<div class="membership-card standard">
+<h3 class="text-lg font-semibold mb-2">Standard Membership</h3>
+<ul>
+<li><span class="tick">✓</span>Access to all modules</li>
+<li><span class="tick">✓</span>Professional Equipment</li>
+<li><span class="tick">✓</span>Davinci Resolve</li>
+<li><span class="tick">✓</span>WriterDuet</li>
+<li><span class="tick">✓</span>4K HDR Films</li>
+<li><span class="no-tick">✗</span>Framed Posters</li>
+<li><span class="no-tick">✗</span>Adders Pen, Notepad & Bottle</li>
+<li><span class="no-tick">✗</span>T-Shirt</li>
+<li><span class="no-tick">✗</span>TOTUM card after 6 months</li>
+<li><span class="tick">✗</span>Showreel after 24 months</li>
+</ul>
+<button onclick="window.location.href='https://bookwhen.com/standard'">3 - Month</button>
+<button onclick="window.location.href='https://bookwhen.com/premium'">6 - Month</button>
+<button onclick="window.location.href='https://bookwhen.com/premium'">12 - Month</button>
+</div>
+
+<!-- Premium Membership -->
+<div class="membership-card premium">
+<h3 class="text-lg font-semibold mb-2">Premium Membership</h3>
+<ul>
+<li><span class="tick">✓</span>Access to all modules</li>
+<li><span class="tick">✓</span>Professional Equipment</li>
+<li><span class="tick">✓</span>Davinci Resolve</li>
+<li><span class="tick">✓</span>WriterDuet</li>
+<li><span class="tick">✓</span>4K HDR Films</li>
+<li><span class="tick">✓</span>Framed Posters</li>
+<li><span class="tick">✓</span>Adders Pen, Notepad & Bottle</li>
+<li><span class="tick">✓</span>T-Shirt</li>
+<li><span class="tick">✓</span>TOTUM card after 6 months</li>
+<li><span class="tick">✓</span>Showreel after 24 months</li>
+</ul>
+<button onclick="window.location.href='https://bookwhen.com/standard'">3 - Month</button>
+<button onclick="window.location.href='https://bookwhen.com/premium'">6 - Month</button>
+<button onclick="window.location.href='https://bookwhen.com/premium'">12 - Month</button>
+</div>
+</div>
+</section>
+<!-- School Introduction -->
+<div class="school-intro">
+<h2 style="font-family: 'Poppins', sans-serif; font-weight: 600;">Adders Film School: Where Your Story Begins</h2>
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Embark on an extraordinary filmmaking journey with Adders Film School! At Adders Film School, we're redefining film education—preparing you for a career in the industry without the hefty price tag or time commitment of university. With hands-on training from industry professionals and access to 4K HDR equipment, you'll be ready to stand out in the film industry. Ready to take your first steps? Explore our memberships below and start your journey toward becoming a filmmaker!.</p>
+</div>
+<!-- Module 1 -->
+<section id="Acting-for-Screen">
+<img src="module1.jpg" alt="Module 1 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">The Idea of Presence. Step in front of the glass and master the ultra-high-definition art of "the moment." In a 6K environment, every breath and eyelid twitch tells a story. We move beyond "theatrical" acting into the raw, cinematic realism required for modern 4K HDR films.</p>
+</section>
+<!-- Module 2 -->
+<section id="Musical-Theatre-for-Screen">
+<img src="module2.jpg" alt="Module 2 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">This is where Broadway meets the big screen. Learn how to translate the energy of live performance into a structured cinematic narrative. We focus on the precision of lip-syncing, movement for the lens, and integrating high-fidelity audio with sweeping 6K visuals to create "The New Hollywood" musical.</p>
+</section>
+<!-- Module 3 -->
+<section id="Scriptwriting">
+<img src="module3.jpg" alt="Module 3 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Developing a compelling script is the cornerstone of any successful film. In this module, students will learn essential techniques for creating engaging storylines and characters that resonate with audiences. Emphasis will be placed on character development, plot structure, and dialogue that drives the narrative forward.</p>
+</section>
+<!-- Module 4 -->
+<section id="Directing-&-Production-Leadership">
+<img src="module4.jpg" alt="Module 4 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">From concept to final cut, dive into the world of film directing. Learn key elements such as storyboarding, shot selection, and scene construction that are essential for crafting a cohesive narrative.</p>
+</section>
+<!-- Module 5 -->
+<section id="camera-operation">
+<img src="module5.jpg" alt="Module 5 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Unlock the secrets of cinematography with practical lessons in camera operation and lighting techniques, preparing you to capture breathtaking visuals that enhance your film's storytelling.</p>
+</section>
+<!-- Module 6 -->
+<section id="Editing-&-Digital-Mastering">
+<img src="module6.jpg" alt="Module 6 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">A film is truly "born" in the edit. You'll dive deep into DaVinci Resolve, mastering the same tools used by Hollywood colourists. Go beyond basic cuts—use Fusion for advanced visual effects, learn HDR grading, audio mastering and finish your projects for the silver screen.</p>
+</section>
+<!-- Module 7 -->
+<section id="Become-A-Supporting-Actor">
+<img src="module7.jpg" alt="Module 7 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Through hands-on exercises and real-world experiences, you'll gain the confidence and expertise needed to shine in supporting roles. Whether you're looking to enhance your acting skills or simply want to try something new, this module is an excellent way to develop your creative horizons.</p>
+</section>
+<!-- Module 8 -->
+<section id="The-Recording-Suite: Vocal-Edition">
+<img src="module8.png" alt="Module 8 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Perfecting the art of sound is crucial to creating a truly immersive cinematic experience. In this module, learn how to use industry-standard recording software to capture high-quality audio that complements your visual storytelling.</p>
+ </section>
+ <!-- Module 9 -->
+ <section id="Advanced-Cinematography">
+ <img src="module9.jpg" alt="Module 9 Photo">
+ <p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Unlock the Secrets of Visual Storytelling... In this advanced course, students will delve into the art of cinematography, exploring the technical aspects of camera operation, lighting design, and visual composition.</p>
+ </section>
+<!-- Staff Bio Section -->
+<div class="staff-bio">
+<h2>Joshua Mark Addington</h2>
+    <img src="staff-joshua.jpg" alt="Joshua Headshot" style="width: 100px; height: auto; margin-right: 20px;">
+      <div>
+<h3>Modules:</h3>
+<ul class="list-disc list-inside mb-4">
+<li>Acting for Screen</li>
+<li>Scriptwriting</li>
+<li>Sketch to Screen</li>
+<li>Directing & Production Leadership</li>
+</ul>
+<p>Joshua founded Adders Film school on the belief that a student's potential is never defined by a grade, a label, or a physical limitation. Growing up, the traditional education system was an uphill battle; Joshua navigated his school years with complex speech challenges and cognitive delays that made understanding even basic tasks a struggle. Beyond the classroom, Joshua faced the social isolation of being part of the only family in the country with a rare condition called NFJ Syndrome, which led to years of intense bullying. In a system that wasn't built for his way of learning, he was placed in the lowest academic sets, with projections suggesting he would leave school having passed only Mathematics. However, these are only the opening chapters of a much larger story. Joshua refused to let those projections dictate his worth. Defying every expectation, he passed all of his GCSEs—achieving two A grades, an A* and six B grades. He continued this momentum to earn a Double Distinction* (D*D*) in Business at A-Level and a First Class BA (Hons) in Acting for Contemporary & Devised Performance from the University of Northampton. Since then, he has directed and produced several award-winning short films and made history by founding the first-ever International Film Festival in Milton Keynes, hosted at Odeon Cinemas. While these achievements are a source of pride, Joshua's journey hasn't been without its darkest moments. In 2022, the cumulative weight of his past struggles led to a significant mental health crisis. Today, Joshua can proudly say he has moved past that place, and he now uses his lived understanding of mental health and neurodiversity to shape a teaching style that is as supportive as it is professional. His mission is to ensure every student understands that their voice is valuable, even when the world tells them otherwise. He doesn't just teach filmmaking; he uses his journey to show students how to defy expectations and become the best version of themselves.</p>
+</div>
+</main>
+<footer class="bg-gray-800 p-6 text-center">
+<p class="text-white">© 2026 Adders Film School. All rights reserved.</p>
+</footer>
+
+<script>
+  const toggleDarkMode = () => {  
+    document.body.classList.toggle('dark-mode');  
+  }  
+  // Add event listener to the toggle button in your HTML  
+  document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
+</script>
+</body>
+</html>
+```
         }
     </style>
 </head>

@@ -8,16 +8,16 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-           font-family: 'Space Mono', monospace;
+            font-family: 'Space Mono', monospace;
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0; /* Light grey background */
+            background-color: #f9f9fe; /* Updated light grey background */
             color: black; /* Black text for better readability on light background */
         }
         header {
             font-family: 'Cabin Sketch', cursive;
-            background: #333; /* Deep orange headers */
-            color: #ff8400;
+            background: linear-gradient(to right, #ff6b6b, #f0e130); /* Gradient header for a modern look */
+            color: white;
             text-align: center;
             padding: 2em 0;
         }
@@ -43,34 +43,24 @@
             display: flex;
             justify-content: space-between;
             align-items: start;
-            margin-bottom: 60px;
             width: 100%;
-            max-width: 1200px;
             padding: 0 20px;
             box-sizing: border-box;
         }
-        section img {
-            width: 45%;
-            height: auto;
-            margin-right: 30px;
-            border-radius: 10px;
+        .membership-columns {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px 0;
         }
-        section p {
+        .membership-column {
             flex: 1;
-            color: black;
             padding: 20px;
-            background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent white for readability */
+            background-color: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
             line-height: 1.6;
         }
-        footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 2em 0;
-            margin-top: auto;
-        }
-        /* CSS Button Style - Hover, Color, and Background */
         button {
             background-color: #4CAF50; /* Default green color */
             border: none;
@@ -81,7 +71,7 @@
             display: inline-block;
             font-size: 16px;
             margin: 4px 2px;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease; /* Smooth transition for hover effect */
         }
         button:hover {
             background-color: #45a049; /* Slightly darker green on hover */
@@ -90,70 +80,83 @@
     </style>
 </head>
 <body>
-    <header>
-        <img src="logo1.jpg" alt="Adders Film School Logo" class="logo">
-        <h1>Welcome to Adders Film School!</h1>
-        <p>Opening in Milton Keynes in July</p>
-    </header>
-    <main>
-        <!-- School Introduction -->
-        <div class="school-intro">
-            <h2>Adders Film School: Where Your Story Begins</h2>
-            <p>Embark on an extraordinary filmmaking journey with Adders Film School! At Adders Film School, we’re redefining film education—preparing you for a career in the industry without the hefty price tag or time commitment of university. With hands-on training from industry professionals and access to 4K HDR equipment, you’ll be ready to stand out in the film industry. Ready to take your first steps? Explore our memberships below and start your journey toward becoming a filmmaker!.</p>
-        </div>
-        <!-- Module 1 -->
-        <section id="acting-for-screen">
-            <img src="module1.jpg" alt="Module 1 Photo">
-            <p>The Idea of Presence. Step in front of the glass and master the ultra-high-definition art of "the moment." In a 6K environment, every breath and eyelid twitch tells a story. We move beyond "theatrical" acting into the raw, cinematic realism required for modern 4K HDR films.</p>
-        </section>
-        <!-- Module 2 -->
-        <section id="musical-theatre-for-screen">
-            <img src="module2.png" alt="Module 2 Photo">
-            <p>This is where Broadway meets the big screen. Learn how to translate the energy of live performance into a structured cinematic narrative. We focus on the precision of lip-syncing, movement for the lens, and integrating high-fidelity audio with sweeping 6K visuals to create "The New Hollywood" musical.</p>
-        </section>
-        <!-- Module 3 -->
-        <section id="scriptwriting">
-            <img src="module3.jpg" alt="Module 3 Photo">
-            <p>Creating the Narrative. Great films aren't filmed; they are built. You will master WriterDuet, the industry-standard collaborative software, to draft scripts that look and read like professional studio commissions.</p>
-        </section>
-        <!-- Module 4 -->
-        <section id="Cinematography-&-AudioVisual-Production">
-            <img src="module4.jpg" alt="Module 4 Photo">
-            <p>The 6K Raw Workflow. Get your hands on the Blackmagic Pyxis 6K—the newest Blackmagic cinema box camera on the market. You’ll learn to manipulate light, texture, and depth of field in 4K HDR.</p>
-        </section>
-        <!-- Module 5 -->
-        <section id="Directing-&-Production-Leadership">
-            <img src="module5.jpg" alt="Module 5 Photo">
-            <p>Become the Captain of the ship. Being a director is about more than "Action." It’s about technical leadership. Learn how to manage a high-end production and lead your cast through complex emotional beats.</p>
-        </section>
-        <!-- Module 6 -->
-        <section id="Editing-&-Digital-Mastering">
-            <img src="module6.jpg" alt="Module 6 Photo">
-            <p>A film is truly "born" in the edit. You’ll dive deep into DaVinci Resolve, mastering the same tools used by Hollywood colourists. Go beyond basic cuts—use Fusion for advanced visual effects, learn HDR grading, audio mastering and finish your projects for the silver screen.</p>
-        </section>
-        <!-- Module 7 -->
-        <section id="Become-A-Supporting-Actor">
-            <img src="module7.jpg" alt="Module 7 Photo">
-            <p>Through hands-on exercises and real-world experiences, you’ll gain the confidence and expertise needed to shine in supporting roles. Whether you’re looking to enhance your acting skills or simply want to try something new, this module is an excellent way to develop your creative horizons.</p>
-        </section>
-        <!-- Module 8 -->
-        <section id="The-Recording-Suite: Vocal-Edition">
-            <img src="module8.png" alt="Module 8 Photo">
-            <p>In our state-of-the-art recording suite, students will learn the art of capturing exceptional vocal performances. Through professional vocal training, students will discover how to produce high-quality recordings that showcase their unique voice and style.</p>
-        </section>
-        <!-- Module 9 -->
-        <section id="Advanced-Cinematography">
-            <img src="module9.jpg" alt="Module 9 Photo">
-            <p>Unlock the Secrets of Visual Storytelling... In this advanced course, students will delve into the art of cinematography, exploring the technical aspects of camera operation, lighting design, and visual composition.</p>
-        </section>
-    </main>
-    <footer>
-     <!-- Staff Section -->
-         <img src="staff-joshua.jpg" alt="Joshua Headshot" style="width: 100px; height: auto; margin-right: 20px;">
-      <div>
-<h3>Joshua Mark Addington</h3>
-<p>Joshua founded Adders Film school on the belief that a student’s potential is never defined by a grade, a label, or a physical limitation. Growing up, the traditional education system was an uphill battle; Joshua navigated his school years with complex speech challenges and cognitive delays that made understanding even basic tasks a struggle. Beyond the classroom, Joshua faced the social isolation of being part of the only family in the country with a rare condition called NFJ Syndrome, which led to years of intense bullying. In a system that wasn't built for his way of learning, he was placed in the lowest academic sets, with projections suggesting he would leave school having passed only Mathematics. However, these are only the opening chapters of a much larger story. Joshua refused to let those projections dictate his worth. Defying every expectation, he passed all of his GCSEs—achieving two A grades, an A* and six B grades. He continued this momentum to earn a Double Distinction* (D*D*) in Business at A-Level and a First Class BA (Hons) in Acting for Contemporary & Devised Performance from the University of Northampton. Since then, he has directed and produced several award-winning short films and made history by founding the first-ever International Film Festival in Milton Keynes, hosted at Odeon Cinemas. While these achievements are a source of pride, Joshua’s journey hasn't been without its darkest moments. In 2022, the cumulative weight of his past struggles led to a significant mental health crisis. Today, Joshua can proudly say he has moved past that place, and he now uses his lived understanding of mental health and neurodiversity to shape a teaching style that is as supportive as it is professional. His mission is to ensure every student understands that their voice is valuable, even when the world tells them otherwise. He doesn’t just teach filmmaking; he uses his journey to show students how to defy expectations and become the best version of themselves. </p>
-      </div>
-    </footer>
+<header>
+<img src="logo1.jpg" alt="Adders Film School Logo" class="logo">
+<h1 style="font-family: 'Poppins', sans-serif; font-weight: 600;">Welcome to Adders Film School!</h1>
+<p>Opening in Milton Keynes in July</p>
+</header>
+<main>
+<!-- School Introduction -->
+<div class="school-intro">
+<h2 style="font-family: 'Poppins', sans-serif; font-weight: 600;">Adders Film School: Where Your Story Begins</h2>
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Embark on an extraordinary filmmaking journey with Adders Film School! At Adders Film School, we're redefining film education—preparing you for a career in the industry without the hefty price tag or time commitment of university. With hands-on training from industry professionals and access to 4K HDR equipment, you'll be ready to stand out in the film industry. Ready to take your first steps? Explore our memberships below and start your journey toward becoming a filmmaker!.</p>
+</div>
+<!-- Module 1 -->
+<section id="acting-for-screen">
+<img src="module1.jpg" alt="Module 1 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">The Idea of Presence. Step in front of the glass and master the ultra-high-definition art of "the moment." In a 6K environment, every breath and eyelid twitch tells a story. We move beyond "theatrical" acting into the raw, cinematic realism required for modern 4K HDR films.</p>
+</section>
+<!-- Module 2 -->
+<section id="musical-theatre-for-screen">
+<img src="module2.jpg" alt="Module 2 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">This is where Broadway meets the big screen. Learn how to translate the energy of live performance into a structured cinematic narrative. We focus on the precision of lip-syncing, movement for the lens, and integrating high-fidelity audio with sweeping 6K visuals to create "The New Hollywood" musical.</p>
+</section>
+<!-- Module 3 -->
+<section id="scriptwriting">
+<img src="module3.jpg" alt="Module 3 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Developing a compelling script is the cornerstone of any successful film. In this module, students will learn essential techniques for creating engaging storylines and characters that resonate with audiences. Emphasis will be placed on character development, plot structure, and dialogue that drives the narrative forward.</p>
+</section>
+<!-- Module 4 -->
+<section id="directing-for-film">
+<img src="module4.jpg" alt="Module 4 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">From concept to final cut, dive into the world of film directing. Learn key elements such as storyboarding, shot selection, and scene construction that are essential for crafting a cohesive narrative.</p>
+</section>
+<!-- Module 5 -->
+<section id="camera-operation">
+<img src="module5.jpg" alt="Module 5 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Unlock the secrets of cinematography with practical lessons in camera operation and lighting techniques, preparing you to capture breathtaking visuals that enhance your film's storytelling.</p>
+</section>
+<!-- Module 6 -->
+<section id="Editing-&-Digital-Mastering">
+<img src="module6.jpg" alt="Module 6 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">A film is truly "born" in the edit. You'll dive deep into DaVinci Resolve, mastering the same tools used by Hollywood colourists. Go beyond basic cuts—use Fusion for advanced visual effects, learn HDR grading, audio mastering and finish your projects for the silver screen.</p>
+</section>
+<!-- Module 7 -->
+<section id="Become-A-Supporting-Actor">
+<img src="module7.jpg" alt="Module 7 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Through hands-on exercises and real-world experiences, you'll gain the confidence and expertise needed to shine in supporting roles. Whether you're looking to enhance your acting skills or simply want to try something new, this module is an excellent way to develop your creative horizons.</p>
+</section>
+<!-- Module 8 -->
+<section id="The-Recording-Suite: Vocal-Edition">
+<img src="module8.jpg" alt="Module 8 Photo">
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Perfecting the art of sound is crucial to creating a truly immersive cinematic experience. In this module, learn how to use industry-standard recording software to capture high-quality audio that complements your visual storytelling.</p>
+</section>
+<!-- Membership Columns -->
+<div class="membership-columns">
+<div class="membership-column">
+<h3 style="font-family: 'Poppins', sans-serif; font-weight: 600;">Standard Membership</h3>
+<ul style="list-style-type: none; padding: 0;">
+<li><span style="font-family: 'Manrope', sans-serif; font-weight: 500;">✓</span>Access to all modules</li>
+<!-- Add other items here with conditions -->
+</ul>
+</div>
+<div class="membership-column">
+<h3 style="font-family: 'Poppins', sans-serif; font-weight: 600;">Premium Membership</h3>
+<ul style="list-style-type: none; padding: 0;">
+<li><span style="font-family: 'Manrope', sans-serif; font-weight: 500;">✓</span>Access to all modules</li>
+<!-- Add other items here with conditions -->
+</ul>
+</div>
+</div>
+</main>
+<footer>
+<!-- Staff Section -->
+<img src="staff-joshua.jpg" alt="Joshua Headshot" style="width: 100px; height: auto; margin-right: 20px;">
+<div>
+<h3 style="font-family: 'Poppins', sans-serif; font-weight: 600;">Joshua Mark Addington</h3>
+<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Founder and Director</p>
+</div>
+</footer>
 </body>
-</html>
+</html></source>
+</context>

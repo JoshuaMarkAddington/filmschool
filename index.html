@@ -28,7 +28,7 @@
     height: 100%;
     object-fit: cover;
     z-index: -1;
-    opacity: 0.5;
+    opacity: 0.4;
   }
   .dark-mode {
     background-color: #1a202c;
@@ -71,22 +71,22 @@
     border-left: 4px solid #48bb78;
   }
   .membership-card {
-    background-color: white;
+    background-color: #0c1e3e;
     border-radius: 12px;
     padding: 25px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #1a3a6c;
     min-height: 500px;
     display: flex;
     flex-direction: column;
   }
   .membership-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
   }
   .membership-card h3 {
-    color: #333;
+    color: #ff8400;
     margin-bottom: 20px;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
@@ -136,12 +136,17 @@
   header {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
-    background: #333;
+    background: linear-gradient(to right, #0c1e3e, #1a3a6c);
     color: #ff8400;
     text-align: center;
-    padding: 2.5em 0;
+    padding: 4em 0;
     position: relative;
     z-index: 10;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
   main {
     padding: 40px 20px;
@@ -157,14 +162,33 @@
     width: 200px;
     height: auto;
     margin-bottom: 15px;
+    filter: brightness(1.2);
   }
   .school-intro {
     text-align: center;
     padding-bottom: 40px;
     max-width: 800px;
     margin: 0 auto;
-    font-size: 1.1rem;
-    line-height: 1.7;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    background: linear-gradient(to right, #0c1e3e, #1a3a6c);
+    color: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .school-intro::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(255,132,0,0.1), rgba(12,30,62,0.1));
+    z-index: -1;
   }
   .section {
     display: flex;
@@ -269,15 +293,16 @@
     max-width: 1200px;
     padding: 0 20px;
     box-sizing: border-box;
-    background: white;
+    background: #0c1e3e;
     border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     margin: 40px 0;
+    border: 1px solid #1a3a6c;
   }
   .module-content:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
   }
   .module-image {
     width: 45%;
@@ -285,13 +310,14 @@
     margin-right: 30px;
     border-radius: 10px;
     object-fit: cover;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    border: 2px solid #ff8400;
   }
   .module-text {
     flex: 1;
-    color: #ff8400;
+    color: #e2e8f0;
     padding: 30px;
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(12, 30, 62, 0.8);
     border-radius: 10px;
     line-height: 1.6;
   }
@@ -320,6 +346,7 @@
     }
     header {
       padding: 1.5em 0;
+      height: auto;
     }
     .logo {
       width: 150px;
@@ -342,9 +369,7 @@
 </video>
 <button id="dark-mode-toggle" class="dark-mode-toggle">🌙</button>
 <header>
-<img src="logo1.jpg" alt="Adders Film School Logo" class="logo">
-<h1>Welcome to Adders Film School!</h1>
-<p>Opening in Milton Keynes in July</p>
+  <img src="logo1.jpg" alt="Adders Film School Logo" class="logo">
 </header>
 <main class="container mx-auto p-6 flex-grow">
 <!-- School Introduction -->
@@ -514,21 +539,8 @@
       </div>
     </div>
   </section>
-
-   <!-- Module 8 -->
-  <section class="module-section">
-    <div class="module-content">
-      <div class="module-image">
-        <img src="module8.png" alt="Module 8 Photo">
-      </div>
-      <div class="module-text">
-        <h2 class="module-title">The Recording Suite: Vocal Edition</h2>
-        <p>Perfecting the art of sound is crucial to creating a truly immersive cinematic experience. In this module, learn how to use industry-standard recording software to capture high-quality audio that complements your visual storytelling.</p>
-      </div>
-    </div>
-  </section>
-
-   <!-- Module 10 -->
+  
+  <!-- Module 10 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -540,8 +552,8 @@
       </div>
     </div>
   </section>
-
-   <!-- Module 11 -->
+  
+  <!-- Module 11 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -553,8 +565,8 @@
       </div>
     </div>
   </section>
-
-   <!-- Module 12 -->
+  
+  <!-- Module 12 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -562,11 +574,10 @@
       </div>
       <div class="module-text">
         <h2 class="module-title">Voice Acting & Foley Performance</h2>
-        <p>This dynamic module is designed for students who want to bring characters and worlds to life through sound. From voice acting to creating immersive foley effects, you’ll learn how to captivate audiences with your voice and creativity.</p>
+        <p>This dynamic module is designed for students who want to bring characters and worlds to life through sound. From voice acting to creating immersive foley effects, you'll learn how to captivate audiences with your voice and creativity.</p>
       </div>
     </div>
   </section>
-  
 </div>
 <footer class="bg-gray-800 p-6 text-center">
 <p class="text-white">© 2026 Adders Film School. All rights reserved.</p>
@@ -580,6 +591,3 @@
 </script>
 </body>
 </html>
-<footer class="bg-gray-800 p-6 text-center">
-<p class="text-white">© 2026 Adders Film School. All rights reserved.</p>
-</footer>

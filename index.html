@@ -32,6 +32,9 @@
   z-index: -2; /* Changed from -1 to -2 */
   opacity: 1;
   pointer-events: none;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  transform: translateZ(0); /* Forces GPU acceleration */
 }
 
 /* Add this brand new block for the texture overlay: */

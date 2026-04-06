@@ -21,7 +21,7 @@
     background-color: transparent;
   }
   
-  /* Video background */
+   /* Video background - FIXED */
   #video-background {
     position: fixed;
     top: 0;
@@ -31,6 +31,7 @@
     object-fit: cover;
     z-index: -1;
     opacity: 0.6;
+    pointer-events: none; /* Prevents video from blocking interactions */
   }
   
   .dark-mode {

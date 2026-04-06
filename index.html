@@ -15,9 +15,10 @@
     font-family: 'Manrope', sans-serif;
     margin: 0;
     padding: 0;
-    color: transparent;
+    color: #333;
     position: relative;
     overflow-x: hidden;
+    background-color: transparent; /* Removed light grey background */
   }
   /* Video background */
   #video-background {
@@ -28,7 +29,7 @@
     height: 100%;
     object-fit: cover;
     z-index: -1;
-    opacity: 0.5;
+    opacity: 0.6; /* Adjusted for better visibility */
   }
   .dark-mode {
     background-color: #1a202c;
@@ -224,7 +225,7 @@
   }
   .dark-mode .dark-mode-toggle {
     background: #ff8400;
-    color: #white;
+    color: #333;
   }
   .dark-mode .dark-mode-toggle:hover {
     background: #333;
@@ -315,7 +316,7 @@
   }
   .module-text {
     flex: 1;
-    color: #e2e8f0;
+    color: white; /* Changed to white text */
     padding: 30px;
     background-color: rgba(12, 30, 62, 0.8);
     border-radius: 10px;

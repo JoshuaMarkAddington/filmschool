@@ -21,7 +21,7 @@
     background-color: transparent;
   }
   
-   /* Video background - FIXED */
+/* Update your existing video-background CSS to this: */
 #video-background {
   position: fixed;
   top: 0;
@@ -29,9 +29,23 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: -1;
-  opacity: 1; /* Changed from 0.6 to 1 to remove the grey overlay */
+  z-index: -2; /* Changed from -1 to -2 */
+  opacity: 1;
   pointer-events: none;
+}
+
+/* Add this brand new block for the texture overlay: */
+#video-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Sits perfectly over the video, behind the content */
+  pointer-events: none;
+  /* This creates a subtle, crisp dot pattern */
+  background-image: radial-gradient(rgba(0, 0, 0, 0.35) 1px, transparent 1px);
+  background-size: 4px 4px; 
 }
   
   .dark-mode {
@@ -379,6 +393,8 @@
 <video id="video-background" autoplay muted loop playsinline>
   <source src="website-video1.mp4" type="video/mp4">
   Your browser does not support the video tag.
+</video>
+<div id="video-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; background-image: radial-gradient(rgba(0, 0, 0, 0.2) 1px, transparent 1px); background-size: 3px 3px;"></div>
 </video>
 <button id="dark-mode-toggle" class="dark-mode-toggle">🌙</button>
 <header>

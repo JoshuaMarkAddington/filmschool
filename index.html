@@ -15,49 +15,75 @@
     font-family: 'Manrope', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #b3e5fc; /* Light ocean blue background */
     color: #333;
+    position: relative;
+    overflow-x: hidden;
   }
+  
+  /* Video background */
+  #video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    opacity: 0.7;
+  }
+  
   .dark-mode {
     background-color: #1a202c;
     color: #e2e8f0;
   }
+  
   .dark-mode header {
     background: #2d3748;
     color: #ff8400;
   }
+  
   .dark-mode .logo {
     filter: brightness(0.8);
   }
+  
   .dark-mode .membership-card {
     background-color: #2d3748;
     border-color: #4a5568;
   }
+  
   .dark-mode .membership-card h3 {
     color: #ff8400;
   }
+  
   .dark-mode .membership-card ul li {
     color: #e2e8f0;
   }
+  
   .dark-mode .membership-card button {
     background-color: #48bb78;
     color: white;
   }
+  
   .dark-mode .membership-card button:hover {
     background-color: #38a169;
   }
+  
   .dark-mode .membership-card .tick {
     color: #48bb78;
   }
+  
   .dark-mode .membership-card .no-tick {
     color: #718096;
   }
+  
   .dark-mode .membership-card .standard {
     border-left: 4px solid #ff8400;
   }
+  
   .dark-mode .membership-card .premium {
     border-left: 4px solid #48bb78;
   }
+  
   .membership-card {
     background-color: white;
     border-radius: 12px;
@@ -69,37 +95,44 @@
     display: flex;
     flex-direction: column;
   }
+  
   .membership-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
   }
+  
   .membership-card h3 {
     color: #333;
     margin-bottom: 20px;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
   }
+  
   .membership-card ul {
     list-style: none;
     padding: 0;
     flex-grow: 1;
   }
+  
   .membership-card ul li {
     margin-bottom: 15px;
     display: flex;
     align-items: flex-start;
   }
+  
   .membership-card .tick {
     color: #48bb78;
     font-weight: bold;
     margin-right: 10px;
     font-size: 1.2em;
   }
+  
   .membership-card .no-tick {
     color: #e53e3e;
     margin-right: 10px;
     font-size: 1.2em;
   }
+  
   .membership-card button {
     @apply bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-4 rounded;
     width: 100%;
@@ -111,16 +144,20 @@
     padding: 12px;
     font-size: 1rem;
   }
+  
   .membership-card button:hover {
     background-color: #45a049;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   }
+  
   .dark-mode .membership-card button {
     background-color: #48bb78;
   }
+  
   .dark-mode .membership-card button:hover {
     background-color: #38a169;
   }
+  
   header {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
@@ -129,7 +166,9 @@
     text-align: center;
     padding: 2.5em 0;
     position: relative;
+    z-index: 10;
   }
+  
   main {
     padding: 40px 20px;
     max-width: 1200px;
@@ -137,12 +176,16 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
+    z-index: 10;
   }
+  
   .logo {
     width: 200px;
     height: auto;
     margin-bottom: 15px;
   }
+  
   .school-intro {
     text-align: center;
     padding-bottom: 40px;
@@ -151,6 +194,7 @@
     font-size: 1.1rem;
     line-height: 1.7;
   }
+  
   .section {
     display: flex;
     justify-content: space-between;
@@ -160,6 +204,7 @@
     width: 100%;
     margin-bottom: 60px;
   }
+  
   .dark-mode-toggle {
     position: absolute;
     top: 20px;
@@ -176,27 +221,34 @@
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
+    z-index: 20;
   }
+  
   .dark-mode-toggle:hover {
     background: #ff8400;
     color: #333;
     transform: rotate(15deg);
   }
+  
   .dark-mode .dark-mode-toggle {
     background: #ff8400;
     color: #333;
   }
+  
   .dark-mode .dark-mode-toggle:hover {
     background: #333;
     color: #ff8400;
     transform: rotate(-15deg);
   }
+  
   .membership-card.standard {
     border-left: 4px solid #ff8400;
   }
+  
   .membership-card.premium {
     border-left: 4px solid #48bb78;
   }
+  
   .staff-bio {
     background-color: white;
     border-radius: 12px;
@@ -206,6 +258,7 @@
     width: 100%;
     max-width: 1200px;
   }
+  
   .staff-bio h2 {
     color: #333;
     margin-bottom: 25px;
@@ -213,24 +266,31 @@
     font-weight: 600;
     text-align: center;
   }
+  
   .staff-bio p {
     font-size: 1.1rem;
     line-height: 1.7;
     margin-bottom: 20px;
   }
+  
   .dark-mode .staff-bio {
     background-color: #2d3748;
   }
+  
   .dark-mode .staff-bio h2 {
     color: #ff8400;
   }
+  
   .dark-mode .staff-bio p {
     color: #e2e8f0;
   }
+  
   .module-section {
     margin: 40px 0;
     text-align: center;
+    width: 100%;
   }
+  
   .module-title {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
@@ -238,24 +298,66 @@
     margin-bottom: 20px;
     color: #333;
   }
+  
   .module-description {
     max-width: 800px;
     margin: 0 auto 30px;
     font-size: 1.1rem;
     line-height: 1.7;
   }
-  .module-image {
-    max-width: 600px;
-    margin: 0 auto;
-    border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  
+  .module-content {
+    display: flex;
+    align-items: center;
+    margin-bottom: 60px;
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin: 40px 0;
   }
+  
+  .module-content:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+  }
+  
+  .module-image {
+    width: 45%;
+    height: auto;
+    margin-right: 30px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .module-text {
+    flex: 1;
+    color: black;
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    line-height: 1.6;
+  }
+  
+  .module-text h2 {
+    color: #FF6B35;
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+  }
+  
   .dark-mode .module-title {
     color: #ff8400;
   }
+  
   .dark-mode .module-description {
     color: #e2e8f0;
   }
+  
   @media (max-width: 768px) {
     .section {
       flex-direction: column;
@@ -274,7 +376,23 @@
     .logo {
       width: 150px;
     }
+    .module-content {
+      flex-direction: column;
+    }
+    .module-image {
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: 20px;
+    }
   }
+</style>
+</head>
+<body class="flex flex-col min-h-screen">
+<video id="video-background" autoplay muted loop>
+  <source src="website-video1.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -308,7 +426,7 @@
 <li><span class="no-tick">✗</span>Adders Pen, Notepad & Bottle</li>
 <li><span class="no-tick">✗</span>T-Shirt</li>
 <li><span class="no-tick">✗</span>TOTUM card after 6 months</li>
-<li><span class="tick">✗</span>Showreel after 24 months</li>
+<li><span class="tick">✓</span>Showreel after 24 months</li>
 </ul>
 <button onclick="window.location.href='https://bookwhen.com/standard'">3 - Month</button>
 <button onclick="window.location.href='https://bookwhen.com/premium'">6 - Month</button>
@@ -389,21 +507,7 @@
  <img src="module9.jpg" alt="Module 9 Photo">
  <p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Unlock the Secrets of Visual Storytelling... In this advanced course, students will delve into the art of cinematography, exploring the technical aspects of camera operation, lighting design, and visual composition.</p>
  </section>
-<!-- Staff Bio Section -->
-<div class="staff-bio">
-<h2>Joshua Mark Addington</h2>
-    <img src="staff-joshua.jpg" alt="Joshua Headshot" style="width: 100px; height: auto; margin-right: 20px;">
-      <div>
-<h3>Modules:</h3>
-<ul class="list-disc list-inside mb-4">
-<li>Acting for Screen</li>
-<li>Scriptwriting</li>
-<li>Sketch to Screen</li>
-<li>Directing & Production Leadership</li>
-</ul>
-<p>Joshua founded Adders Film school on the belief that a student's potential is never defined by a grade, a label, or a physical limitation. Growing up, the traditional education system was an uphill battle; Joshua navigated his school years with complex speech challenges and cognitive delays that made understanding even basic tasks a struggle. Beyond the classroom, Joshua faced the social isolation of being part of the only family in the country with a rare condition called NFJ Syndrome, which led to years of intense bullying. In a system that wasn't built for his way of learning, he was placed in the lowest academic sets, with projections suggesting he would leave school having passed only Mathematics. However, these are only the opening chapters of a much larger story. Joshua refused to let those projections dictate his worth. Defying every expectation, he passed all of his GCSEs—achieving two A grades, an A* and six B grades. He continued this momentum to earn a Double Distinction* (D*D*) in Business at A-Level and a First Class BA (Hons) in Acting for Contemporary & Devised Performance from the University of Northampton. Since then, he has directed and produced several award-winning short films and made history by founding the first-ever International Film Festival in Milton Keynes, hosted at Odeon Cinemas. While these achievements are a source of pride, Joshua's journey hasn't been without its darkest moments. In 2022, the cumulative weight of his past struggles led to a significant mental health crisis. Today, Joshua can proudly say he has moved past that place, and he now uses his lived understanding of mental health and neurodiversity to shape a teaching style that is as supportive as it is professional. His mission is to ensure every student understands that their voice is valuable, even when the world tells them otherwise. He doesn't just teach filmmaking; he uses his journey to show students how to defy expectations and become the best version of themselves.</p>
-</div>
-</main>
+
 <footer class="bg-gray-800 p-6 text-center">
 <p class="text-white">© 2026 Adders Film School. All rights reserved.</p>
 </footer>

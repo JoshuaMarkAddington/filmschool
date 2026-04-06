@@ -19,7 +19,6 @@
     position: relative;
     overflow-x: hidden;
   }
-  
   /* Video background */
   #video-background {
     position: fixed;
@@ -29,61 +28,48 @@
     height: 100%;
     object-fit: cover;
     z-index: -1;
-    opacity: 0.7;
+    opacity: 0.5;
   }
-  
   .dark-mode {
     background-color: #1a202c;
     color: #e2e8f0;
   }
-  
   .dark-mode header {
     background: #2d3748;
     color: #ff8400;
   }
-  
   .dark-mode .logo {
     filter: brightness(0.8);
   }
-  
   .dark-mode .membership-card {
     background-color: #2d3748;
     border-color: #4a5568;
   }
-  
   .dark-mode .membership-card h3 {
     color: #ff8400;
   }
-  
   .dark-mode .membership-card ul li {
     color: #e2e8f0;
   }
-  
   .dark-mode .membership-card button {
     background-color: #48bb78;
     color: white;
   }
-  
   .dark-mode .membership-card button:hover {
     background-color: #38a169;
   }
-  
   .dark-mode .membership-card .tick {
     color: #48bb78;
   }
-  
   .dark-mode .membership-card .no-tick {
     color: #718096;
   }
-  
   .dark-mode .membership-card .standard {
     border-left: 4px solid #ff8400;
   }
-  
   .dark-mode .membership-card .premium {
     border-left: 4px solid #48bb78;
   }
-  
   .membership-card {
     background-color: white;
     border-radius: 12px;
@@ -95,44 +81,37 @@
     display: flex;
     flex-direction: column;
   }
-  
   .membership-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
   }
-  
   .membership-card h3 {
     color: #333;
     margin-bottom: 20px;
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
   }
-  
   .membership-card ul {
     list-style: none;
     padding: 0;
     flex-grow: 1;
   }
-  
   .membership-card ul li {
     margin-bottom: 15px;
     display: flex;
     align-items: flex-start;
   }
-  
   .membership-card .tick {
     color: #48bb78;
     font-weight: bold;
     margin-right: 10px;
     font-size: 1.2em;
   }
-  
   .membership-card .no-tick {
     color: #e53e3e;
     margin-right: 10px;
     font-size: 1.2em;
   }
-  
   .membership-card button {
     @apply bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-4 rounded;
     width: 100%;
@@ -144,20 +123,16 @@
     padding: 12px;
     font-size: 1rem;
   }
-  
   .membership-card button:hover {
     background-color: #45a049;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   }
-  
   .dark-mode .membership-card button {
     background-color: #48bb78;
   }
-  
   .dark-mode .membership-card button:hover {
     background-color: #38a169;
   }
-  
   header {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
@@ -168,7 +143,6 @@
     position: relative;
     z-index: 10;
   }
-  
   main {
     padding: 40px 20px;
     max-width: 1200px;
@@ -179,13 +153,11 @@
     position: relative;
     z-index: 10;
   }
-  
   .logo {
     width: 200px;
     height: auto;
     margin-bottom: 15px;
   }
-  
   .school-intro {
     text-align: center;
     padding-bottom: 40px;
@@ -194,7 +166,6 @@
     font-size: 1.1rem;
     line-height: 1.7;
   }
-  
   .section {
     display: flex;
     justify-content: space-between;
@@ -204,7 +175,6 @@
     width: 100%;
     margin-bottom: 60px;
   }
-  
   .dark-mode-toggle {
     position: absolute;
     top: 20px;
@@ -223,32 +193,26 @@
     transition: all 0.3s ease;
     z-index: 20;
   }
-  
   .dark-mode-toggle:hover {
     background: #ff8400;
     color: #333;
     transform: rotate(15deg);
   }
-  
   .dark-mode .dark-mode-toggle {
     background: #ff8400;
     color: #333;
   }
-  
   .dark-mode .dark-mode-toggle:hover {
     background: #333;
     color: #ff8400;
     transform: rotate(-15deg);
   }
-  
   .membership-card.standard {
     border-left: 4px solid #ff8400;
   }
-  
   .membership-card.premium {
     border-left: 4px solid #48bb78;
   }
-  
   .staff-bio {
     background-color: white;
     border-radius: 12px;
@@ -258,7 +222,6 @@
     width: 100%;
     max-width: 1200px;
   }
-  
   .staff-bio h2 {
     color: #333;
     margin-bottom: 25px;
@@ -266,46 +229,38 @@
     font-weight: 600;
     text-align: center;
   }
-  
   .staff-bio p {
     font-size: 1.1rem;
     line-height: 1.7;
     margin-bottom: 20px;
   }
-  
   .dark-mode .staff-bio {
     background-color: #2d3748;
   }
-  
   .dark-mode .staff-bio h2 {
     color: #ff8400;
   }
-  
   .dark-mode .staff-bio p {
     color: #e2e8f0;
   }
-  
   .module-section {
     margin: 40px 0;
     text-align: center;
     width: 100%;
   }
-  
   .module-title {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
     font-size: 1.8rem;
     margin-bottom: 20px;
-    color: #333;
+    color: #ff8400;
   }
-  
   .module-description {
     max-width: 800px;
     margin: 0 auto 30px;
     font-size: 1.1rem;
     line-height: 1.7;
   }
-  
   .module-content {
     display: flex;
     align-items: center;
@@ -320,12 +275,10 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     margin: 40px 0;
   }
-  
   .module-content:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 35px rgba(0,0,0,0.15);
   }
-  
   .module-image {
     width: 45%;
     height: auto;
@@ -334,30 +287,25 @@
     object-fit: cover;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
   }
-  
   .module-text {
     flex: 1;
-    color: black;
+    color: #ff8400;
     padding: 30px;
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
     line-height: 1.6;
   }
-  
   .module-text h2 {
     color: #FF6B35;
     font-size: 1.8rem;
     margin-bottom: 1rem;
   }
-  
   .dark-mode .module-title {
     color: #ff8400;
   }
-  
   .dark-mode .module-description {
     color: #e2e8f0;
   }
-  
   @media (max-width: 768px) {
     .section {
       flex-direction: column;
@@ -392,10 +340,6 @@
   <source src="website-video1.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
-
-</style>
-</head>
-<body class="flex flex-col min-h-screen">
 <button id="dark-mode-toggle" class="dark-mode-toggle">🌙</button>
 <header>
 <img src="logo1.jpg" alt="Adders Film School Logo" class="logo">
@@ -408,7 +352,6 @@
 <h2>Adders Film School: Where Your Story Begins</h2>
 <p>Embark on an extraordinary filmmaking journey with Adders Film School! At Adders Film School, we're redefining film education—preparing you for a career in the industry without the hefty price tag or time commitment of university. With hands-on training from industry professionals and access to 4K HDR equipment, you'll be ready to stand out in the film industry. Ready to take your first steps? Explore our memberships below and start your journey toward becoming a filmmaker!</p>
 </div>
-    
 <!-- Membership Options -->
 <section class="mb-8">
 <h2 class="text-xl font-bold mb-4 text-center">Membership Types</h2>
@@ -432,7 +375,6 @@
 <button onclick="window.location.href='https://bookwhen.com/premium'">6 - Month</button>
 <button onclick="window.location.href='https://bookwhen.com/premium'">12 - Month</button>
 </div>
-
 <!-- Premium Membership -->
 <div class="membership-card premium">
 <h3 class="text-lg font-semibold mb-2">Premium Membership</h3>
@@ -454,64 +396,128 @@
 </div>
 </div>
 </section>
-<!-- School Introduction -->
-<div class="school-intro">
-<h2 style="font-family: 'Poppins', sans-serif; font-weight: 600;">Adders Film School: Where Your Story Begins</h2>
-<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Embark on an extraordinary filmmaking journey with Adders Film School! At Adders Film School, we're redefining film education—preparing you for a career in the industry without the hefty price tag or time commitment of university. With hands-on training from industry professionals and access to 4K HDR equipment, you'll be ready to stand out in the film industry. Ready to take your first steps? Explore our memberships below and start your journey toward becoming a filmmaker!.</p>
+<!-- Module Sections -->
+<div id="module-sections">
+  <!-- Module 1 -->
+  <section class="module-section">
+    <div class="module-content">
+      <div class="module-image">
+        <img src="module1.jpg" alt="Module 1 Photo">
+      </div>
+      <div class="module-text">
+        <h2 class="module-title">Acting-for-Screen</h2>
+        <p>The Idea of Presence. Step in front of the glass and master the ultra-high-definition art of "the moment." In a 6K environment, every breath and eyelid twitch tells a story. We move beyond "theatrical" acting into the raw, cinematic realism required for modern 4K HDR films.</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Module 2 -->
+  <section class="module-section">
+    <div class="module-content">
+      <div class="module-image">
+        <img src="module2.jpg" alt="Module 2 Photo">
+      </div>
+      <div class="module-text">
+        <h2 class="module-title">Musical-Theatre-for-Screen</h2>
+        <p>This is where Broadway meets the big screen. Learn how to translate the energy of live performance into a structured cinematic narrative. We focus on the precision of lip-syncing, movement for the lens, and integrating high-fidelity audio with sweeping 6K visuals to create "The New Hollywood" musical.</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Module 3 -->
+  <section class="module-section">
+    <div class="module-content">
+      <div class="module-image">
+        <img src="module3.jpg" alt="Module 3 Photo">
+      </div>
+      <div class="module-text">
+        <h2 class="module-title">Scriptwriting</h2>
+        <p>Developing a compelling script is the cornerstone of any successful film. In this module, students will learn essential techniques for creating engaging storylines and characters that resonate with audiences. Emphasis will be placed on character development, plot structure, and dialogue that drives the narrative forward.</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Module 4 -->
+  <section class="module-section">
+    <div class="module-content">
+      <div class="module-image">
+        <img src="module4.jpg" alt="Module 4 Photo">
+      </div>
+      <div class="module-text">
+        <h2 class="module-title">Directing-&-Production-Leadership</h2>
+        <p>From concept to final cut, dive into the world of film directing. Learn key elements such as storyboarding, shot selection, and scene construction that are essential for crafting a cohesive narrative.</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Module 5 -->
+  <section class="module-section">
+    <div class="module-content">
+      <div class="module-image">
+        <img src="module5.jpg" alt="Module 5 Photo">
+      </div>
+      <div class="module-text">
+        <h2 class="module-title">camera-operation</h2>
+        <p>Unlock the secrets of cinematography with practical lessons in camera operation and lighting techniques, preparing you to capture breathtaking visuals that enhance your film's storytelling.</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Module 6 -->
+  <section class="module-section">
+    <div class="module-content">
+      <div class="module-image">
+        <img src="module6.jpg" alt="Module 6 Photo">
+      </div>
+      <div class="module-text">
+        <h2 class="module-title">Editing-&-Digital-Mastering</h2>
+        <p>A film is truly "born" in the edit. You'll dive deep into DaVinci Resolve, mastering the same tools used by Hollywood colourists. Go beyond basic cuts—use Fusion for advanced visual effects, learn HDR grading, audio mastering and finish your projects for the silver screen.</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Module 7 -->
+  <section class="module-section">
+    <div class="module-content">
+      <div class="module-image">
+        <img src="module7.jpg" alt="Module 7 Photo">
+      </div>
+      <div class="module-text">
+        <h2 class="module-title">Become-A-Supporting-Actor</h2>
+        <p>Through hands-on exercises and real-world experiences, you'll gain the confidence and expertise needed to shine in supporting roles. Whether you're looking to enhance your acting skills or simply want to try something new, this module is an excellent way to develop your creative horizons.</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Module 8 -->
+  <section class="module-section">
+    <div class="module-content">
+      <div class="module-image">
+        <img src="module8.png" alt="Module 8 Photo">
+      </div>
+      <div class="module-text">
+        <h2 class="module-title">The-Recording-Suite: Vocal-Edition</h2>
+        <p>Perfecting the art of sound is crucial to creating a truly immersive cinematic experience. In this module, learn how to use industry-standard recording software to capture high-quality audio that complements your visual storytelling.</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Module 9 -->
+  <section class="module-section">
+    <div class="module-content">
+      <div class="module-image">
+        <img src="module9.jpg" alt="Module 9 Photo">
+      </div>
+      <div class="module-text">
+        <h2 class="module-title">Advanced-Cinematography</h2>
+        <p>Unlock the Secrets of Visual Storytelling... In this advanced course, students will delve into the art of cinematography, exploring the technical aspects of camera operation, lighting design, and visual composition.</p>
+      </div>
+    </div>
+  </section>
 </div>
-<!-- Module 1 -->
-<section id="Acting-for-Screen">
-<p>Acting-for-Screen</p>
-<img src="module1.jpg" alt="Module 1 Photo">
-<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">The Idea of Presence. Step in front of the glass and master the ultra-high-definition art of "the moment." In a 6K environment, every breath and eyelid twitch tells a story. We move beyond "theatrical" acting into the raw, cinematic realism required for modern 4K HDR films.</p>
-</section>
-<!-- Module 2 -->
-<section id="Musical-Theatre-for-Screen">
-<p>Musical-Theatre-for-Screen</p>
-<img src="module2.jpg" alt="Module 2 Photo">
-<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">This is where Broadway meets the big screen. Learn how to translate the energy of live performance into a structured cinematic narrative. We focus on the precision of lip-syncing, movement for the lens, and integrating high-fidelity audio with sweeping 6K visuals to create "The New Hollywood" musical.</p>
-</section>
-<!-- Module 3 -->
-<section id="Scriptwriting">
-<p>Scriptwritingn</p>
-<img src="module3.jpg" alt="Module 3 Photo">
-<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Developing a compelling script is the cornerstone of any successful film. In this module, students will learn essential techniques for creating engaging storylines and characters that resonate with audiences. Emphasis will be placed on character development, plot structure, and dialogue that drives the narrative forward.</p>
-</section>
-<!-- Module 4 -->
-<section id="Directing-&-Production-Leadership">
-<img src="module4.jpg" alt="Module 4 Photo">
-<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">From concept to final cut, dive into the world of film directing. Learn key elements such as storyboarding, shot selection, and scene construction that are essential for crafting a cohesive narrative.</p>
-</section>
-<!-- Module 5 -->
-<section id="camera-operation">
-<img src="module5.jpg" alt="Module 5 Photo">
-<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Unlock the secrets of cinematography with practical lessons in camera operation and lighting techniques, preparing you to capture breathtaking visuals that enhance your film's storytelling.</p>
-</section>
-<!-- Module 6 -->
-<section id="Editing-&-Digital-Mastering">
-<img src="module6.jpg" alt="Module 6 Photo">
-<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">A film is truly "born" in the edit. You'll dive deep into DaVinci Resolve, mastering the same tools used by Hollywood colourists. Go beyond basic cuts—use Fusion for advanced visual effects, learn HDR grading, audio mastering and finish your projects for the silver screen.</p>
-</section>
-<!-- Module 7 -->
-<section id="Become-A-Supporting-Actor">
-<img src="module7.jpg" alt="Module 7 Photo">
-<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Through hands-on exercises and real-world experiences, you'll gain the confidence and expertise needed to shine in supporting roles. Whether you're looking to enhance your acting skills or simply want to try something new, this module is an excellent way to develop your creative horizons.</p>
-</section>
-<!-- Module 8 -->
-<section id="The-Recording-Suite: Vocal-Edition">
-<img src="module8.png" alt="Module 8 Photo">
-<p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Perfecting the art of sound is crucial to creating a truly immersive cinematic experience. In this module, learn how to use industry-standard recording software to capture high-quality audio that complements your visual storytelling.</p>
- </section>
- <!-- Module 9 -->
- <section id="Advanced-Cinematography">
- <img src="module9.jpg" alt="Module 9 Photo">
- <p style="font-family: 'Manrope', sans-serif; font-weight: 500;">Unlock the Secrets of Visual Storytelling... In this advanced course, students will delve into the art of cinematography, exploring the technical aspects of camera operation, lighting design, and visual composition.</p>
- </section>
-
 <footer class="bg-gray-800 p-6 text-center">
 <p class="text-white">© 2026 Adders Film School. All rights reserved.</p>
 </footer>
-
 <script>
   const toggleDarkMode = () => {  
     document.body.classList.toggle('dark-mode');  
@@ -521,4 +527,6 @@
 </script>
 </body>
 </html>
-```
+<footer class="bg-gray-800 p-6 text-center">
+<p class="text-white">© 2026 Adders Film School. All rights reserved.</p>
+</footer>

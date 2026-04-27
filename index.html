@@ -4,11 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Welcome to Adders Film School</title>
-<!-- Tailwind CSS -->
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Manrope:wght@500&display=swap" rel="stylesheet">
-<!-- Framer Motion -->
 <script src="https://unpkg.com/framer-motion@6.5.1/dist/framer-motion.umd.js"></script>
 <style>
   body {
@@ -182,10 +179,40 @@
     background: linear-gradient(45deg, rgba(255,132,0,0.1), rgba(12,30,62,0.1));
     z-index: -1;
   }
+  /* New About Us Toggle Button Styles */
+  .about-btn {
+    background-color: #ff8400;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    padding: 12px 28px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+    font-size: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .about-btn:hover {
+    background-color: #e67600;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+  .about-content {
+    display: none;
+    margin-top: 30px;
+    text-align: center;
+    animation: fadeIn 0.4s ease-in-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   .section {
     display: flex;
     justify-content: space-between;
-    align-items: start;
+    align-items: stretch;
     flex-wrap: wrap;
     gap: 30px;
     width: 100%;
@@ -324,14 +351,35 @@
   .dark-mode .module-description {
     color: #e2e8f0;
   }
+  
+  /* UPDATED MOBILE STYLES */
   @media (max-width: 768px) {
     .section {
-      flex-direction: column;
-      align-items: center;
+      flex-direction: row; /* Forces cards side-by-side */
+      align-items: stretch;
+      flex-wrap: nowrap;
+      gap: 10px; /* Reduces gap for mobile screen */
     }
     .membership-card {
-      width: 100%;
-      max-width: 500px;
+      width: 50%; /* Splits the screen evenly */
+      max-width: none;
+      padding: 15px 10px; /* Reduces padding to fit text better */
+    }
+    .membership-card h3 {
+      font-size: 1rem;
+      margin-bottom: 15px;
+    }
+    .membership-card ul li {
+      font-size: 0.75rem; /* Shrinks text slightly to prevent messy wrapping */
+      margin-bottom: 10px;
+    }
+    .membership-card .tick, .membership-card .no-tick {
+      font-size: 1rem;
+      margin-right: 6px;
+    }
+    .membership-card button {
+      padding: 10px;
+      font-size: 0.9rem;
     }
     .school-intro {
       padding: 0 15px;
@@ -365,18 +413,19 @@
   <img src="logo1.jpg" alt="Adders Film School Logo" class="logo">
 </header>
 <main class="container mx-auto p-6 flex-grow">
-<!-- School Introduction -->
 <div class="school-intro">
-<h2 class="text-3xl font-bold mb-6 text-orange-500">Adders Film School: Where Your Story Begins</h2>
-<p class="mb-4 text-white">Embark on an extraordinary filmmaking journey with Adders Film School!</p>
-<p class="mb-4 text-white">We are redefining film education—preparing you for a career in the industry without the hefty price tag or time commitment of university.</p>
-<p class="mb-4 text-white">With hands-on training from industry professionals 4 hours every week and access to 4K HDR equipment, you'll be ready to stand out in the film industry.</p>
-<p class="text-white">Ready to take your first steps? Explore our memberships below and start your journey toward becoming a filmmaker!</p>
+  <h2 style="color: #ff8400;" class="text-4xl font-bold mb-2">Adders Film School: Where Your Story Begins</h2>
+  <button id="about-toggle-btn" class="about-btn">About Us</button>
+
+  <div id="about-content" class="about-content">
+    <p class="mb-5 text-white text-lg">Embark on an extraordinary filmmaking journey with Adders Film School!</p>
+    <p class="mb-5 text-white text-lg">We are redefining film education—preparing you for a career in the industry without the hefty price tag or time commitment of university.</p>
+    <p class="mb-5 text-white text-lg">With hands-on training from industry professionals 4 hours every week and access to 4K HDR equipment, you'll be ready to stand out in the film industry.</p>
+    <p class="text-white text-lg font-semibold">Ready to take your first steps? Explore our memberships below and start your journey toward becoming a filmmaker!</p>
+  </div>
 </div>
-<!-- Membership Options -->
 <section class="mb-8">
 <div class="section">
-<!-- Standard Membership -->
 <div class="membership-card standard">
 <h3 class="text-lg font-semibold mb-2">Standard Membership</h3>
 <ul>
@@ -393,7 +442,6 @@
 </ul>
 <button onclick="window.location.href='https://bookwhen.com/addersfilmschool/memberships'">Standard</button>
 </div>
-<!-- Premium Membership -->
 <div class="membership-card premium">
 <h3 class="text-lg font-semibold mb-2">Premium Membership</h3>
 <ul>
@@ -412,9 +460,7 @@
 </div>
 </div>
 </section>
-<!-- Module Sections -->
 <div id="module-sections">
-  <!-- Module 1 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -426,7 +472,6 @@
       </div>
     </div>
   </section>
-  <!-- Module 2 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -438,7 +483,6 @@
       </div>
     </div>
   </section>
-  <!-- Module 3 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -450,7 +494,6 @@
       </div>
     </div>
   </section>
-  <!-- Module 4 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -462,7 +505,6 @@
       </div>
     </div>
   </section>
-  <!-- Module 5 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -474,7 +516,6 @@
       </div>
     </div>
   </section>
-  <!-- Module 6 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -486,7 +527,6 @@
       </div>
     </div>
   </section>
-  <!-- Module 7 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -498,7 +538,6 @@
       </div>
     </div>
   </section>
-  <!-- Module 8 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -510,7 +549,6 @@
       </div>
     </div>
   </section>
-  <!-- Module 9 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -522,7 +560,6 @@
       </div>
     </div>
   </section>
-  <!-- Module 10 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -534,7 +571,6 @@
       </div>
     </div>
   </section>
-  <!-- Module 11 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -546,7 +582,6 @@
       </div>
     </div>
   </section>
-  <!-- Module 12 -->
   <section class="module-section">
     <div class="module-content">
       <div class="module-image">
@@ -568,6 +603,6 @@
   }  
   // Add event listener to the toggle button in your HTML  
   document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
-</script>
-</body>
-</html>
+
+  // About Us Toggle Functionality
+  const aboutBtn = doc

@@ -264,33 +264,39 @@
     text-align: left;
   }
 
-  /* SIDE-BY-SIDE MOBILE FIX */
+  /* MOBILE FIX: Side-by-Side and No Huge Gap */
   @media (max-width: 768px) {
     .section {
-      flex-direction: row; /* Forces side-by-side */
+      flex-direction: row;
       flex-wrap: nowrap;
-      gap: 8px;
+      gap: 10px;
     }
     .membership-card {
-      width: 50%; /* Each takes half screen */
-      min-height: 620px; /* Increased to fit full original text */
-      padding: 12px 6px;
+      width: 50%;
+      min-height: auto; /* Removes the forced giant gap */
+      padding: 15px 8px;
     }
     .membership-card h3 { 
-      font-size: 0.85rem; 
-      margin-bottom: 10px; 
+      font-size: 0.9rem; 
+      margin-bottom: 12px; 
+      min-height: 2.5em; /* Ensures titles align even if they wrap */
+    }
+    .membership-card ul {
+      flex-grow: 0; /* Lets text stay compact */
+      margin-bottom: 10px;
     }
     .membership-card ul li { 
-      font-size: 0.62rem; /* Scaled down for readability on small screens */
-      margin-bottom: 6px; 
+      font-size: 0.65rem; 
+      margin-bottom: 8px; 
     }
     .membership-card .tick, .membership-card .no-tick {
-      font-size: 0.8rem;
-      margin-right: 4px;
+      font-size: 0.85rem;
+      margin-right: 5px;
     }
     .membership-card button {
-      padding: 10px 4px;
-      font-size: 0.8rem;
+      padding: 10px 5px;
+      font-size: 0.85rem;
+      margin-top: auto; /* Keeps buttons aligned at the bottom of the content */
     }
     .module-content { flex-direction: column; }
     .module-image { width: 100%; }
@@ -496,7 +502,7 @@
     document.body.classList.toggle('dark-mode');
   });
 
-  // Robust About Us Toggle
+  // About Us Toggle
   const aboutBtn = document.getElementById('about-toggle-btn');
   const aboutContent = document.getElementById('about-content');
 

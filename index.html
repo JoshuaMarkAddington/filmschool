@@ -6,6 +6,7 @@
 <title>Welcome to Adders Film School</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Manrope:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/framer-motion/6.5.1/framer-motion.umd.js"></script>
 <style>
   body {
     font-family: 'Manrope', sans-serif;
@@ -346,12 +347,13 @@
 <main class="container mx-auto p-6 flex-grow">
   <div class="intro-container">
     <div class="intro-text">
-      <p class="mb-5 text-white text-lg">Embark on an extraordinary filmmaking journey with Adders Film School!</p>
+      <p class="mb-5 text-white text-lg">Master the craft. Find your voice. Become the professional you were meant to be!</p>
     </div>
     <button id="about-toggle-btn" class="about-btn">About Us</button>
     <div id="about-content" class="about-content" style="display: none;">
-      <p class="mb-5 text-white text-lg">We are redefining film education—preparing you for a career in the industry without the hefty price tag or time commitment of university.</p>
-      <p class="mb-5 text-white text-lg">With hands-on training from industry professionals 4 hours every week and access to 4K HDR equipment, you'll be ready to stand out in the film industry.</p>
+      <p class="mb-5 text-white text-lg">You have stories that the world hasn't seen yet. Our mission is to give you the professional-grade tools and the technical mastery to tell them—without compromise. From your first draft in WriterDuet to the final 4K HDR master in DaVinci Resolve, you aren't just a student; you are a filmmaker preparing to make your impact in the industry.</p>
+      <p class="mb-5 text-white text-lg"><em>CHOOSE YOUR PATH:</em> Our 3-month membership cycles are designed to help you build a custom career. Every session, you hand-pick two - three core modules to master.</p>
+      <p class="mb-5 text-white text-lg"><em>3 months to launch your project. A lifetime to master the art.</em></p>
       <p class="text-white text-lg font-semibold">Ready to take your first steps? Explore our memberships below and start your journey toward becoming a filmmaker!</p>
     </div>
   </div>
@@ -403,7 +405,7 @@
     </section>
     <section class="module-section">
       <div class="module-content">
-        <img src="module2.png" alt="Module 2 Photo" class="module-image">
+        <img src="module2.jpg" alt="Module 2 Photo" class="module-image">
         <div class="module-text">
           <h2 class="module-title">Musical Theatre for Screen</h2>
           <p>This is where Broadway meets the big screen. Learn how to translate the energy of live performance into a structured cinematic narrative. We focus on the precision of lip-syncing, movement for the lens, and integrating high-fidelity audio with sweeping 6K visuals to create "The New Hollywood" musical.</p>
@@ -437,6 +439,42 @@
         </div>
       </div>
     </section>
+    <section class="module-section">
+      <div class="module-content">
+        <img src="module6.jpg" alt="Module 6 Photo" class="module-image">
+        <div class="module-text">
+          <h2 class="module-title">Editing & Digital Mastering</h2>
+          <p>A film is truly "born" in the edit. You'll dive deep into DaVinci Resolve, mastering the same tools used by Hollywood colourists. Go beyond basic cuts—use Fusion for advanced visual effects, learn HDR grading, audio mastering and finish your projects for the silver screen.</p>
+        </div>
+      </div>
+    </section>
+    <section class="module-section">
+      <div class="module-content">
+        <img src="module7.jpg" alt="Module 7 Photo" class="module-image">
+        <div class="module-text">
+          <h2 class="module-title">Become A Supporting Actor</h2>
+          <p>Through hands-on exercises and real-world experiences, you'll gain the confidence and expertise needed to shine in supporting roles. Whether you're looking to enhance your acting skills or simply want to try something new, this module is an excellent way to develop your creative horizons.</p>
+        </div>
+      </div>
+    </section>
+    <section class="module-section">
+      <div class="module-content">
+        <img src="module8.jpg" alt="Module 8 Photo" class="module-image">
+        <div class="module-text">
+          <h2 class="module-title">The Recording Suite: Vocal Edition</h2>
+          <p>In our state-of-the-art recording suite, students will learn the art of capturing exceptional vocal performances. Through professional vocal training, students will discover how to produce high-quality recordings that showcase their unique voice and style.</p>
+        </div>
+      </div>
+    </section>
+    <section class="module-section">
+      <div class="module-content">
+        <img src="module9.jpg" alt="Module 9 Photo" class="module-image">
+        <div class="module-text">
+          <h2 class="module-title">Advanced Cinematography</h2>
+          <p>Unlock the Secrets of Visual Storytelling... In this advanced course, students will delve into the art of cinematography, exploring the technical aspects of camera operation, lighting design, and visual composition.</p>
+        </div>
+      </div>
+    </section>
   </div>
 </main>
 <footer class="bg-gray-800 p-6 text-center">
@@ -447,7 +485,6 @@
   document.getElementById('dark-mode-toggle').addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
   });
-  
   // About Us Toggle
   const aboutBtn = document.getElementById('about-toggle-btn');
   const aboutContent = document.getElementById('about-content');

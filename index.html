@@ -183,14 +183,63 @@
     <section class="min-h-screen flex flex-col items-center justify-center text-center px-4">
       <h1 class="text-5xl md:text-7xl font-bold mb-4">Adders Film School</h1>
       <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl">
-        Master the craft. Find your voice. Become the professional you were meant to be!</p>
-      <button id="about-toggle-btn" class="about-btn">About Us</button>
-    <div id="about-content" class="about-content" style="display: none;">
-      <p class="mb-5 text-white text-lg">You have stories that the world hasn't seen yet. Our mission is to give you the professional-grade tools and the technical mastery to tell them—without compromise. From your first draft in WriterDuet to the final 4K HDR master in DaVinci Resolve, you aren't just a student; you are a filmmaker preparing to make your impact in the industry.</p>
-      <p class="mb-5 text-white text-lg"><em>CHOOSE YOUR PATH:</em> Our 3-month membership cycles are designed to help you build a custom career. Every session, you hand-pick two - three core modules to master.</p>
-      <p class="mb-5 text-white text-lg"><em>3 months to launch your project. A lifetime to master the art.</em></p>
-      <p class="text-white text-lg font-semibold">Ready to take your first steps? Explore our memberships below and start your journey toward becoming a filmmaker!</p>
-    </div>
+        <!-- Opening Section -->
+<p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl">  
+Master the craft. Find your voice. Become the professional you were meant to be!</p>  
+<button id="about-toggle-btn" class="about-btn">About Us</button>  
+<div id="about-content" class="about-content" style="display: none;">  
+  <p class="mb-5 text-white text-lg">You have stories that the world hasn't seen yet. Our mission is to give you the professional-grade tools and the technical mastery to tell them—without compromise. From your first draft in WriterDuet to the final 4K HDR master in DaVinci Resolve, you aren't just a student; you are a filmmaker preparing to make your impact in the industry.</p>  
+  <p class="mb-5 text-white text-lg"><em>CHOOSE YOUR PATH:</em> Our 3-month membership cycles are designed to help you build a custom career. Every session, you hand-pick two - three core modules to master.</p>  
+  <p class="mb-5 text-white text-lg"><em>3 months to launch your project. A lifetime to master the art.</em></p>  
+  <p class="text-white text-lg font-semibold">Ready to take your first steps? Explore our memberships below and start your journey toward becoming a filmmaker!</p>  
+</div>
+
+<style>
+  /* Button Styling */
+  .about-btn {
+    background: linear-gradient(135deg, #ea580c, #c2410c);
+    color: #ffffff;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 1rem;
+  }
+  .about-btn:hover {
+    background: linear-gradient(135deg, #c2410c, #9a3412);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+  }
+  
+  /* Smooth Reveal Animation */
+  .about-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out, opacity 0.4s ease;
+    opacity: 0;
+  }
+  .about-content.show {
+    max-height: 600px;
+    opacity: 1;
+    margin-top: 1.5rem;
+  }
+</style>
+
+<script>
+  document.getElementById('about-toggle-btn').addEventListener('click', function() {
+    const content = document.getElementById('about-content');
+    content.classList.toggle('show');
+    
+    // Sync display property with the animation class
+    if (content.classList.contains('show')) {
+      content.style.display = 'block';
+    } else {
+      content.style.display = 'none';
+    }
+  });
+</script>
     </section>
     <!-- Membership Section -->
     <section class="py-16 px-4">

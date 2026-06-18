@@ -63,6 +63,31 @@
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(234, 88, 12, 0.5);
     }
+
+    /* ===== Sign Up Now — primary call to action ===== */
+    .signup-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1.15rem;
+      padding: 1rem 2.75rem;
+      border-radius: 0.6rem;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      box-shadow: 0 6px 24px rgba(234, 88, 12, 0.45);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      animation: signupPulse 2.6s ease-in-out infinite;
+    }
+    .signup-btn:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 34px rgba(234, 88, 12, 0.6);
+    }
+    @keyframes signupPulse {
+      0%, 100% { box-shadow: 0 6px 24px rgba(234, 88, 12, 0.40); }
+      50%      { box-shadow: 0 6px 30px rgba(234, 88, 12, 0.68); }
+    }
+
     /* Membership Cards - Enhanced Design */
     .membership-card {
       background: linear-gradient(145deg, #1e293b, #0f172a);
@@ -186,6 +211,14 @@
         <!-- Opening Section -->
 <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl">  
 Master the craft. Find your voice. Become the professional you were meant to be!</p>  
+
+<!-- ===== Sign Up Now button — links to the application form ===== -->
+<!-- 🔗 Update this href once the form is deployed. If the form lives on this same -->
+<!--     site it can stay as "/apply"; if it lives elsewhere, paste the full URL.  -->
+<div style="margin-top: 0.5rem; margin-bottom: 1rem;">
+  <a href="/apply" class="signup-btn">Sign Up Now</a>
+</div>
+
 <button id="about-toggle-btn" class="about-btn">About Us</button>  
 <div id="about-content" class="about-content" style="display: none;">  
   <p class="mb-5 text-white text-lg">You have stories that the world hasn't seen yet. Our mission is to give you the professional-grade tools and the technical mastery to tell them—without compromise. From your first draft in WriterDuet to the final 4K HDR master in DaVinci Resolve, you aren't just a student; you are a filmmaker preparing to make your impact in the industry.</p>  
@@ -407,4 +440,3 @@ Master the craft. Find your voice. Become the professional you were meant to be!
   </script>
 </body>
 </html>
-

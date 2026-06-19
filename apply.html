@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apply — Adders Film School</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- React + Babel via CDN (the site already loads tooling from CDNs) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: #070B14;
+      color: #F4F1EA;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root { width: 100vw; height: 100vh; }
+    input, textarea, button { font-family: inherit; }
+
+    /* Step + element animations referenced by the form */
+    @keyframes stepFwd { from { opacity:0; transform:translateX(34px); } to { opacity:1; transform:none; } }
+    @keyframes stepBk  { from { opacity:0; transform:translateX(-34px); } to { opacity:1; transform:none; } }
+    @keyframes slideDown { from { opacity:0; max-height:0; } to { opacity:1; max-height:240px; } }
+    @keyframes spinR { to { transform: rotate(360deg); } }
+    @keyframes fade { from { opacity:0; } to { opacity:1; } }
+    @keyframes mzFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .mz-idle { animation: mzFloat 3.4s ease-in-out infinite; }
+
+    /* tidy scrollbars inside the form */
+    *::-webkit-scrollbar { width: 9px; height: 9px; }
+    *::-webkit-scrollbar-thumb { background: #1B2440; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="react">
+  /* @jsxRuntime classic */
+  // Use the classic JSX runtime so compiled output calls the global
+  // React.createElement (loaded above) instead of emitting an ES import.
+  const { useState, useEffect } = React;
+
+  /* =====================================================================
+     DESIGN TOKENS / DEPENDENCIES
+     These supply the palette, logo marks, helpers and module data that the
+     app component expects. Styling + text below are kept as authored.
+     ===================================================================== */
+
+  // Cinematic dark palette — copper/gold to match the Adders brand.
+  const C = {
+    bg:        "#070B14",
+    bg2:       "#0E1525",
+    text:      "#F4F1EA",
+    muted:     "#8A93A8",
+    line:      "#1B2440",
+    copper:    "#E0894A",
+    copperDeep:"#B5651D",
+    gold:      "#E8B84B",
+    goldDeep:  "#B8902E",
+    blue:      "#5B8DEF",
+  };
+
+  const PALETTE = { filmschool: [C.copper, C.gold] };
+
+  // lighten / darken a hex colour by a percentage (-100..100)
+  function shade(hex, percent) {
+    const n = parseInt(hex.slice(1), 16);
+    const t = percent < 0 ? 0 : 255;
+    const p = Math.abs(percent) / 100;
+    const R = (n >> 16) & 0xff, G = (n >> 8) & 0xff, B = n & 0xff;
+    const to = (c) => Math.round((t - c) * p) + c;
+    return "#" + ((1 << 24) + (to(R) << 16) + (to(G) << 8) + to(B)).toString(16).slice(1);
+  }
+
+  // Logo mark — renders the Adders Film School logo image.
+  function MazeMark({ pair, size = 80, className, style }) {
+    return (
+      <img src="Adders Film School Logo 110825.png" alt="Adders Film School"
+        className={className}
+        style={{ width: size, height: size, objectFit: "contain", display: "block", ...style }} />
+    );
+  }
+
+  function Wordmark({ name, sub, subColor, size = 20 }) {
+    return (
+      <div style={{ textAlign: "center" }}>
+        <div style={{ fontFamily: "'Cinzel',serif", letterSpacing: 5, fontSize: size, color: C.text, fontWeight: 700 }}>{name}</div>
+        {sub && <div style={{ fontFamily: "'Cinzel',serif", letterSpacing: 6, fontSize: Math.round(size * 0.52), color: subColor || C.muted, marginTop: 5 }}>{sub}</div>}
+      </div>
+    );
+  }
+
+  function Calendar({ size = 24, color = "#fff" }) {
+    return (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" />
+        <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
+      </svg>
+    );
+  }
+
+  function Btn({ color, onClick, children }) {
+    return (
+      <button onClick={onClick} style={{
+        padding: "14px 30px", borderRadius: 13, border: "none", cursor: "pointer",
+        background: `linear-gradient(180deg,${color},${shade(color, -18)})`,
+        color: "#070B14", fontWeight: 700, fontSize: 15, fontFamily: "'Cinzel',serif", letterSpacing: 0.3,
+      }}>{children}</button>
+    );
+  }
+
+  /* ---------- module data (from the site's "Our Modules" section) ---------- */
+  const MODULES = [
+    "Acting for Screen",
+    "Musical Theatre for Screen",
+    "Scriptwriting",
+    "Cinematography & AudioVisual Production",
+    "Directing & Production Leadership",
+    "Editing & Digital Mastering",
+    "The Recording Suite: Vocal Edition",
+    "Advanced Cinematography",
+    "Sketch to Screen",
+    "Advanced Dance",
+    "Cinematic Lighting",
+    "Voice Acting & Foley Performance",
+  ];
+
+  const MODULE_INFO = {
+    "Acting for Screen": "Step into the spotlight and master the art of presence in ultra-high-definition. In our 6K environment, every heartbeat, breath, and subtle facial expression becomes a storytelling tool. This module goes beyond traditional acting techniques to equip you with the raw, cinematic realism demanded by modern 4K HDR filmmaking.",
+    "Musical Theatre for Screen": "Where Broadway meets the big screen. Learn how to translate live performance energy into compelling cinematic narratives. This module focuses on precision lip-syncing, movement for camera, and integrating high-fidelity audio with stunning 6K visuals—creating the next generation of musical storytelling.",
+    "Scriptwriting": "Great films start with great stories. In this module, you'll master WriterDuet, the industry-standard collaborative scriptwriting software. You'll learn to craft professional-grade scripts that not only tell a story but build one—from character development to dialogue and structure.",
+    "Cinematography & AudioVisual Production": "Get hands-on with cutting-edge technology using the Blackmagic Pyxis 6K camera. This module teaches you how to manipulate light, texture, and depth of field in 4K HDR, giving you the skills to create visually stunning productions that stand out.",
+    "Directing & Production Leadership": "Learn what it takes to lead a production from start to finish. This isn't just about shouting \"Action!\"—it's about technical expertise, creative vision, and managing complex emotional beats. You'll gain the tools to lead your team, manage a high-end production, and bring your artistic vision to life.",
+    "Editing & Digital Mastering": "This is where your film truly comes alive. Dive into DaVinci Resolve and learn advanced editing techniques, including Fusion for visual effects, HDR grading, and audio mastering. You'll leave this module with the skills to finish your projects professionally—ready for the silver screen.",
+    "The Recording Suite: Vocal Edition": "In our state-of-the-art recording suite, you'll learn how to capture exceptional vocal performances. From professional vocal training to advanced recording techniques, this module will equip you with the skills to produce high-quality recordings that showcase your unique voice and style.",
+    "Advanced Cinematography": "Unleash your visual storytelling potential. This advanced course dives into the technical aspects of camera operation, lighting design, and visual composition. You'll gain the expertise needed to create cinematic masterpieces that captivate audiences and stand out in the industry.",
+    "Sketch to Screen": "Unleash your creativity by learning the art of improvisation and devising original sketches. In this module, you'll develop your own ideas from concept to screen, creating short films that reflect your unique voice. Through hands-on workshops, you'll explore character development, dialogue writing, and on-camera performance, culminating in a final film project that showcases your storytelling skills.",
+    "Advanced Dance": "Master the technical and artistic aspects of dance for screen. This module focuses on developing precision, artistry, and adaptability across various dance styles. You'll learn how to translate movement into cinematic narratives, working with choreographers and directors to create dynamic, visually compelling performances that enhance storytelling in film.",
+    "Cinematic Lighting": "Learn how to use light as a narrative tool to shape mood, atmosphere, and meaning in film. This module explores both technical and creative approaches to lighting, from traditional methods to cutting-edge AI-assisted tools. You'll design lighting for multi-shot sequences, experimenting with physically based and stylised techniques to communicate emotion and intent through light.",
+    "Voice Acting & Foley Performance": "Bring characters and scenes to life through sound. This module covers voice acting techniques, foley artistry, and audio layering to create immersive soundscapes that elevate your storytelling.",
+  };
+
+  // Month 1 options, and progression for months 2 & 3.
+  // (Any module may currently be chosen each month — send the real
+  //  module-progression rules and they'll slot straight in here.)
+  const M1 = MODULES;
+  function m2Opts(month1) { return MODULES; }
+  function m3Opts(month2) { return MODULES; }
+
+  /* =====================================================================
+     FILM SCHOOL APPLICATION FORM — one question at a time
+     ===================================================================== */
+
+  // ⚙️  Update these when prices are confirmed — all values are placeholders
+  const PRICES = {
+    standard: [
+      { months: 3,  label: "3 months",  price: 150, save: null },
+      { months: 6,  label: "6 months",  price: 270, save: 30 },
+      { months: 12, label: "12 months", price: 480, save: 120 },
+    ],
+    premium: [
+      { months: 3,  label: "3 months",  price: 225, save: null },
+      { months: 6,  label: "6 months",  price: 405, save: 45 },
+      { months: 12, label: "12 months", price: 720, save: 180 },
+    ],
+  };
+
+  const EMPTY = {
+    studentName:"", studentDob:"",
+    month1:"", month2:"", month3:"",
+    newToFilm:null,
+    guardianName:"", guardianDob:"",
+    addressLine1:"", addressLine2:"", city:"", county:"", postcode:"",
+    email:"", phone:"",
+    emergencySame:null, emergencyName:"", emergencyPhone:"", emergencyRelation:"",
+    allergies:null, allergiesDetail:"",
+    additionalNeeds:null, additionalNeedsDetail:"",
+    healthIssues:null, healthIssuesDetail:"",
+    consentFilming:false, consentPolicy:false,
+    selectedPlan: null, // { type:"standard"|"premium", months:3|6|12 }
+  };
+
+  const FSTEPS = [
+    "intro","studentName","studentDob","month1","month2","month3","newToFilm",
+    "guardianName","guardianDob","address","email","phone","emergency",
+    "allergies","additionalNeeds","healthIssues","consents","policy","payment","done",
+  ];
+
+  function FilmSchoolForm({ onBack, onDone }) {
+    const [idx, setIdx] = useState(0);
+    const [dir, setDir] = useState("fwd");
+    const [ak, setAk] = useState(0);
+    const [d, setD] = useState(EMPTY);
+    const [paying, setPaying] = useState(false);
+    const set = (k,v) => setD(p => ({...p,[k]:v}));
+
+    const total = FSTEPS.length;
+    const step = FSTEPS[idx];
+    const pct = Math.round((idx / (total - 1)) * 100);
+
+    const canGo = () => {
+      switch(step){
+        case "intro": return true;
+        case "studentName": return d.studentName.trim().length > 1;
+        case "studentDob": return !!d.studentDob;
+        case "month1": return !!d.month1;
+        case "month2": return !!d.month2;
+        case "month3": return !!d.month3;
+        case "newToFilm": return d.newToFilm !== null;
+        case "guardianName": return d.guardianName.trim().length > 1;
+        case "guardianDob": return !!d.guardianDob;
+        case "address": return d.addressLine1.trim().length > 2 && d.city.trim().length > 1 && d.postcode.trim().length > 3;
+        case "email": return /\S+@\S+\.\S+/.test(d.email);
+        case "phone": return d.phone.trim().length > 7;
+        case "emergency": return d.emergencySame !== null && (d.emergencySame || (d.emergencyName.trim().length > 1 && d.emergencyPhone.trim().length > 7));
+        case "allergies": return d.allergies !== null && (d.allergies === false || d.allergiesDetail.trim().length > 1);
+        case "additionalNeeds": return d.additionalNeeds !== null && (d.additionalNeeds === false || d.additionalNeedsDetail.trim().length > 1);
+        case "healthIssues": return d.healthIssues !== null && (d.healthIssues === false || d.healthIssuesDetail.trim().length > 1);
+        case "consents": return d.consentFilming && d.consentPolicy;
+        case "policy": return true;
+        case "payment": return !!d.selectedPlan;
+        default: return true;
+      }
+    };
+
+    const next = () => { if(!canGo()) return; setDir("fwd"); setAk(k=>k+1); setIdx(i=>Math.min(i+1,total-1)); };
+    const prev = () => { setDir("bk"); setAk(k=>k+1); setIdx(i=>Math.max(i-1,0)); };
+
+    // mock Stripe: show processing overlay, then advance to done
+    const handlePay = () => {
+      if(!canGo()) return;
+      setPaying(true);
+      setTimeout(() => { setPaying(false); setDir("fwd"); setAk(k=>k+1); setIdx(i=>Math.min(i+1,total-1)); }, 2200);
+    };
+
+    const btnLabel = step==="intro" ? "Begin application"
+      : step==="policy" ? "Review payment options →"
+      : step==="payment" ? "Pay now — secure checkout"
+      : "Continue →";
+
+    const handleContinue = step==="payment" ? handlePay : next;
+    const firstName = d.studentName ? d.studentName.split(" ")[0] : "the student";
+
+    return (
+      <div style={{ width:"100%", height:"100%", display:"flex", flexDirection:"column",
+        background: step==="payment"
+          ? `radial-gradient(ellipse 90% 50% at 50% -10%, ${C.gold}18, ${C.copper}10, transparent 60%), ${C.bg}`
+          : `radial-gradient(ellipse 80% 40% at 50% -5%, ${C.copper}1A, transparent 55%), ${C.bg}` }}>
+
+        {/* top bar: back + subtle progress */}
+        <div style={{ display:"flex", alignItems:"center", padding:"18px 28px 0", gap:14, flexShrink:0 }}>
+          {step !== "done" && (
+            <button onClick={idx===0 ? onBack : prev}
+              style={{ background:"transparent", border:`1px solid ${C.line}`, color:C.muted,
+                borderRadius:9, padding:"7px 14px", cursor:"pointer", fontSize:14, fontWeight:600, flexShrink:0 }}>
+              ‹ {idx===0 ? "Back" : "Prev"}
+            </button>
+          )}
+          <div style={{ flex:1, height:3, background:"#1B2440", borderRadius:4, overflow:"hidden" }}>
+            <div style={{ width:`${pct}%`, height:"100%", borderRadius:4, transition:"width .45s ease",
+              background:`linear-gradient(90deg,${C.copperDeep},${C.copper})` }} />
+          </div>
+          <div style={{ width:50, flexShrink:0 }} />
+        </div>
+
+        {/* animated step content */}
+        <div key={ak} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center",
+          justifyContent:"center", padding:"24px 32px", overflowY:"auto",
+          animation:`${dir==="fwd"?"stepFwd":"stepBk"} .3s cubic-bezier(.25,.46,.45,.94) both` }}>
+          <FormContent step={step} d={d} set={set} firstName={firstName} onDone={onDone} />
+        </div>
+
+        {/* bottom CTA */}
+        {step !== "done" && (
+          <div style={{ padding:"10px 32px 30px", flexShrink:0, maxWidth:500, width:"100%", alignSelf:"center" }}>
+            <button onClick={handleContinue} style={{
+              width:"100%", padding:"16px 20px", fontSize:16, fontWeight:700, cursor: canGo()?"pointer":"not-allowed",
+              border:"none", borderRadius:13, letterSpacing:0.3, transition:"opacity .15s, transform .1s",
+              opacity: canGo()?1:0.3,
+              background: canGo()
+                ? step==="payment"
+                  ? `linear-gradient(180deg,${C.gold},${C.goldDeep})`
+                  : `linear-gradient(180deg,${C.copper},${C.copperDeep})`
+                : "#2A3650",
+              color:"#070B14",
+            }}
+              onMouseDown={e=>e.currentTarget.style.transform="scale(.98)"}
+              onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}
+              onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}
+            >{btnLabel}</button>
+            {step==="payment" && (
+              <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginTop:10, color:C.muted, fontSize:12.5 }}>
+                <span>🔒</span> Secured by Stripe — your card details never touch our servers
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* mock Stripe processing overlay */}
+        {paying && <PayingOverlay plan={d.selectedPlan} />}
+      </div>
+    );
+  }
+
+  /* ---------- step renderer ---------- */
+  function FormContent({ step, d, set, firstName, onDone }) {
+    const Q = ({children,sub}) => (
+      <div style={{ textAlign:"center", marginBottom:28, maxWidth:520 }}>
+        <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:26, lineHeight:1.25, color:C.text, fontWeight:700, margin:0 }}>{children}</h2>
+        {sub && <p style={{ color:C.muted, fontSize:14, lineHeight:1.6, marginTop:10 }}>{sub}</p>}
+      </div>
+    );
+
+    switch(step){
+
+      case "intro": return (
+        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center", maxWidth:460 }}>
+          <MazeMark pair={PALETTE.filmschool} size={82} className="mz-idle" />
+          <div style={{ marginTop:16 }}><Wordmark name="ADDERS" sub="FILM SCHOOL" subColor={C.copper} size={20} /></div>
+          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:28, color:C.text, marginTop:22, lineHeight:1.2 }}>Begin your application</h2>
+          <p style={{ color:C.muted, fontSize:14.5, lineHeight:1.75, marginTop:14 }}>
+            We'll walk you through everything we need to set up your membership. Take your time — your progress is saved as you go.
+          </p>
+          <div style={{ marginTop:22, display:"flex", alignItems:"center", gap:10, color:C.copper, fontSize:13, fontWeight:600,
+            border:`1px solid ${C.copper}44`, padding:"10px 18px", borderRadius:30, background:`${C.copper}0E` }}>
+            ⚡ Module choices are final and cannot be changed after submission
+          </div>
+        </div>
+      );
+
+      case "studentName": return (
+        <div style={{ width:"100%", maxWidth:460 }}>
+          <Q>What is the student's full name?</Q>
+          <FInput value={d.studentName} onChange={e=>set("studentName",e.target.value)} placeholder="e.g. Jamie Rivers" autoFocus />
+        </div>
+      );
+
+      case "studentDob": return (
+        <div style={{ width:"100%", maxWidth:460 }}>
+          <Q sub="We use this to confirm eligibility for the programme.">When was {firstName} born?</Q>
+          <FInput type="date" value={d.studentDob} onChange={e=>set("studentDob",e.target.value)} />
+        </div>
+      );
+
+      case "month1": return (
+        <div style={{ width:"100%", maxWidth:520 }}>
+          <Q sub={`${firstName} will study this module during the first month of the cycle.`}>Choose the Month 1 module</Q>
+          <TimetableHint />
+          <ModWarn />
+          <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+            {M1.map(m=>(
+              <ModCard key={m} name={m} selected={d.month1===m}
+                onClick={()=>{ set("month1",m); set("month2",""); set("month3",""); }} />
+            ))}
+          </div>
+        </div>
+      );
+
+      case "month2": {
+        const opts = m2Opts(d.month1);
+        const locked = opts.length===1;
+        return (
+          <div style={{ width:"100%", maxWidth:520 }}>
+            <Q sub="Month 2 options may be limited based on your Month 1 choice.">Now choose the Month 2 module</Q>
+            <TimetableHint />
+            {locked && (
+              <div style={{ background:`${C.blue}14`, border:`1px solid ${C.blue}44`, borderRadius:12,
+                padding:"12px 16px", marginBottom:18, color:C.blue, fontSize:13, lineHeight:1.5 }}>
+                ℹ️ Because <b>{d.month1}</b> was chosen for Month 1, {firstName} must continue with the same module in Month 2.
+              </div>
+            )}
+            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+              {opts.map(m=>(
+                <ModCard key={m} name={m} selected={d.month2===m} locked={locked}
+                  onClick={()=>{ set("month2",m); set("month3",""); }} />
+              ))}
+            </div>
+            <ModSummary month1={d.month1} />
+          </div>
+        );
+      }
+
+      case "month3": {
+        const opts = m3Opts(d.month2);
+        const locked = opts.length===1;
+        return (
+          <div style={{ width:"100%", maxWidth:520 }}>
+            <Q sub="The final month of the cycle. Once submitted, all module choices are locked.">Finally, the Month 3 module</Q>
+            <TimetableHint />
+            {locked && (
+              <div style={{ background:`${C.blue}14`, border:`1px solid ${C.blue}44`, borderRadius:12,
+                padding:"12px 16px", marginBottom:18, color:C.blue, fontSize:13, lineHeight:1.5 }}>
+                ℹ️ Because <b>{d.month2}</b> was chosen for Month 2, Month 3 must also be {d.month2}.
+              </div>
+            )}
+            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+              {opts.map(m=>(
+                <ModCard key={m} name={m} selected={d.month3===m} locked={locked} onClick={()=>set("month3",m)} />
+              ))}
+            </div>
+            <ModSummary month1={d.month1} month2={d.month2} />
+          </div>
+        );
+      }
+
+      case "newToFilm": return (
+        <div style={{ width:"100%", maxWidth:420, display:"flex", flexDirection:"column", alignItems:"center" }}>
+          <Q sub="This helps us pitch sessions at the right level. There's no wrong answer!">
+            Is {firstName} new to filmmaking?
+          </Q>
+          <div style={{ display:"flex", gap:16, width:"100%", maxWidth:300 }}>
+            {[["Yes",true],["No",false]].map(([label,val])=>(
+              <button key={label} onClick={()=>set("newToFilm",val)} style={{
+                flex:1, padding:"22px 0", borderRadius:14, border:`2px solid ${d.newToFilm===val?C.copper:C.line}`,
+                background:d.newToFilm===val?`${C.copper}18`:C.bg2, cursor:"pointer",
+                color:d.newToFilm===val?C.copper:C.text, fontSize:20, fontWeight:700,
+                fontFamily:"'Cinzel',serif", transition:"all .15s ease",
+              }}>{label}</button>
+            ))}
+          </div>
+        </div>
+      );
+
+      case "guardianName": return (
+        <div style={{ width:"100%", maxWidth:460 }}>
+          <Q sub="The responsible adult who is signing up the student.">Parent or guardian's full name</Q>
+          <FInput value={d.guardianName} onChange={e=>set("guardianName",e.target.value)} placeholder="Full name" autoFocus />
+        </div>
+      );
+
+      case "guardianDob": return (
+        <div style={{ width:"100%", maxWidth:460 }}>
+          <Q>{d.guardianName?d.guardianName.split(" ")[0]+"'s":"Guardian's"} date of birth</Q>
+          <FInput type="date" value={d.guardianDob} onChange={e=>set("guardianDob",e.target.value)} />
+        </div>
+      );
+
+      case "address": return (
+        <div style={{ width:"100%", maxWidth:480 }}>
+          <Q sub="Address Line 2, County are optional — the rest are required.">What is your home address?</Q>
+          <div style={{ display:"flex", flexDirection:"column", gap:11 }}>
+            <div>
+              <div style={{ color:C.muted, fontSize:12, fontWeight:600, letterSpacing:0.3, marginBottom:5 }}>Address Line 1 *</div>
+              <FInput value={d.addressLine1} onChange={e=>set("addressLine1",e.target.value)} placeholder="House number and street" autoFocus />
+            </div>
+            <div>
+              <div style={{ color:C.muted, fontSize:12, fontWeight:600, letterSpacing:0.3, marginBottom:5 }}>Address Line 2</div>
+              <FInput value={d.addressLine2} onChange={e=>set("addressLine2",e.target.value)} placeholder="Apartment, flat, suite (optional)" />
+            </div>
+            <div style={{ display:"flex", gap:11 }}>
+              <div style={{ flex:1 }}>
+                <div style={{ color:C.muted, fontSize:12, fontWeight:600, letterSpacing:0.3, marginBottom:5 }}>City *</div>
+                <FInput value={d.city} onChange={e=>set("city",e.target.value)} placeholder="City" />
+              </div>
+              <div style={{ flex:1 }}>
+                <div style={{ color:C.muted, fontSize:12, fontWeight:600, letterSpacing:0.3, marginBottom:5 }}>County</div>
+                <FInput value={d.county} onChange={e=>set("county",e.target.value)} placeholder="County (optional)" />
+              </div>
+            </div>
+            <div style={{ maxWidth:200 }}>
+              <div style={{ color:C.muted, fontSize:12, fontWeight:600, letterSpacing:0.3, marginBottom:5 }}>Postcode *</div>
+              <FInput value={d.postcode} onChange={e=>set("postcode",e.target.value.toUpperCase())} placeholder="e.g. SW1A 1AA" />
+            </div>
+          </div>
+        </div>
+      );
+
+      case "email": return (
+        <div style={{ width:"100%", maxWidth:460 }}>
+          <Q sub="This should match the email used to log in to the app — it links your membership.">
+            Best email to reach you?
+          </Q>
+          <FInput type="email" value={d.email} onChange={e=>set("email",e.target.value)} placeholder="your@email.com" autoFocus />
+        </div>
+      );
+
+      case "phone": return (
+        <div style={{ width:"100%", maxWidth:460 }}>
+          <Q>And your phone number?</Q>
+          <FInput type="tel" value={d.phone} onChange={e=>set("phone",e.target.value)} placeholder="+44 7700 900000" autoFocus />
+        </div>
+      );
+
+      case "emergency": return (
+        <div style={{ width:"100%", maxWidth:480 }}>
+          <Q sub="Who should we contact if there's an emergency during a session?">Emergency contact</Q>
+          <div style={{ display:"flex", flexDirection:"column", gap:12, marginBottom:18 }}>
+            {[[true,`Use ${d.guardianName||"parent/guardian"} details above`,d.phone||"Same contact info"],
+              [false,"Someone different","I'll add their details below"]].map(([val,label,sub])=>(
+              <button key={String(val)} onClick={()=>set("emergencySame",val)} style={{
+                padding:"15px 18px", borderRadius:14, border:`2px solid ${d.emergencySame===val?C.copper:C.line}`,
+                background:d.emergencySame===val?`${C.copper}14`:C.bg2, cursor:"pointer", textAlign:"left",
+                transition:"all .15s ease",
+              }}>
+                <div style={{ color:d.emergencySame===val?C.copper:C.text, fontWeight:700, fontSize:14 }}>{label}</div>
+                <div style={{ color:C.muted, fontSize:12, marginTop:3 }}>{sub}</div>
+              </button>
+            ))}
+          </div>
+          {d.emergencySame===false && (
+            <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+              <FInput value={d.emergencyName} onChange={e=>set("emergencyName",e.target.value)} placeholder="Their full name" />
+              <FInput type="tel" value={d.emergencyPhone} onChange={e=>set("emergencyPhone",e.target.value)} placeholder="Their phone number" />
+              <FInput value={d.emergencyRelation} onChange={e=>set("emergencyRelation",e.target.value)} placeholder="Relationship to student (e.g. Grandparent, Aunt)" />
+            </div>
+          )}
+        </div>
+      );
+
+      case "allergies": return (
+        <MedStep question={`Does ${firstName} have any allergies?`}
+          hint="Food, medication, environmental — include anything that's relevant."
+          val={d.allergies} detail={d.allergiesDetail}
+          onVal={v=>set("allergies",v)} onDetail={v=>set("allergiesDetail",v)} />
+      );
+
+      case "additionalNeeds": return (
+        <MedStep question="Any additional needs or disabilities?"
+          hint="Any support we should put in place to make sessions the best they can be."
+          val={d.additionalNeeds} detail={d.additionalNeedsDetail}
+          onVal={v=>set("additionalNeeds",v)} onDetail={v=>set("additionalNeedsDetail",v)} />
+      );
+
+      case "healthIssues": return (
+        <MedStep question="Any health issues we should know about?"
+          hint="Conditions, medications, or anything that may affect the student during sessions."
+          val={d.healthIssues} detail={d.healthIssuesDetail}
+          onVal={v=>set("healthIssues",v)} onDetail={v=>set("healthIssuesDetail",v)} />
+      );
+
+      case "consents": return (
+        <div style={{ width:"100%", maxWidth:520 }}>
+          <div style={{ textAlign:"center", marginBottom:26 }}>
+            <MazeMark pair={PALETTE.filmschool} size={52} />
+            <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:22, color:C.text, marginTop:14, marginBottom:0 }}>Almost there</h2>
+            <p style={{ color:C.muted, fontSize:14, marginTop:8, lineHeight:1.6 }}>
+              We need your agreement on two important points before we review your application.
+            </p>
+          </div>
+          <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+            <ConsentCard checked={d.consentFilming} onChange={v=>set("consentFilming",v)}
+              title="Consent to film the student"
+              desc="Because this is a film school, students will be filmed as part of their learning and for promotional purposes. I give consent for the student to be filmed during sessions and for appropriate footage to be used by Adders Film School." />
+            <ConsentCard checked={d.consentPolicy} onChange={v=>set("consentPolicy",v)}
+              title="I accept the terms and policy"
+              desc="I confirm I have read and understood the Adders Film School policy agreement (shown on the next screen) and I agree to abide by its terms on behalf of myself and the student." />
+          </div>
+        </div>
+      );
+
+      case "policy": return (
+        <div style={{ width:"100%", maxWidth:580 }}>
+          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:22, color:C.text, textAlign:"center", marginBottom:18 }}>
+            Policy Agreement
+          </h2>
+          <div style={{ background:C.bg2, border:`1px solid ${C.line}`, borderRadius:14, padding:"22px 24px",
+            maxHeight:360, overflowY:"auto", color:C.muted, fontSize:13.5, lineHeight:1.85 }}>
+            <div style={{ color:C.copper, fontFamily:"'Cinzel',serif", fontWeight:700, fontSize:16, marginBottom:16 }}>
+              Adders Film School — Membership Policy
+            </div>
+            <div style={{ color:`${C.copper}CC`, fontStyle:"italic", marginBottom:18, border:`1px dashed ${C.copper}44`,
+              padding:"12px 16px", borderRadius:10 }}>
+              📄 Your full policy document will be placed here. Send it across and I'll drop it straight in — formatted and scrollable exactly like this.
+            </div>
+            <p>This document sets out the terms and expectations for all Adders Film School members, including attendance requirements, code of conduct, and the use of footage captured during sessions. Members and their guardians are expected to have read and understood all sections before submitting their application.</p>
+            <p style={{ marginTop:14 }}>By proceeding, you confirm that you have scrolled through and accepted the full policy on the previous screen.</p>
+          </div>
+          <div style={{ color:C.muted, fontSize:12.5, textAlign:"center", marginTop:14 }}>
+            You confirmed acceptance on the previous screen. Submitting locks your application.
+          </div>
+        </div>
+      );
+
+      case "payment": return <PaymentStep d={d} set={set} />;
+
+      case "done": return (
+        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center", maxWidth:420 }}>
+          <div style={{ fontSize:60, marginBottom:16 }}>🎬</div>
+          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:28, color:C.text, lineHeight:1.2, margin:0 }}>
+            You're in!
+          </h2>
+          <p style={{ color:C.muted, fontSize:15, lineHeight:1.75, marginTop:12 }}>
+            Welcome to Adders Film School,{" "}
+            <b style={{color:C.copper}}>{d.studentName||"new member"}</b>. Two emails are on their way.
+          </p>
+          <div style={{ marginTop:18, width:"100%", display:"flex", flexDirection:"column", gap:10, textAlign:"left" }}>
+            <div style={{ background:"#0E1E12", border:"1px solid #1E4A28", borderRadius:13, padding:"14px 16px", display:"flex", gap:12, alignItems:"flex-start" }}>
+              <span style={{ fontSize:20, flexShrink:0 }}>✉️</span>
+              <div>
+                <div style={{ color:"#5BC08A", fontWeight:700, fontSize:14 }}>Booking confirmation sent</div>
+                <div style={{ color:C.muted, fontSize:12.5, marginTop:3, lineHeight:1.5 }}>
+                  Your receipt, membership details and module summary have been sent to <b style={{color:C.text}}>{d.email||"your email"}</b>.
+                </div>
+              </div>
+            </div>
+            <div style={{ background:`${C.blue}0C`, border:`1px solid ${C.blue}33`, borderRadius:13, padding:"14px 16px", display:"flex", gap:12, alignItems:"flex-start" }}>
+              <span style={{ fontSize:20, flexShrink:0 }}>📋</span>
+              <div>
+                <div style={{ color:C.blue, fontWeight:700, fontSize:14 }}>Info pack email queued</div>
+                <div style={{ color:C.muted, fontSize:12.5, marginTop:3, lineHeight:1.5 }}>
+                  A second email with everything you need to know — what to bring, what to wear, and what to expect — will be sent once finalised.
+                </div>
+                <div style={{ color:C.muted, fontSize:11.5, marginTop:6, fontStyle:"italic" }}>
+                  Content placeholder — drop the copy in whenever you're ready.
+                </div>
+              </div>
+            </div>
+          </div>
+          {d.selectedPlan && (
+            <div style={{ background:`${C.gold}0E`, border:`1px solid ${C.gold}44`, borderRadius:14, padding:"16px 20px", marginTop:18, width:"100%", textAlign:"left" }}>
+              <div style={{ color:C.muted, fontSize:11.5, letterSpacing:2, marginBottom:10 }}>YOUR MEMBERSHIP</div>
+              <div style={{ color:C.gold, fontFamily:"'Cinzel',serif", fontWeight:700, fontSize:17 }}>
+                {d.selectedPlan.type.charAt(0).toUpperCase()+d.selectedPlan.type.slice(1)} — {d.selectedPlan.months} months
+              </div>
+              <div style={{ color:C.muted, fontSize:12.5, marginTop:4 }}>
+                £{PRICES[d.selectedPlan.type].find(p=>p.months===d.selectedPlan.months)?.price}
+                {PRICES[d.selectedPlan.type].find(p=>p.months===d.selectedPlan.months)?.save &&
+                  <span style={{color:"#5BC08A",marginLeft:8}}>
+                    · Saved £{PRICES[d.selectedPlan.type].find(p=>p.months===d.selectedPlan.months).save}
+                  </span>
+                }
+              </div>
+            </div>
+          )}
+          <div style={{ background:`${C.copper}10`, border:`1px solid ${C.copper}44`, borderRadius:14, padding:"16px 20px", marginTop:12, width:"100%", textAlign:"left" }}>
+            <div style={{ color:C.muted, fontSize:11.5, letterSpacing:2, marginBottom:10 }}>MODULES SELECTED</div>
+            {[["Month 1",d.month1],["Month 2",d.month2],["Month 3",d.month3]].map(([l,v])=>(
+              <div key={l} style={{ display:"flex", justifyContent:"space-between", marginBottom:7 }}>
+                <span style={{ color:C.muted, fontSize:13 }}>{l}</span>
+                <span style={{ color:C.copper, fontSize:13, fontWeight:600 }}>{v}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop:26 }}>
+            <Btn color={C.copper} onClick={onDone}>Go to my dashboard →</Btn>
+          </div>
+        </div>
+      );
+
+      default: return null;
+    }
+  }
+
+  /* ---------- form helpers ---------- */
+  const FI = {
+    width:"100%", boxSizing:"border-box", background:C.bg2, border:`2px solid ${C.line}`,
+    borderRadius:12, padding:"16px 18px", color:C.text, fontSize:16, outline:"none",
+  };
+  const FInput = (props) => (
+    <input {...props} style={FI}
+      onFocus={e=>{e.target.style.borderColor=C.copper}}
+      onBlur={e=>{e.target.style.borderColor=C.line}} />
+  );
+
+  function ModCard({ name, selected, locked, onClick }) {
+    const [info, setInfo] = useState(false);
+    const desc = MODULE_INFO[name];
+    return (
+      <div style={{
+        borderRadius:13, border:`2px solid ${selected?C.copper:info?`${C.copper}66`:C.line}`,
+        background: selected ? `linear-gradient(135deg,${C.copper}1E,${C.copperDeep}14)` : C.bg2,
+        transition:"all .14s ease", overflow:"hidden",
+      }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, padding:"14px 16px" }}>
+          <button onClick={onClick} style={{
+            flex:1, display:"flex", alignItems:"center", justifyContent:"space-between", gap:12,
+            background:"transparent", border:"none", textAlign:"left",
+            cursor: locked&&selected ? "default" : "pointer", padding:0,
+          }}>
+            <span style={{ color:selected?C.copper:C.text, fontWeight:selected?700:400, fontSize:15, lineHeight:1.3 }}>{name}</span>
+            {selected && <span style={{ color:C.copper, fontSize:18, flexShrink:0 }}>✓</span>}
+            {locked && !selected && <span style={{ color:C.muted, fontSize:11, flexShrink:0 }}>Required</span>}
+          </button>
+          {desc && (
+            <button onClick={()=>setInfo(o=>!o)} aria-label={`About ${name}`} title="Module info" style={{
+              flexShrink:0, width:26, height:26, borderRadius:"50%", cursor:"pointer",
+              border:`1.5px solid ${info?C.copper:C.muted}`, background:info?C.copper:"transparent",
+              color:info?"#070B14":C.muted, fontFamily:"Georgia, serif", fontStyle:"italic",
+              fontWeight:700, fontSize:14, display:"grid", placeItems:"center", transition:"all .15s ease", lineHeight:1,
+            }}>i</button>
+          )}
+        </div>
+        {info && desc && (
+          <div style={{ padding:"0 16px 15px", animation:"slideDown .2s ease both" }}>
+            <div style={{ borderTop:`1px solid ${C.copper}2E`, paddingTop:12, color:C.muted, fontSize:13, lineHeight:1.65 }}>
+              {desc}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function TimetableHint() {
+    const [open, setOpen] = useState(false);
+    return (
+      <div style={{ marginBottom:16 }}>
+        <div style={{ background:`${C.blue}12`, border:`1px solid ${C.blue}3A`, borderRadius:12,
+          padding:"12px 16px", display:"flex", gap:12, alignItems:"flex-start" }}>
+          <span style={{ fontSize:18, flexShrink:0 }}>📅</span>
+          <div style={{ flex:1 }}>
+            <div style={{ color:C.text, fontWeight:700, fontSize:14 }}>Check the timetable before you choose</div>
+            <div style={{ color:C.muted, fontSize:13, lineHeight:1.5, marginTop:4 }}>
+              Each module runs on specific days and times. Please review the schedule below to make sure it works for you — your selection can't be changed once submitted.
+            </div>
+            <button onClick={()=>setOpen(o=>!o)} style={{ marginTop:9, background:"transparent", border:`1px solid ${C.blue}55`,
+              color:C.blue, fontSize:12.5, fontWeight:600, padding:"5px 13px", borderRadius:20, cursor:"pointer" }}>
+              {open ? "Hide timetable ▲" : "View timetable ▼"}
+            </button>
+          </div>
+        </div>
+        {open && (
+          <div style={{ marginTop:10, background:C.bg2, border:`1px dashed ${C.line}`, borderRadius:12, padding:"20px 18px",
+            display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
+            <Calendar size={28} color={C.muted} />
+            <div style={{ color:C.text, fontWeight:600, fontSize:14 }}>Timetable coming soon</div>
+            <div style={{ color:C.muted, fontSize:12.5, textAlign:"center", lineHeight:1.6, maxWidth:320 }}>
+              Send the session schedule and I'll drop it in here — formatted as a proper weekly grid with days, times and module names.
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function ModWarn() {
+    return (
+      <div style={{ background:`${C.copper}12`, border:`1px solid ${C.copper}3A`, borderRadius:12,
+        padding:"11px 16px", marginBottom:18, display:"flex", gap:10, alignItems:"flex-start" }}>
+        <span>⚠️</span>
+        <span style={{ color:C.copper, fontSize:13, lineHeight:1.5 }}>
+          <b>Choices are final.</b> Once submitted, module selections cannot be changed for this cycle.
+        </span>
+      </div>
+    );
+  }
+
+  function ModSummary({ month1, month2, month3 }) {
+    const entries = [["Month 1",month1],["Month 2",month2],["Month 3",month3]].filter(([,v])=>v);
+    if(!entries.length) return null;
+    return (
+      <div style={{ marginTop:16, background:C.bg2, border:`1px solid ${C.line}`, borderRadius:12, padding:"13px 16px" }}>
+        <div style={{ color:C.muted, fontSize:11, letterSpacing:2, marginBottom:10 }}>YOUR SELECTIONS SO FAR</div>
+        {entries.map(([l,v])=>(
+          <div key={l} style={{ display:"flex", justifyContent:"space-between", gap:12, marginBottom:6 }}>
+            <span style={{ color:C.muted, fontSize:13 }}>{l}</span>
+            <span style={{ color:C.text, fontSize:13, fontWeight:600, textAlign:"right" }}>{v}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  function MedStep({ question, hint, val, detail, onVal, onDetail }) {
+    return (
+      <div style={{ width:"100%", maxWidth:480 }}>
+        <div style={{ textAlign:"center", marginBottom:hint?6:24 }}>
+          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:24, lineHeight:1.3, color:C.text, fontWeight:700, margin:0 }}>{question}</h2>
+          {hint && <p style={{ color:C.muted, fontSize:14, lineHeight:1.6, marginTop:8, marginBottom:22 }}>{hint}</p>}
+        </div>
+        <div style={{ display:"flex", gap:16, marginBottom:18 }}>
+          {[["No",false],["Yes",true]].map(([label,v])=>(
+            <button key={label} onClick={()=>onVal(v)} style={{
+              flex:1, padding:"20px 0", borderRadius:14, border:`2px solid ${val===v?C.copper:C.line}`,
+              background:val===v?`${C.copper}18`:C.bg2, cursor:"pointer",
+              color:val===v?C.copper:C.text, fontSize:18, fontWeight:700,
+              fontFamily:"'Cinzel',serif", transition:"all .15s ease",
+            }}>{label}</button>
+          ))}
+        </div>
+        {val===true && (
+          <textarea value={detail} onChange={e=>onDetail(e.target.value)}
+            placeholder="Please give us details so we can make sure we're fully prepared..."
+            rows={4} style={{...FI, resize:"vertical", fontFamily:"inherit", lineHeight:1.6, marginTop:4}}
+            onFocus={e=>e.target.style.borderColor=C.copper} onBlur={e=>e.target.style.borderColor=C.line} />
+        )}
+      </div>
+    );
+  }
+
+  function ConsentCard({ checked, onChange, title, desc }) {
+    return (
+      <button onClick={()=>onChange(!checked)} style={{
+        padding:"18px 20px", borderRadius:16, textAlign:"left", cursor:"pointer", width:"100%",
+        border:`2px solid ${checked?C.copper:C.line}`, background:checked?`${C.copper}10`:C.bg2,
+        transition:"all .18s ease", display:"flex", gap:14, alignItems:"flex-start",
+      }}>
+        <div style={{ width:22, height:22, borderRadius:6, flexShrink:0, marginTop:2,
+          border:`2px solid ${checked?C.copper:C.muted}`, background:checked?C.copper:"transparent",
+          display:"grid", placeItems:"center" }}>
+          {checked && <span style={{ color:"#070B14", fontSize:13, fontWeight:900, lineHeight:1 }}>✓</span>}
+        </div>
+        <div>
+          <div style={{ color:checked?C.copper:C.text, fontWeight:700, fontSize:15, marginBottom:6 }}>{title}</div>
+          <div style={{ color:C.muted, fontSize:13, lineHeight:1.65 }}>{desc}</div>
+        </div>
+      </button>
+    );
+  }
+
+  /* ---------- payment step ---------- */
+  function PaymentStep({ d, set }) {
+    const planDefs = {
+      premium:  { color: C.gold,   label: "Premium",  perks: ["Everything in Standard","Framed posters","Merch pack","T-shirt","TOTUM after 6 months"] },
+      standard: { color: C.copper, label: "Standard", perks: ["All modules","Professional equipment","DaVinci Resolve","WriterDuet","4K HDR films"] },
+    };
+    return (
+      <div style={{ width:"100%", maxWidth:720 }}>
+        <div style={{ textAlign:"center", marginBottom:28 }}>
+          <MazeMark pair={PALETTE.filmschool} size={52} className="mz-idle" />
+          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:26, color:C.text, marginTop:14, marginBottom:0 }}>Choose your membership</h2>
+          <p style={{ color:C.muted, fontSize:14, lineHeight:1.6, marginTop:8 }}>
+            Longer memberships save you more. Prices shown are placeholders — update when confirmed.
+          </p>
+        </div>
+
+        <div style={{ display:"flex", gap:18, flexWrap:"wrap" }}>
+          {Object.entries(planDefs).map(([type, plan]) => (
+            <div key={type} style={{ flex:"1 1 280px", display:"flex", flexDirection:"column", gap:10 }}>
+              <div style={{ background:`${plan.color}14`, border:`1px solid ${plan.color}44`, borderRadius:16, padding:"18px 20px" }}>
+                <div style={{ fontFamily:"'Cinzel',serif", color:plan.color, fontWeight:700, fontSize:18, marginBottom:10 }}>{plan.label}</div>
+                <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
+                  {plan.perks.map(p=>(
+                    <div key={p} style={{ color:C.text, fontSize:12.5, display:"flex", gap:8 }}>
+                      <span style={{ color:plan.color }}>✓</span>{p}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {PRICES[type].map(opt => {
+                const sel = d.selectedPlan?.type===type && d.selectedPlan?.months===opt.months;
+                return (
+                  <button key={opt.months} onClick={()=>set("selectedPlan",{type,months:opt.months})} style={{
+                    padding:"15px 18px", borderRadius:13, textAlign:"left", cursor:"pointer", width:"100%",
+                    border:`2px solid ${sel?plan.color:C.line}`,
+                    background: sel?`linear-gradient(135deg,${plan.color}1E,${plan.color}0A)`:C.bg2,
+                    transition:"all .15s ease", position:"relative",
+                  }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                      <div>
+                        <div style={{ color:sel?plan.color:C.text, fontWeight:700, fontSize:15 }}>{opt.label}</div>
+                        {opt.save && (
+                          <div style={{ color:"#5BC08A", fontSize:12, fontWeight:700, marginTop:3 }}>
+                            🎉 Save £{opt.save} vs monthly
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ textAlign:"right" }}>
+                        <div style={{ color:sel?plan.color:C.text, fontWeight:700, fontSize:20, fontFamily:"'Cinzel',serif" }}>
+                          £{opt.price}
+                        </div>
+                        <div style={{ color:C.muted, fontSize:11 }}>
+                          £{Math.round(opt.price/opt.months)}/mo
+                        </div>
+                      </div>
+                    </div>
+                    {opt.months===12 && (
+                      <div style={{ position:"absolute", top:-10, right:12, background:`linear-gradient(90deg,${plan.color},${shade(plan.color,-20)})`,
+                        color:"#070B14", fontSize:10, fontWeight:700, padding:"3px 10px", borderRadius:20, letterSpacing:0.5 }}>
+                        BEST VALUE
+                      </div>
+                    )}
+                    {sel && <span style={{ position:"absolute", top:14, right:16, color:plan.color, fontSize:18 }}>✓</span>}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+
+        {d.selectedPlan && (
+          <div style={{ marginTop:20, background:C.bg2, border:`1px solid ${C.line}`, borderRadius:12, padding:"13px 18px",
+            display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+            <span style={{ color:C.muted, fontSize:13 }}>Selected:</span>
+            <span style={{ color:C.text, fontWeight:700, fontSize:14 }}>
+              {planDefs[d.selectedPlan.type].label} · {d.selectedPlan.months} months
+              {" — "}
+              <span style={{ color: planDefs[d.selectedPlan.type].color }}>
+                £{PRICES[d.selectedPlan.type].find(p=>p.months===d.selectedPlan.months)?.price}
+              </span>
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ---------- paying overlay ---------- */
+  function PayingOverlay({ plan }) {
+    const [phase, setPhase] = useState(0);
+    useEffect(() => {
+      const t1 = setTimeout(()=>setPhase(1), 800);
+      const t2 = setTimeout(()=>setPhase(2), 1700);
+      return () => { clearTimeout(t1); clearTimeout(t2); };
+    }, []);
+    const msgs = ["Connecting to Stripe…","Processing payment…","Payment confirmed ✓"];
+    const colors = [C.blue, C.copper, "#5BC08A"];
+    return (
+      <div style={{ position:"absolute", inset:0, zIndex:50, display:"flex", flexDirection:"column",
+        alignItems:"center", justifyContent:"center",
+        background:`rgba(7,11,20,.92)`, backdropFilter:"blur(8px)",
+        animation:"fade .25s ease both" }}>
+        <MazeMark pair={phase===2?PALETTE.filmschool:[C.gold,C.goldDeep]} size={100}
+          style={{ animation: phase===2?"none":"spinR 1s linear infinite", transformOrigin:"50% 50%" }} />
+        <div style={{ marginTop:28, fontFamily:"'Cinzel',serif", fontSize:18, color:colors[phase],
+          transition:"color .4s ease", fontWeight:700 }}>
+          {msgs[phase]}
+        </div>
+        {plan && (
+          <div style={{ marginTop:14, color:C.muted, fontSize:13 }}>
+            {plan.type.charAt(0).toUpperCase()+plan.type.slice(1)} · {plan.months} months
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ---------- mount ---------- */
+  const goHome = () => { window.location.href = "index.html"; };
+  ReactDOM.createRoot(document.getElementById("root"))
+    .render(<FilmSchoolForm onBack={goHome} onDone={goHome} />);
+  </script>
+</body>
+</html>

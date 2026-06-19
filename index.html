@@ -67,25 +67,26 @@
     /* ===== Sign Up Now — primary call to action ===== */
     .signup-btn {
       display: inline-block;
-      background: linear-gradient(135deg, #f97316, #ea580c);
+      background: linear-gradient(135deg, #fb923c, #ea580c 55%, #dc2626);
       color: #ffffff;
       font-weight: 700;
       font-size: 1.15rem;
-      padding: 1rem 2.75rem;
-      border-radius: 0.6rem;
+      padding: 1.05rem 3rem;
+      border-radius: 0.75rem;
       text-decoration: none;
       letter-spacing: 0.02em;
-      box-shadow: 0 6px 24px rgba(234, 88, 12, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 28px rgba(234, 88, 12, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       animation: signupPulse 2.6s ease-in-out infinite;
     }
     .signup-btn:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 10px 34px rgba(234, 88, 12, 0.6);
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 38px rgba(234, 88, 12, 0.75);
     }
     @keyframes signupPulse {
-      0%, 100% { box-shadow: 0 6px 24px rgba(234, 88, 12, 0.40); }
-      50%      { box-shadow: 0 6px 30px rgba(234, 88, 12, 0.68); }
+      0%, 100% { box-shadow: 0 8px 28px rgba(234, 88, 12, 0.45); }
+      50%      { box-shadow: 0 8px 36px rgba(234, 88, 12, 0.8); }
     }
 
     /* Membership Cards - Enhanced Design */
@@ -133,6 +134,64 @@
     }
     .membership-card button {
       margin: 0 1.5rem 1.5rem;
+    }
+    /* Standard button — cool slate tone, secondary to Premium */
+    .standard-btn {
+      background: linear-gradient(135deg, #475569, #334155);
+      color: #ffffff;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid #64748b;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    }
+    .standard-btn:hover {
+      background: linear-gradient(135deg, #64748b, #475569);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    }
+    /* Premium membership — gold treatment so it stands out */
+    .membership-card.premium {
+      border: 1px solid #f59e0b;
+      box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.25), 0 20px 40px rgba(245, 158, 11, 0.12);
+    }
+    .membership-card.premium::before {
+      background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b);
+    }
+    .membership-card.premium:hover {
+      box-shadow: 0 24px 48px rgba(245, 158, 11, 0.3);
+    }
+    .premium-badge {
+      position: absolute;
+      top: 0.9rem;
+      right: 1.2rem;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #1e293b;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+    }
+    .premium-btn {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b 60%, #d97706);
+      color: #1e293b;
+      font-weight: 700;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
+    }
+    .premium-btn:hover {
+      background: linear-gradient(135deg, #fcd34d, #fbbf24 60%, #f59e0b);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 26px rgba(245, 158, 11, 0.6);
     }
     .tick {
       color: #22c55e;
@@ -213,10 +272,8 @@
 Master the craft. Find your voice. Become the professional you were meant to be!</p>  
 
 <!-- ===== Sign Up Now button — links to the application form ===== -->
-<!-- 🔗 Update this href once the form is deployed. If the form lives on this same -->
-<!--     site it can stay as "/apply"; if it lives elsewhere, paste the full URL.  -->
 <div style="margin-top: 0.5rem; margin-bottom: 1rem;">
-  <a href="/apply" class="signup-btn">Sign Up Now</a>
+  <a href="https://adders-entertainment-app.pages.dev/?signup=1" class="signup-btn">Sign Up Now</a>
 </div>
 
 <button id="about-toggle-btn" class="about-btn">About Us</button>  
@@ -230,10 +287,10 @@ Master the craft. Find your voice. Become the professional you were meant to be!
 <style>
   /* Button Styling */
   .about-btn {
-    background: linear-gradient(135deg, #ea580c, #c2410c);
-    color: #ffffff;
-    padding: 0.75rem 1.5rem;
-    border: none;
+    background: transparent;
+    color: #fb923c;
+    padding: 0.7rem 1.5rem;
+    border: 2px solid #ea580c;
     border-radius: 0.5rem;
     font-weight: 600;
     cursor: pointer;
@@ -241,9 +298,11 @@ Master the craft. Find your voice. Become the professional you were meant to be!
     margin-top: 1rem;
   }
   .about-btn:hover {
-    background: linear-gradient(135deg, #c2410c, #9a3412);
+    background: rgba(234, 88, 12, 0.12);
+    color: #ffffff;
+    border-color: #fb923c;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);
   }
   
   /* Smooth Reveal Animation */
@@ -293,10 +352,11 @@ Master the craft. Find your voice. Become the professional you were meant to be!
             <li><span class="no-tick">✗</span>TOTUM card after 6 months</li>
             <li><span class="tick">✓</span>Showreel after 24 months</li>
           </ul>
-          <button class="orange-btn" onclick="window.location.href='https://bookwhen.com/addersfilmschool/memberships'">Standard</button>
+          <button class="standard-btn" onclick="window.location.href='https://bookwhen.com/addersfilmschool/memberships'">Standard</button>
         </div>
         <!-- Premium Membership -->
-        <div class="membership-card">
+        <div class="membership-card premium">
+          <span class="premium-badge">Most Popular</span>
           <h3>Premium Membership</h3>
           <ul>
             <li><span class="tick">✓</span>Access to all modules</li>
@@ -310,7 +370,7 @@ Master the craft. Find your voice. Become the professional you were meant to be!
             <li><span class="tick">✓</span>TOTUM card after 6 months</li>
             <li><span class="tick">✓</span>Showreel after 24 months</li>
           </ul>
-          <button class="orange-btn" onclick="window.location.href='https://bookwhen.com/addersfilmschool/memberships'">Premium</button>
+          <button class="premium-btn" onclick="window.location.href='https://bookwhen.com/addersfilmschool/memberships'">Premium</button>
         </div>
       </div>
     </section>

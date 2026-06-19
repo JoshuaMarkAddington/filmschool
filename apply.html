@@ -149,11 +149,12 @@
   };
 
   // Month 1 options, and progression for months 2 & 3.
-  // (Any module may currently be chosen each month — send the real
-  //  module-progression rules and they'll slot straight in here.)
-  const M1 = MODULES;
-  function m2Opts(month1) { return MODULES; }
-  function m3Opts(month2) { return MODULES; }
+  const M1 = ["Scriptwriting","Acting for Screen","Musical Theatre for Screen","Cinematography & AudioVisual Production"];
+  const M2_ALL = ["Acting for Screen","Musical Theatre for Screen","Cinematography & AudioVisual Production","Directing & Production Leadership","Editing & Digital Mastering"];
+  const M3_ALL = ["The Recording Suite: Vocal Edition","Advanced Cinematography","Cinematic Lighting","Editing & Digital Mastering","Sketch to Screen","Advanced Dance","Voice Acting & Foley Performance"];
+  const M_LOCK = ["Acting for Screen","Musical Theatre for Screen","Cinematography & AudioVisual Production"];
+  function m2Opts(month1) { return M_LOCK.includes(month1) ? [month1] : month1 === "Scriptwriting" ? ["Directing & Production Leadership","Editing & Digital Mastering"] : M2_ALL; }
+  function m3Opts(month2) { return month2 === "Editing & Digital Mastering" ? ["Editing & Digital Mastering"] : M3_ALL; }
 
   /* =====================================================================
      FILM SCHOOL APPLICATION FORM — one question at a time

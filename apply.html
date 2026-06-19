@@ -42,10 +42,11 @@
 <body>
   <div id="root"></div>
 
-  <script type="text/babel" data-presets="react">
-  /* @jsxRuntime classic */
-  // Use the classic JSX runtime so compiled output calls the global
-  // React.createElement (loaded above) instead of emitting an ES import.
+  <!-- Form source. Held as plain text and compiled by the bootstrap script
+       at the bottom of the page, rather than relying on Babel's auto-runner
+       (whose default JSX-runtime config conflicts with the classic runtime
+       we need when running from a plain <script> tag). -->
+  <script type="text/plain" id="form-src">
   const { useState, useEffect } = React;
 
   /* =====================================================================
@@ -928,6 +929,27 @@
   const goHome = () => { window.location.href = "index.html"; };
   ReactDOM.createRoot(document.getElementById("root"))
     .render(<FilmSchoolForm onBack={goHome} onDone={goHome} />);
+  </script>
+
+  <!-- Bootstrap: compile the JSX above with the classic runtime (so the output
+       calls the global React.createElement) and run it. -->
+  <script>
+    (function () {
+      try {
+        var src = document.getElementById("form-src").textContent;
+        var out = Babel.transform(src, { presets: [["react", { runtime: "classic" }]] }).code;
+        var s = document.createElement("script");
+        s.textContent = out;
+        document.body.appendChild(s);
+      } catch (e) {
+        console.error(e);
+        document.getElementById("root").innerHTML =
+          '<div style="color:#F4F1EA;font-family:sans-serif;padding:48px;text-align:center;max-width:480px;margin:0 auto;">' +
+          "<h2 style=\"font-family:'Cinzel',serif\">We hit a snag loading the form</h2>" +
+          '<p style="color:#8A93A8;line-height:1.6">Please refresh the page. If it keeps happening, get in touch and we\'ll sort it.</p>' +
+          '<p style="margin-top:24px"><a href="index.html" style="color:#E0894A">‹ Back to the website</a></p></div>';
+      }
+    })();
   </script>
 </body>
 </html>

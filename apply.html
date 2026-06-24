@@ -176,6 +176,20 @@
     },
   };
 
+  function ageInYears(dob) {
+    const birth = new Date(dob);
+    if (isNaN(birth)) return null;
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--;
+    return age;
+  }
+  function isEligibleAge(dob) {
+    const age = ageInYears(dob);
+    return age !== null && age >= 13 && age <= 17;
+  }
+
   const EMPTY = {
     studentName:"", studentDob:"",
     month1:"", month2:"", month3:"",
@@ -214,7 +228,7 @@
       switch(step){
         case "intro": return true;
         case "studentName": return d.studentName.trim().length > 1;
-        case "studentDob": return !!d.studentDob;
+        case "studentDob": return !!d.studentDob && isEligibleAge(d.studentDob);
         case "month1": return !!d.month1;
         case "month2": return !!d.month2;
         case "month3": return !!d.month3;
@@ -371,8 +385,13 @@
 
       case "studentDob": return (
         <div style={{ width:"100%", maxWidth:460 }}>
-          <Q sub="We use this to confirm eligibility for the programme.">When was {firstName} born?</Q>
+          <Q sub="Adders Film School is open to students aged 13–17.">When was {firstName} born?</Q>
           <FInput type="date" value={d.studentDob} onChange={e=>set("studentDob",e.target.value)} />
+          {d.studentDob && !isEligibleAge(d.studentDob) && (
+            <div style={{ color:C.copper, fontSize:13, marginTop:10 }}>
+              Sorry — the programme is only open to students aged 13 to 17. Please double-check the date entered.
+            </div>
+          )}
         </div>
       );
 
@@ -590,14 +609,22 @@
           <div style={{ background:C.bg2, border:`1px solid ${C.line}`, borderRadius:14, padding:"22px 24px",
             maxHeight:360, overflowY:"auto", color:C.muted, fontSize:13.5, lineHeight:1.85 }}>
             <div style={{ color:C.copper, fontFamily:"'Cinzel',serif", fontWeight:700, fontSize:16, marginBottom:16 }}>
-              Adders Film School — Membership Policy
+              Adders Entertainment Group — Policies
             </div>
-            <div style={{ color:`${C.copper}CC`, fontStyle:"italic", marginBottom:18, border:`1px dashed ${C.copper}44`,
-              padding:"12px 16px", borderRadius:10 }}>
-              📄 Your full policy document will be placed here. Send it across and I'll drop it straight in — formatted and scrollable exactly like this.
-            </div>
-            <p>This document sets out the terms and expectations for all Adders Film School members, including attendance requirements, code of conduct, and the use of footage captured during sessions. Members and their guardians are expected to have read and understood all sections before submitting their application.</p>
-            <p style={{ marginTop:14 }}>By proceeding, you confirm that you have scrolled through and accepted the full policy on the previous screen.</p>
+            <p><b>1. Code of Conduct.</b> All members, parents and guardians are expected to treat staff, students and the studio with courtesy and respect at all times. Disruptive, abusive or unsafe behaviour may result in suspension or removal from the programme without refund.</p>
+            <p><b>2. Attendance.</b> Sessions run to a fixed timetable. Persistent lateness or unexplained absence may affect a student's place on the programme. Please notify us in advance if a student cannot attend a session.</p>
+            <p><b>3. Health, Safety &amp; Medical Information.</b> Any allergies, additional needs or health issues declared on this form will be kept on file and used solely to keep the student safe during sessions. Parents/guardians must keep this information up to date.</p>
+            <p><b>4. Filming &amp; Use of Footage.</b> Sessions involve filming as part of the curriculum. By submitting this form and consenting below, you agree that footage of the student may be captured and used for educational purposes and, where separately consented to, promotional use by Adders Entertainment Group.</p>
+            <p><b>5. Payments &amp; Plans.</b> Fees are due as set out at checkout for the plan selected. Module selections are final for the cycle once submitted and paid for.</p>
+            <p><b>6. Cancellations.</b> Requests to cancel or change a booking should be sent to us in writing as early as possible. Refunds, where applicable, are handled on a case-by-case basis in line with our cancellation policy.</p>
+            <p><b>7. Safeguarding.</b> We take the welfare of all students seriously. Any safeguarding concerns will be handled in accordance with our safeguarding procedures and reported to the appropriate authorities where required.</p>
+            <p><b>8. Data Protection.</b> Information submitted on this form is stored securely and used only for the purposes of administering the programme. It is not shared with third parties except where required to deliver the service (e.g. payment processing).</p>
+            <p><b>9. Changes to this Policy.</b> Adders Entertainment Group may update these policies from time to time. Continued participation in the programme constitutes acceptance of the current policy.</p>
+            <p style={{ marginTop:14 }}>
+              <a href="/policy.pdf" target="_blank" rel="noopener noreferrer" style={{ color:C.blue, fontWeight:600 }}>
+                📄 Download the full policy document (PDF)
+              </a>
+            </p>
           </div>
           <div style={{ color:C.muted, fontSize:12.5, textAlign:"center", marginTop:14 }}>
             You confirmed acceptance on the previous screen. Submitting locks your application.
@@ -683,10 +710,15 @@
           <div style={{ marginTop:10, background:C.bg2, border:`1px dashed ${C.line}`, borderRadius:12, padding:"20px 18px",
             display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
             <Calendar size={28} color={C.muted} />
-            <div style={{ color:C.text, fontWeight:600, fontSize:14 }}>Timetable coming soon</div>
+            <div style={{ color:C.text, fontWeight:600, fontSize:14 }}>September–November 2026 timetable</div>
             <div style={{ color:C.muted, fontSize:12.5, textAlign:"center", lineHeight:1.6, maxWidth:320 }}>
-              Send the session schedule and I'll drop it in here — formatted as a proper weekly grid with days, times and module names.
+              View the full weekly schedule of days, times and module names for this cycle.
             </div>
+            <a href="/timetable.pdf" target="_blank" rel="noopener noreferrer"
+              style={{ marginTop:4, background:"transparent", border:`1px solid ${C.blue}55`,
+                color:C.blue, fontSize:12.5, fontWeight:600, padding:"6px 14px", borderRadius:20, textDecoration:"none" }}>
+              📄 Open timetable (PDF)
+            </a>
           </div>
         )}
       </div>

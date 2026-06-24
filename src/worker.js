@@ -25,6 +25,16 @@ export default {
   },
 };
 
+function isEligibleAge(dob) {
+  const birth = new Date(dob);
+  if (Number.isNaN(birth.getTime())) return false;
+  const today = new Date();
+  let age = today.getUTCFullYear() - birth.getUTCFullYear();
+  const monthDiff = today.getUTCMonth() - birth.getUTCMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getUTCDate() < birth.getUTCDate())) age--;
+  return age >= 13 && age <= 17;
+}
+
 async function handleApply(request, env) {
   let body;
   try {
@@ -41,6 +51,9 @@ async function handleApply(request, env) {
   }
   if (!body.selectedPlan?.type || !body.selectedPlan?.months) {
     return Response.json({ error: "Missing selectedPlan.type/months" }, { status: 400 });
+  }
+  if (!isEligibleAge(body.studentDob)) {
+    return Response.json({ error: "Student must be between 13 and 17 years old" }, { status: 400 });
   }
 
   const id = crypto.randomUUID();
@@ -76,7 +89,7 @@ async function handleApply(request, env) {
   // Email notifications are best-effort — a failure here must never block
   // the applicant from reaching Stripe checkout.
   try {
-    await sendApplicationReceivedEmails(env, { ...body, id });
+    await sendApplicationReceivedEmails(env, { ...body, id }, new URL(request.url).origin);
   } catch (err) {
     console.error("application email failed", err);
   }
@@ -114,7 +127,7 @@ async function handleStripeWebhook(request, env) {
       const application = results?.[0];
       if (application) {
         try {
-          await sendPaymentConfirmedEmails(env, application);
+          await sendPaymentConfirmedEmails(env, application, new URL(request.url).origin);
         } catch (err) {
           console.error("payment confirmation email failed", err);
         }
@@ -180,19 +193,20 @@ function modulesSummary(a) {
   return [a.month1, a.month2, a.month3].filter(Boolean).map(escapeHtml).join(" → ") || "—";
 }
 
-async function sendApplicationReceivedEmails(env, app) {
+async function sendApplicationReceivedEmails(env, app, origin) {
   const planLabel = `${app.selectedPlan.type} · ${app.selectedPlan.months} months`;
 
   await sendEmail(env, {
     to: app.email,
-    subject: "We've received your Adders Film School application",
+    subject: "Your Adders Film School policy document",
     html: `
       <p>Hi ${escapeHtml(app.guardianName)},</p>
       <p>Thanks for applying to Adders Film School on behalf of <b>${escapeHtml(app.studentName)}</b>.</p>
+      <p>We're sending over our <a href="${origin}/policy.pdf">policy document</a> for your reference. If you have any questions
+      at all, please feel free to get in touch with us.</p>
       <p>Modules selected: <b>${modulesSummary(app)}</b><br/>
       Plan: <b>${escapeHtml(planLabel)}</b></p>
-      <p>You're about to be taken to Stripe to complete payment securely. Once payment is confirmed
-      we'll send you a final confirmation with next steps.</p>
+      <p>You're about to be taken to Stripe to complete payment securely.</p>
       <p>— Adders Film School</p>
     `,
   });
@@ -217,15 +231,17 @@ async function sendApplicationReceivedEmails(env, app) {
   }
 }
 
-async function sendPaymentConfirmedEmails(env, app) {
+async function sendPaymentConfirmedEmails(env, app, origin) {
   await sendEmail(env, {
     to: app.email,
-    subject: "Payment confirmed — welcome to Adders Film School!",
+    subject: "Welcome to Adders Film School!",
     html: `
       <p>Hi ${escapeHtml(app.guardian_name)},</p>
-      <p>Payment for <b>${escapeHtml(app.student_name)}</b>'s membership is confirmed. Welcome to Adders Film School!</p>
+      <p>Payment for <b>${escapeHtml(app.student_name)}</b>'s membership is confirmed — welcome to Adders Film School!</p>
       <p>Modules: <b>${[app.month1, app.month2, app.month3].filter(Boolean).map(escapeHtml).join(" → ")}</b></p>
-      <p>Our team will be in touch shortly to confirm the module schedule and what to bring on the first day.</p>
+      <p>Here's the <a href="${origin}/timetable.pdf">timetable for September–November 2026</a> so you know exactly
+      when each session runs.</p>
+      <p>If you have any questions before the first session, just get in touch.</p>
       <p>— Adders Film School</p>
     `,
   });

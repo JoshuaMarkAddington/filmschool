@@ -242,6 +242,60 @@
     .dark-mode-toggle:hover {
       background: #334155;
     }
+    /* ===== Opening Announcement Banner ===== */
+    .opening-banner {
+      background: linear-gradient(135deg, rgba(234, 88, 12, 0.18), rgba(194, 65, 12, 0.12));
+      border: 1px solid #ea580c;
+      border-radius: 0.85rem;
+      padding: 1.25rem 1.75rem;
+      margin-bottom: 2rem;
+      max-width: 42rem;
+      box-shadow: 0 8px 28px rgba(234, 88, 12, 0.25);
+    }
+    .opening-banner-title {
+      color: #fb923c;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+    }
+    .opening-banner-text {
+      color: #f8fafc;
+      font-size: 1.05rem;
+      margin: 0.25rem 0;
+    }
+
+    /* ===== Contact Us Section ===== */
+    .contact-section {
+      max-width: 36rem;
+      margin: 0 auto;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 1px solid #334155;
+      border-radius: 1rem;
+      padding: 2rem;
+      text-align: center;
+    }
+    .contact-section a {
+      color: #fb923c;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .contact-section a:hover {
+      text-decoration: underline;
+    }
+    .contact-item {
+      font-size: 1.1rem;
+      margin: 0.75rem 0;
+      color: #f8fafc;
+    }
+    .contact-label {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
     /* Mobile Responsive */
     @media (max-width: 768px) {
       .membership-card {
@@ -265,6 +319,16 @@
 <main class="relative z-10">
     <!-- Hero Section -->
     <section class="min-h-screen flex flex-col items-center justify-center text-center px-4">
+      <!-- ===== Opening Announcement ===== -->
+      <div class="opening-banner">
+        <p class="opening-banner-title">🎬 Now Opening in Milton Keynes — 1st September!</p>
+        <p class="opening-banner-text">Classes begin on the 1st of September.</p>
+        <p class="opening-banner-text">
+          <strong>Ages 13–17</strong> — available to buy <strong>now</strong>.
+          Adult classes available to buy <strong>soon</strong>.
+        </p>
+      </div>
+
       <h1 class="text-5xl md:text-7xl font-bold mb-4">Adders Film School</h1>
       <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl">
         <!-- Opening Section -->
@@ -475,6 +539,20 @@ Master the craft. Find your voice. Become the professional you were meant to be!
             <p class="text-gray-300 text-sm">Bring characters and scenes to life through sound. This module covers voice acting techniques, foley artistry, and audio layering to create immersive soundscapes that elevate your storytelling.</p>
           </div>
         </div>
+      </div>
+    </section>
+    <!-- Contact Us Section -->
+    <section class="py-16 px-4" id="contact">
+      <h2 class="text-3xl font-bold text-center mb-8">Contact Us</h2>
+      <div class="contact-section">
+        <p class="contact-item">
+          <span class="contact-label">Email</span>
+          <a href="mailto:office@addersentertainment.org">office@addersentertainment.org</a>
+        </p>
+        <p class="contact-item">
+          <span class="contact-label">Phone</span>
+          Coming soon
+        </p>
       </div>
     </section>
   </main>

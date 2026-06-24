@@ -8,6 +8,9 @@ export default {
     if (url.pathname === "/api/apply" && request.method === "POST") {
       return handleApply(request, env);
     }
+    if (url.pathname === "/api/stripe-webhook" && request.method === "POST") {
+      return handleStripeWebhook(request, env);
+    }
 
     return env.ASSETS.fetch(request);
   },
@@ -62,4 +65,50 @@ async function handleApply(request, env) {
   ).run();
 
   return Response.json({ id });
+}
+
+// Stripe sends a `Stripe-Signature` header of the form `t=<timestamp>,v1=<hex hmac>[,v0=...]`.
+// We verify it ourselves (HMAC-SHA256 over `${timestamp}.${rawBody}`) rather than pulling in
+// the full Stripe SDK, since this only needs to check one header on the Workers edge.
+async function verifyStripeSignature(rawBody, signatureHeader, secret) {
+  const parts = Object.fromEntries(
+    signatureHeader.split(",").map(p => p.split("=").map(s => s.trim()))
+  );
+  if (!parts.t || !parts.v1) return false;
+
+  const key = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+  );
+  const mac = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`${parts.t}.${rawBody}`));
+  const expected = [...new Uint8Array(mac)].map(b => b.toString(16).padStart(2, "0")).join("");
+
+  if (expected.length !== parts.v1.length) return false;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ parts.v1.charCodeAt(i);
+  return diff === 0;
+}
+
+async function handleStripeWebhook(request, env) {
+  const signature = request.headers.get("stripe-signature");
+  const rawBody = await request.text();
+
+  if (!signature || !env.STRIPE_WEBHOOK_SECRET) {
+    return new Response("Webhook not configured", { status: 500 });
+  }
+  if (!(await verifyStripeSignature(rawBody, signature, env.STRIPE_WEBHOOK_SECRET))) {
+    return new Response("Invalid signature", { status: 400 });
+  }
+
+  const event = JSON.parse(rawBody);
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data.object;
+    if (session.client_reference_id) {
+      await env.DB.prepare(
+        "UPDATE applications SET status = 'paid' WHERE id = ?"
+      ).bind(session.client_reference_id).run();
+    }
+  }
+
+  return Response.json({ received: true });
 }

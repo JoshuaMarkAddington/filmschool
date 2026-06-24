@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin — Adders Film School</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0; min-height: 100vh; background: #070B14; color: #F4F1EA;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased;
+    }
+    h1 { font-family: 'Cinzel', serif; font-size: 22px; margin: 0; }
+    .muted { color: #8A93A8; }
+    #login { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
+    .card { max-width: 360px; width: 100%; background: #0E1525; border: 1px solid #1B2440; border-radius: 16px; padding: 28px; text-align: center; }
+    input { width: 100%; box-sizing: border-box; background: #0E1525; border: 2px solid #1B2440; border-radius: 10px;
+      padding: 13px 14px; color: #F4F1EA; font-size: 15px; outline: none; margin-top: 18px; }
+    input:focus { border-color: #E0894A; }
+    button { width: 100%; margin-top: 14px; padding: 13px; border-radius: 10px; border: none; cursor: pointer;
+      font-weight: 700; font-size: 15px; background: linear-gradient(180deg,#E0894A,#B5651D); color: #070B14; }
+    .err { color: #E0894A; font-size: 13px; margin-top: 12px; min-height: 16px; }
+    #dash { display: none; padding: 24px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; gap: 12px; flex-wrap: wrap; }
+    .topbar button { width: auto; padding: 9px 16px; font-size: 13px; background: transparent; border: 1px solid #1B2440; color: #8A93A8; }
+    table { width: 100%; border-collapse: collapse; font-size: 12.5px; background: #0E1525; border-radius: 12px; overflow: hidden; }
+    th, td { padding: 9px 11px; border-bottom: 1px solid #1B2440; text-align: left; white-space: nowrap; }
+    th { color: #E0894A; position: sticky; top: 0; background: #0E1525; font-size: 11px; letter-spacing: 0.3px; }
+    tr:hover td { background: #121B30; }
+    .scroll { overflow: auto; max-height: 80vh; border: 1px solid #1B2440; border-radius: 12px; }
+    .pill { padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .pill.paid { background: #5BC08A22; color: #5BC08A; }
+    .pill.pending { background: #E0894A22; color: #E0894A; }
+    .empty { padding: 40px; text-align: center; color: #8A93A8; }
+  </style>
+</head>
+<body>
+  <div id="login">
+    <div class="card">
+      <h1>Admin sign in</h1>
+      <p class="muted" style="font-size:13px;margin-top:8px;">Adders Film School applicant data</p>
+      <input id="password" type="password" placeholder="Password" autofocus>
+      <button id="loginBtn">Sign in</button>
+      <div class="err" id="loginErr"></div>
+    </div>
+  </div>
+
+  <div id="dash">
+    <div class="topbar">
+      <h1>Applications <span class="muted" id="count" style="font-size:14px;"></span></h1>
+      <div style="display:flex; gap:10px;">
+        <button id="exportBtn">Export CSV</button>
+        <button id="logoutBtn">Log out</button>
+      </div>
+    </div>
+    <div class="scroll">
+      <table id="table">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const COLUMNS = [
+      ["created_at","Submitted"],["status","Status"],
+      ["student_name","Student"],["student_dob","Student DOB"],
+      ["month1","Month 1"],["month2","Month 2"],["month3","Month 3"],["new_to_film","New to film"],
+      ["guardian_name","Guardian"],["guardian_dob","Guardian DOB"],
+      ["address_line1","Address 1"],["address_line2","Address 2"],["city","City"],["county","County"],["postcode","Postcode"],
+      ["email","Email"],["phone","Phone"],
+      ["emergency_same","Emergency = guardian"],["emergency_name","Emergency name"],["emergency_phone","Emergency phone"],["emergency_relation","Emergency relation"],
+      ["allergies","Allergies"],["allergies_detail","Allergies detail"],
+      ["additional_needs","Additional needs"],["additional_needs_detail","Additional needs detail"],
+      ["health_issues","Health issues"],["health_issues_detail","Health issues detail"],
+      ["consent_filming","Consent: filming"],["consent_policy","Consent: policy"],
+      ["plan_type","Plan"],["plan_months","Months"],["id","Application ID"],
+    ];
+
+    const loginCard = document.getElementById("login");
+    const dash = document.getElementById("dash");
+    const loginErr = document.getElementById("loginErr");
+    let rows = [];
+
+    function fmt(col, val) {
+      if (val === null || val === undefined) return "";
+      if (["new_to_film","emergency_same","allergies","additional_needs","health_issues","consent_filming","consent_policy"].includes(col)) {
+        return val ? "Yes" : "No";
+      }
+      if (col === "created_at") return new Date(val + "Z").toLocaleString();
+      return String(val);
+    }
+
+    function render() {
+      const thead = document.querySelector("#table thead");
+      const tbody = document.querySelector("#table tbody");
+      thead.innerHTML = "<tr>" + COLUMNS.map(([,label]) => `<th>${label}</th>`).join("") + "</tr>";
+      document.getElementById("count").textContent = `(${rows.length})`;
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="${COLUMNS.length}" class="empty">No applications yet.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = rows.map(r => {
+        const cells = COLUMNS.map(([col]) => {
+          if (col === "status") {
+            const cls = r.status === "paid" ? "paid" : "pending";
+            return `<td><span class="pill ${cls}">${r.status}</span></td>`;
+          }
+          return `<td>${escapeHtml(fmt(col, r[col]))}</td>`;
+        }).join("");
+        return `<tr>${cells}</tr>`;
+      }).join("");
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+    }
+
+    function toCsv() {
+      const header = COLUMNS.map(([,label]) => `"${label}"`).join(",");
+      const lines = rows.map(r => COLUMNS.map(([col]) => `"${String(fmt(col, r[col])).replace(/"/g,'""')}"`).join(","));
+      return [header, ...lines].join("\n");
+    }
+
+    async function loadApplications() {
+      const res = await fetch("/api/admin/applications", { credentials: "same-origin" });
+      if (res.status === 401) { showLogin(); return; }
+      const data = await res.json();
+      rows = data.applications || [];
+      render();
+      showDash();
+    }
+
+    function showDash() { loginCard.style.display = "none"; dash.style.display = "block"; }
+    function showLogin() { dash.style.display = "none"; loginCard.style.display = "flex"; }
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      loginErr.textContent = "";
+      const password = document.getElementById("password").value;
+      const res = await fetch("/api/admin/login", {
+        method: "POST", credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (!res.ok) { loginErr.textContent = "Incorrect password."; return; }
+      loadApplications();
+    });
+
+    document.getElementById("password").addEventListener("keydown", e => {
+      if (e.key === "Enter") document.getElementById("loginBtn").click();
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await fetch("/api/admin/logout", { method: "POST", credentials: "same-origin" });
+      showLogin();
+    });
+
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      const blob = new Blob([toCsv()], { type: "text/csv" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `applications-${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    });
+
+    loadApplications();
+  </script>
+</body>
+</html>

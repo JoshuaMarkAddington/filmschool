@@ -8,6 +8,18 @@ export default {
     if (url.pathname === "/api/apply" && request.method === "POST") {
       return handleApply(request, env);
     }
+    if (url.pathname === "/api/stripe/webhook" && request.method === "POST") {
+      return handleStripeWebhook(request, env);
+    }
+    if (url.pathname === "/api/admin/login" && request.method === "POST") {
+      return handleAdminLogin(request, env);
+    }
+    if (url.pathname === "/api/admin/logout" && request.method === "POST") {
+      return handleAdminLogout();
+    }
+    if (url.pathname === "/api/admin/applications" && request.method === "GET") {
+      return handleAdminApplications(request, env);
+    }
 
     return env.ASSETS.fetch(request);
   },
@@ -61,5 +73,266 @@ async function handleApply(request, env) {
     id
   ).run();
 
+  // Email notifications are best-effort — a failure here must never block
+  // the applicant from reaching Stripe checkout.
+  try {
+    await sendApplicationReceivedEmails(env, { ...body, id });
+  } catch (err) {
+    console.error("application email failed", err);
+  }
+
   return Response.json({ id });
+}
+
+/* ===========================================================================
+   STRIPE WEBHOOK — confirms a payment actually completed and flips the
+   application's status, rather than trusting the client-side redirect.
+   =========================================================================== */
+async function handleStripeWebhook(request, env) {
+  const payload = await request.text();
+  const sigHeader = request.headers.get("Stripe-Signature") || "";
+
+  const ok = await verifyStripeSignature(payload, sigHeader, env.STRIPE_WEBHOOK_SECRET);
+  if (!ok) {
+    return Response.json({ error: "Invalid signature" }, { status: 400 });
+  }
+
+  let event;
+  try {
+    event = JSON.parse(payload);
+  } catch {
+    return Response.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  if (event.type === "checkout.session.completed") {
+    const session = event.data?.object || {};
+    const appId = session.client_reference_id;
+    if (appId) {
+      await env.DB.prepare(`UPDATE applications SET status = 'paid' WHERE id = ?`).bind(appId).run();
+
+      const { results } = await env.DB.prepare(`SELECT * FROM applications WHERE id = ?`).bind(appId).all();
+      const application = results?.[0];
+      if (application) {
+        try {
+          await sendPaymentConfirmedEmails(env, application);
+        } catch (err) {
+          console.error("payment confirmation email failed", err);
+        }
+      }
+    }
+  }
+
+  return Response.json({ received: true });
+}
+
+async function verifyStripeSignature(payload, sigHeader, secret) {
+  if (!secret || !sigHeader) return false;
+
+  const parts = Object.fromEntries(
+    sigHeader.split(",").map((p) => {
+      const [k, v] = p.split("=");
+      return [k, v];
+    })
+  );
+  const timestamp = parts.t;
+  const expectedSig = parts.v1;
+  if (!timestamp || !expectedSig) return false;
+
+  // Reject events older than 5 minutes to limit replay-attack exposure.
+  const age = Date.now() / 1000 - Number(timestamp);
+  if (!Number.isFinite(age) || age > 300 || age < -300) return false;
+
+  const signedPayload = `${timestamp}.${payload}`;
+  const computedSig = await hmacSha256Hex(secret, signedPayload);
+  return timingSafeEqual(computedSig, expectedSig);
+}
+
+/* ===========================================================================
+   EMAIL — Resend. Two emails fire on application submission (to the
+   applicant, and to the school so you immediately know someone signed up),
+   then a payment-confirmed pair once Stripe confirms the charge.
+   =========================================================================== */
+async function sendEmail(env, { to, subject, html }) {
+  if (!env.RESEND_API_KEY || !env.RESEND_FROM) {
+    console.error("Resend is not configured (RESEND_API_KEY / RESEND_FROM missing)");
+    return;
+  }
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ from: env.RESEND_FROM, to, subject, html }),
+  });
+  if (!res.ok) {
+    console.error("Resend send failed", res.status, await res.text());
+  }
+}
+
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  }[c]));
+}
+
+function modulesSummary(a) {
+  return [a.month1, a.month2, a.month3].filter(Boolean).map(escapeHtml).join(" → ") || "—";
+}
+
+async function sendApplicationReceivedEmails(env, app) {
+  const planLabel = `${app.selectedPlan.type} · ${app.selectedPlan.months} months`;
+
+  await sendEmail(env, {
+    to: app.email,
+    subject: "We've received your Adders Film School application",
+    html: `
+      <p>Hi ${escapeHtml(app.guardianName)},</p>
+      <p>Thanks for applying to Adders Film School on behalf of <b>${escapeHtml(app.studentName)}</b>.</p>
+      <p>Modules selected: <b>${modulesSummary(app)}</b><br/>
+      Plan: <b>${escapeHtml(planLabel)}</b></p>
+      <p>You're about to be taken to Stripe to complete payment securely. Once payment is confirmed
+      we'll send you a final confirmation with next steps.</p>
+      <p>— Adders Film School</p>
+    `,
+  });
+
+  if (env.ADMIN_NOTIFY_EMAIL) {
+    await sendEmail(env, {
+      to: env.ADMIN_NOTIFY_EMAIL,
+      subject: `New application: ${app.studentName}`,
+      html: `
+        <p>A new application was submitted (payment not yet confirmed).</p>
+        <ul>
+          <li><b>Student:</b> ${escapeHtml(app.studentName)} (DOB ${escapeHtml(app.studentDob)})</li>
+          <li><b>Guardian:</b> ${escapeHtml(app.guardianName)}</li>
+          <li><b>Email:</b> ${escapeHtml(app.email)}</li>
+          <li><b>Phone:</b> ${escapeHtml(app.phone)}</li>
+          <li><b>Modules:</b> ${modulesSummary(app)}</li>
+          <li><b>Plan:</b> ${escapeHtml(app.selectedPlan.type)} · ${escapeHtml(app.selectedPlan.months)} months</li>
+        </ul>
+        <p>View full details (medical/emergency info, address) in the admin dashboard at /admin.</p>
+      `,
+    });
+  }
+}
+
+async function sendPaymentConfirmedEmails(env, app) {
+  await sendEmail(env, {
+    to: app.email,
+    subject: "Payment confirmed — welcome to Adders Film School!",
+    html: `
+      <p>Hi ${escapeHtml(app.guardian_name)},</p>
+      <p>Payment for <b>${escapeHtml(app.student_name)}</b>'s membership is confirmed. Welcome to Adders Film School!</p>
+      <p>Modules: <b>${[app.month1, app.month2, app.month3].filter(Boolean).map(escapeHtml).join(" → ")}</b></p>
+      <p>Our team will be in touch shortly to confirm the module schedule and what to bring on the first day.</p>
+      <p>— Adders Film School</p>
+    `,
+  });
+
+  if (env.ADMIN_NOTIFY_EMAIL) {
+    await sendEmail(env, {
+      to: env.ADMIN_NOTIFY_EMAIL,
+      subject: `Payment confirmed: ${app.student_name}`,
+      html: `<p><b>${escapeHtml(app.student_name)}</b>'s payment has been confirmed via Stripe.</p>`,
+    });
+  }
+}
+
+/* ===========================================================================
+   ADMIN AUTH — password + HMAC-signed session cookie. No data is exposed
+   to the browser until the signature on the session cookie is verified
+   server-side on every request to /api/admin/*.
+   =========================================================================== */
+const SESSION_TTL_SECONDS = 60 * 60 * 8; // 8 hours
+const SESSION_COOKIE = "admin_session";
+
+async function hmacSha256Hex(secret, message) {
+  const key = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(message));
+  return [...new Uint8Array(sig)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function timingSafeEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return result === 0;
+}
+
+async function createSessionCookie(env) {
+  const exp = Math.floor(Date.now() / 1000) + SESSION_TTL_SECONDS;
+  const payload = btoa(JSON.stringify({ exp }));
+  const sig = await hmacSha256Hex(env.ADMIN_SESSION_SECRET, payload);
+  const value = `${payload}.${sig}`;
+  return `${SESSION_COOKIE}=${value}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${SESSION_TTL_SECONDS}`;
+}
+
+function clearSessionCookie() {
+  return `${SESSION_COOKIE}=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0`;
+}
+
+async function isValidSession(request, env) {
+  const cookieHeader = request.headers.get("Cookie") || "";
+  const match = cookieHeader.match(new RegExp(`${SESSION_COOKIE}=([^;]+)`));
+  if (!match) return false;
+
+  const [payload, sig] = match[1].split(".");
+  if (!payload || !sig) return false;
+
+  const expectedSig = await hmacSha256Hex(env.ADMIN_SESSION_SECRET, payload);
+  if (!timingSafeEqual(sig, expectedSig)) return false;
+
+  try {
+    const { exp } = JSON.parse(atob(payload));
+    return typeof exp === "number" && exp > Math.floor(Date.now() / 1000);
+  } catch {
+    return false;
+  }
+}
+
+async function handleAdminLogin(request, env) {
+  if (!env.ADMIN_PASSWORD || !env.ADMIN_SESSION_SECRET) {
+    return Response.json({ error: "Admin login is not configured" }, { status: 503 });
+  }
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const password = typeof body.password === "string" ? body.password : "";
+  const valid = password.length > 0 && timingSafeEqual(password, env.ADMIN_PASSWORD);
+  if (!valid) {
+    return Response.json({ error: "Incorrect password" }, { status: 401 });
+  }
+
+  const cookie = await createSessionCookie(env);
+  return new Response(JSON.stringify({ ok: true }), {
+    status: 200,
+    headers: { "Content-Type": "application/json", "Set-Cookie": cookie },
+  });
+}
+
+function handleAdminLogout() {
+  return new Response(JSON.stringify({ ok: true }), {
+    status: 200,
+    headers: { "Content-Type": "application/json", "Set-Cookie": clearSessionCookie() },
+  });
+}
+
+async function handleAdminApplications(request, env) {
+  if (!(await isValidSession(request, env))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { results } = await env.DB.prepare(
+    `SELECT * FROM applications ORDER BY created_at DESC`
+  ).all();
+
+  return Response.json({ applications: results });
 }

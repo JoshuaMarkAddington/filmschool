@@ -71,16 +71,6 @@
 
   const PALETTE = { filmschool: [C.copper, C.gold] };
 
-  // lighten / darken a hex colour by a percentage (-100..100)
-  function shade(hex, percent) {
-    const n = parseInt(hex.slice(1), 16);
-    const t = percent < 0 ? 0 : 255;
-    const p = Math.abs(percent) / 100;
-    const R = (n >> 16) & 0xff, G = (n >> 8) & 0xff, B = n & 0xff;
-    const to = (c) => Math.round((t - c) * p) + c;
-    return "#" + ((1 << 24) + (to(R) << 16) + (to(G) << 8) + to(B)).toString(16).slice(1);
-  }
-
   // Logo mark — renders the Adders Film School logo image.
   function MazeMark({ pair, size = 80, className, style }) {
     return (
@@ -105,16 +95,6 @@
         <rect x="3" y="4" width="18" height="18" rx="2" />
         <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
       </svg>
-    );
-  }
-
-  function Btn({ color, onClick, children }) {
-    return (
-      <button onClick={onClick} style={{
-        padding: "14px 30px", borderRadius: 13, border: "none", cursor: "pointer",
-        background: `linear-gradient(180deg,${color},${shade(color, -18)})`,
-        color: "#070B14", fontWeight: 700, fontSize: 15, fontFamily: "'Cinzel',serif", letterSpacing: 0.3,
-      }}>{children}</button>
     );
   }
 
@@ -161,18 +141,39 @@
      FILM SCHOOL APPLICATION FORM — one question at a time
      ===================================================================== */
 
-  // ⚙️  Update these when prices are confirmed — all values are placeholders
   const PRICES = {
     standard: [
-      { months: 3,  label: "3 months",  price: 150, save: null },
-      { months: 6,  label: "6 months",  price: 270, save: 30 },
-      { months: 12, label: "12 months", price: 480, save: 120 },
+      { months: 3,  label: "3 months",  price: 450 },
+      { months: 6,  label: "6 months",  price: 845 },
+      { months: 12, label: "12 months", price: 1600 },
     ],
     premium: [
-      { months: 3,  label: "3 months",  price: 225, save: null },
-      { months: 6,  label: "6 months",  price: 405, save: 45 },
-      { months: 12, label: "12 months", price: 720, save: 180 },
+      { months: 3,  label: "3 months",  price: 550 },
+      { months: 6,  label: "6 months",  price: 1000 },
+      { months: 12, label: "12 months", price: 1900 },
     ],
+  };
+  // Add a "save" figure relative to the 3-month run rate, computed rather than hand-typed.
+  for (const type of Object.keys(PRICES)) {
+    const monthlyRate = PRICES[type][0].price / PRICES[type][0].months;
+    for (const opt of PRICES[type]) {
+      const fullPrice = Math.round(monthlyRate * opt.months);
+      opt.save = fullPrice > opt.price ? fullPrice - opt.price : null;
+    }
+  }
+
+  // Real Stripe Payment Links — keyed by plan type + duration.
+  const STRIPE_LINKS = {
+    standard: {
+      3:  "https://buy.stripe.com/cNi5kF9bM9UjdLS0Ef2oE05",
+      6:  "https://buy.stripe.com/dRm14pfAa9UjazGcmX2oE04",
+      12: "https://buy.stripe.com/14A8wR5ZA5E34bicmX2oE03",
+    },
+    premium: {
+      3:  "https://buy.stripe.com/bJe6oJ9bM1nN0Z686H2oE02",
+      6:  "https://buy.stripe.com/7sY4gBcnYfeDgY44Uv2oE01",
+      12: "https://buy.stripe.com/8x28wRbjUd6vdLS0Ef2oE00",
+    },
   };
 
   const EMPTY = {
@@ -193,15 +194,16 @@
   const FSTEPS = [
     "intro","studentName","studentDob","month1","month2","month3","newToFilm",
     "guardianName","guardianDob","address","email","phone","emergency",
-    "allergies","additionalNeeds","healthIssues","consents","policy","payment","done",
+    "allergies","additionalNeeds","healthIssues","consents","policy","payment",
   ];
 
-  function FilmSchoolForm({ onBack, onDone }) {
+  function FilmSchoolForm({ onBack }) {
     const [idx, setIdx] = useState(0);
     const [dir, setDir] = useState("fwd");
     const [ak, setAk] = useState(0);
     const [d, setD] = useState(EMPTY);
     const [paying, setPaying] = useState(false);
+    const [payError, setPayError] = useState("");
     const set = (k,v) => setD(p => ({...p,[k]:v}));
 
     const total = FSTEPS.length;
@@ -236,11 +238,31 @@
     const next = () => { if(!canGo()) return; setDir("fwd"); setAk(k=>k+1); setIdx(i=>Math.min(i+1,total-1)); };
     const prev = () => { setDir("bk"); setAk(k=>k+1); setIdx(i=>Math.max(i-1,0)); };
 
-    // mock Stripe: show processing overlay, then advance to done
-    const handlePay = () => {
+    // Save the application to our records, then hand off to the real Stripe
+    // Payment Link for the chosen plan. Stripe — not this page — takes the
+    // card details and handles the charge.
+    const handlePay = async () => {
       if(!canGo()) return;
+      setPayError("");
       setPaying(true);
-      setTimeout(() => { setPaying(false); setDir("fwd"); setAk(k=>k+1); setIdx(i=>Math.min(i+1,total-1)); }, 2200);
+      try {
+        const res = await fetch("/api/apply", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(d),
+        });
+        if(!res.ok) throw new Error("save_failed");
+        const { id } = await res.json();
+        const link = STRIPE_LINKS[d.selectedPlan.type]?.[d.selectedPlan.months];
+        if(!link) throw new Error("no_link");
+        const url = new URL(link);
+        url.searchParams.set("client_reference_id", id);
+        if(d.email) url.searchParams.set("prefilled_email", d.email);
+        window.location.href = url.toString();
+      } catch (e) {
+        setPaying(false);
+        setPayError("We couldn't save your application — please check your connection and try again.");
+      }
     };
 
     const btnLabel = step==="intro" ? "Begin application"
@@ -277,7 +299,7 @@
         <div key={ak} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center",
           justifyContent:"center", padding:"24px 32px", overflowY:"auto",
           animation:`${dir==="fwd"?"stepFwd":"stepBk"} .3s cubic-bezier(.25,.46,.45,.94) both` }}>
-          <FormContent step={step} d={d} set={set} firstName={firstName} onDone={onDone} />
+          <FormContent step={step} d={d} set={set} firstName={firstName} />
         </div>
 
         {/* bottom CTA */}
@@ -303,6 +325,9 @@
                 <span>🔒</span> Secured by Stripe — your card details never touch our servers
               </div>
             )}
+            {payError && (
+              <div style={{ color:"#E0894A", fontSize:13, textAlign:"center", marginTop:10 }}>{payError}</div>
+            )}
           </div>
         )}
 
@@ -313,7 +338,7 @@
   }
 
   /* ---------- step renderer ---------- */
-  function FormContent({ step, d, set, firstName, onDone }) {
+  function FormContent({ step, d, set, firstName }) {
     const Q = ({children,sub}) => (
       <div style={{ textAlign:"center", marginBottom:28, maxWidth:520 }}>
         <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:26, lineHeight:1.25, color:C.text, fontWeight:700, margin:0 }}>{children}</h2>
@@ -582,70 +607,6 @@
 
       case "payment": return <PaymentStep d={d} set={set} />;
 
-      case "done": return (
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center", maxWidth:420 }}>
-          <div style={{ fontSize:60, marginBottom:16 }}>🎬</div>
-          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:28, color:C.text, lineHeight:1.2, margin:0 }}>
-            You're in!
-          </h2>
-          <p style={{ color:C.muted, fontSize:15, lineHeight:1.75, marginTop:12 }}>
-            Welcome to Adders Film School,{" "}
-            <b style={{color:C.copper}}>{d.studentName||"new member"}</b>. Two emails are on their way.
-          </p>
-          <div style={{ marginTop:18, width:"100%", display:"flex", flexDirection:"column", gap:10, textAlign:"left" }}>
-            <div style={{ background:"#0E1E12", border:"1px solid #1E4A28", borderRadius:13, padding:"14px 16px", display:"flex", gap:12, alignItems:"flex-start" }}>
-              <span style={{ fontSize:20, flexShrink:0 }}>✉️</span>
-              <div>
-                <div style={{ color:"#5BC08A", fontWeight:700, fontSize:14 }}>Booking confirmation sent</div>
-                <div style={{ color:C.muted, fontSize:12.5, marginTop:3, lineHeight:1.5 }}>
-                  Your receipt, membership details and module summary have been sent to <b style={{color:C.text}}>{d.email||"your email"}</b>.
-                </div>
-              </div>
-            </div>
-            <div style={{ background:`${C.blue}0C`, border:`1px solid ${C.blue}33`, borderRadius:13, padding:"14px 16px", display:"flex", gap:12, alignItems:"flex-start" }}>
-              <span style={{ fontSize:20, flexShrink:0 }}>📋</span>
-              <div>
-                <div style={{ color:C.blue, fontWeight:700, fontSize:14 }}>Info pack email queued</div>
-                <div style={{ color:C.muted, fontSize:12.5, marginTop:3, lineHeight:1.5 }}>
-                  A second email with everything you need to know — what to bring, what to wear, and what to expect — will be sent once finalised.
-                </div>
-                <div style={{ color:C.muted, fontSize:11.5, marginTop:6, fontStyle:"italic" }}>
-                  Content placeholder — drop the copy in whenever you're ready.
-                </div>
-              </div>
-            </div>
-          </div>
-          {d.selectedPlan && (
-            <div style={{ background:`${C.gold}0E`, border:`1px solid ${C.gold}44`, borderRadius:14, padding:"16px 20px", marginTop:18, width:"100%", textAlign:"left" }}>
-              <div style={{ color:C.muted, fontSize:11.5, letterSpacing:2, marginBottom:10 }}>YOUR MEMBERSHIP</div>
-              <div style={{ color:C.gold, fontFamily:"'Cinzel',serif", fontWeight:700, fontSize:17 }}>
-                {d.selectedPlan.type.charAt(0).toUpperCase()+d.selectedPlan.type.slice(1)} — {d.selectedPlan.months} months
-              </div>
-              <div style={{ color:C.muted, fontSize:12.5, marginTop:4 }}>
-                £{PRICES[d.selectedPlan.type].find(p=>p.months===d.selectedPlan.months)?.price}
-                {PRICES[d.selectedPlan.type].find(p=>p.months===d.selectedPlan.months)?.save &&
-                  <span style={{color:"#5BC08A",marginLeft:8}}>
-                    · Saved £{PRICES[d.selectedPlan.type].find(p=>p.months===d.selectedPlan.months).save}
-                  </span>
-                }
-              </div>
-            </div>
-          )}
-          <div style={{ background:`${C.copper}10`, border:`1px solid ${C.copper}44`, borderRadius:14, padding:"16px 20px", marginTop:12, width:"100%", textAlign:"left" }}>
-            <div style={{ color:C.muted, fontSize:11.5, letterSpacing:2, marginBottom:10 }}>MODULES SELECTED</div>
-            {[["Month 1",d.month1],["Month 2",d.month2],["Month 3",d.month3]].map(([l,v])=>(
-              <div key={l} style={{ display:"flex", justifyContent:"space-between", marginBottom:7 }}>
-                <span style={{ color:C.muted, fontSize:13 }}>{l}</span>
-                <span style={{ color:C.copper, fontSize:13, fontWeight:600 }}>{v}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop:26 }}>
-            <Btn color={C.copper} onClick={onDone}>Go to my dashboard →</Btn>
-          </div>
-        </div>
-      );
-
       default: return null;
     }
   }
@@ -810,72 +771,88 @@
   /* ---------- payment step ---------- */
   function PaymentStep({ d, set }) {
     const planDefs = {
-      premium:  { color: C.gold,   label: "Premium",  perks: ["Everything in Standard","Framed posters","Merch pack","T-shirt","TOTUM after 6 months"] },
       standard: { color: C.copper, label: "Standard", perks: ["All modules","Professional equipment","DaVinci Resolve","WriterDuet","4K HDR films"] },
+      premium:  { color: C.gold,   label: "Premium",  perks: ["Everything in Standard","Framed posters","Merch pack","T-shirt","TOTUM after 6 months"] },
     };
+    const [openType, setOpenType] = useState(d.selectedPlan?.type || null);
+
+    const chooseType = (type) => {
+      setOpenType(type);
+      if (d.selectedPlan?.type !== type) set("selectedPlan", null);
+    };
+
     return (
-      <div style={{ width:"100%", maxWidth:720 }}>
+      <div style={{ width:"100%", maxWidth:640 }}>
         <div style={{ textAlign:"center", marginBottom:28 }}>
           <MazeMark pair={PALETTE.filmschool} size={52} className="mz-idle" />
           <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:26, color:C.text, marginTop:14, marginBottom:0 }}>Choose your membership</h2>
           <p style={{ color:C.muted, fontSize:14, lineHeight:1.6, marginTop:8 }}>
-            Longer memberships save you more. Prices shown are placeholders — update when confirmed.
+            Pick Standard or Premium, then choose how long you'd like to join for.
           </p>
         </div>
 
-        <div style={{ display:"flex", gap:18, flexWrap:"wrap" }}>
-          {Object.entries(planDefs).map(([type, plan]) => (
-            <div key={type} style={{ flex:"1 1 280px", display:"flex", flexDirection:"column", gap:10 }}>
-              <div style={{ background:`${plan.color}14`, border:`1px solid ${plan.color}44`, borderRadius:16, padding:"18px 20px" }}>
-                <div style={{ fontFamily:"'Cinzel',serif", color:plan.color, fontWeight:700, fontSize:18, marginBottom:10 }}>{plan.label}</div>
-                <div style={{ display:"flex", flexDirection:"column", gap:5 }}>
-                  {plan.perks.map(p=>(
-                    <div key={p} style={{ color:C.text, fontSize:12.5, display:"flex", gap:8 }}>
-                      <span style={{ color:plan.color }}>✓</span>{p}
+        <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+          {Object.entries(planDefs).map(([type, plan]) => {
+            const isOpen = openType === type;
+            const opts = PRICES[type];
+            const selOpt = isOpen ? opts.find(o => o.months === d.selectedPlan?.months) : null;
+            return (
+              <div key={type} style={{
+                borderRadius:18, border:`2px solid ${isOpen ? plan.color : C.line}`,
+                background: isOpen ? `linear-gradient(135deg,${plan.color}16,${plan.color}08)` : C.bg2,
+                overflow:"hidden", transition:"all .18s ease",
+              }}>
+                <button onClick={()=>chooseType(type)} style={{
+                  width:"100%", textAlign:"left", background:"transparent", border:"none", cursor:"pointer",
+                  padding:"20px 22px", display:"flex", justifyContent:"space-between", alignItems:"center", gap:16,
+                }}>
+                  <div>
+                    <div style={{ fontFamily:"'Cinzel',serif", color:plan.color, fontWeight:700, fontSize:19, marginBottom:8 }}>{plan.label}</div>
+                    <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+                      {plan.perks.map(p=>(
+                        <div key={p} style={{ color:C.text, fontSize:12.5, display:"flex", gap:8 }}>
+                          <span style={{ color:plan.color }}>✓</span>{p}
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                  <span style={{ color:plan.color, fontSize:20, flexShrink:0, transform:isOpen?"rotate(180deg)":"none", transition:"transform .2s ease" }}>▾</span>
+                </button>
 
-              {PRICES[type].map(opt => {
-                const sel = d.selectedPlan?.type===type && d.selectedPlan?.months===opt.months;
-                return (
-                  <button key={opt.months} onClick={()=>set("selectedPlan",{type,months:opt.months})} style={{
-                    padding:"15px 18px", borderRadius:13, textAlign:"left", cursor:"pointer", width:"100%",
-                    border:`2px solid ${sel?plan.color:C.line}`,
-                    background: sel?`linear-gradient(135deg,${plan.color}1E,${plan.color}0A)`:C.bg2,
-                    transition:"all .15s ease", position:"relative",
-                  }}>
-                    <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-                      <div>
-                        <div style={{ color:sel?plan.color:C.text, fontWeight:700, fontSize:15 }}>{opt.label}</div>
-                        {opt.save && (
-                          <div style={{ color:"#5BC08A", fontSize:12, fontWeight:700, marginTop:3 }}>
-                            🎉 Save £{opt.save} vs monthly
-                          </div>
-                        )}
+                {isOpen && (
+                  <div style={{ padding:"0 22px 22px", animation:"slideDown .2s ease both" }}>
+                    <div style={{ borderTop:`1px solid ${plan.color}2E`, paddingTop:16 }}>
+                      <div style={{ color:C.muted, fontSize:12, fontWeight:600, letterSpacing:0.3, marginBottom:8 }}>
+                        Membership length *
                       </div>
-                      <div style={{ textAlign:"right" }}>
-                        <div style={{ color:sel?plan.color:C.text, fontWeight:700, fontSize:20, fontFamily:"'Cinzel',serif" }}>
-                          £{opt.price}
+                      <select
+                        value={d.selectedPlan?.type===type ? d.selectedPlan.months : ""}
+                        onChange={e => set("selectedPlan", { type, months: Number(e.target.value) })}
+                        style={{ ...FI, cursor:"pointer", appearance:"auto" }}
+                      >
+                        <option value="" disabled>Select duration…</option>
+                        {opts.map(opt => (
+                          <option key={opt.months} value={opt.months}>
+                            {opt.label} — £{opt.price} (£{Math.round(opt.price/opt.months)}/mo){opt.save ? ` · save £${opt.save}` : ""}
+                          </option>
+                        ))}
+                      </select>
+
+                      {selOpt && (
+                        <div style={{ marginTop:14, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+                          <span style={{ color:C.muted, fontSize:13 }}>{selOpt.label}</span>
+                          <span style={{ textAlign:"right" }}>
+                            <span style={{ color:plan.color, fontWeight:700, fontSize:22, fontFamily:"'Cinzel',serif" }}>£{selOpt.price}</span>
+                            {selOpt.save && <span style={{ color:"#5BC08A", fontSize:12, fontWeight:700, marginLeft:10 }}>🎉 Save £{selOpt.save}</span>}
+                          </span>
                         </div>
-                        <div style={{ color:C.muted, fontSize:11 }}>
-                          £{Math.round(opt.price/opt.months)}/mo
-                        </div>
-                      </div>
+                      )}
                     </div>
-                    {opt.months===12 && (
-                      <div style={{ position:"absolute", top:-10, right:12, background:`linear-gradient(90deg,${plan.color},${shade(plan.color,-20)})`,
-                        color:"#070B14", fontSize:10, fontWeight:700, padding:"3px 10px", borderRadius:20, letterSpacing:0.5 }}>
-                        BEST VALUE
-                      </div>
-                    )}
-                    {sel && <span style={{ position:"absolute", top:14, right:16, color:plan.color, fontSize:18 }}>✓</span>}
-                  </button>
-                );
-              })}
-            </div>
-          ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {d.selectedPlan && (
@@ -897,25 +874,17 @@
 
   /* ---------- paying overlay ---------- */
   function PayingOverlay({ plan }) {
-    const [phase, setPhase] = useState(0);
-    useEffect(() => {
-      const t1 = setTimeout(()=>setPhase(1), 800);
-      const t2 = setTimeout(()=>setPhase(2), 1700);
-      return () => { clearTimeout(t1); clearTimeout(t2); };
-    }, []);
-    const msgs = ["Connecting to Stripe…","Processing payment…","Payment confirmed ✓"];
-    const colors = [C.blue, C.copper, "#5BC08A"];
     return (
       <div style={{ position:"absolute", inset:0, zIndex:50, display:"flex", flexDirection:"column",
         alignItems:"center", justifyContent:"center",
         background:`rgba(7,11,20,.92)`, backdropFilter:"blur(8px)",
         animation:"fade .25s ease both" }}>
-        <MazeMark pair={phase===2?PALETTE.filmschool:[C.gold,C.goldDeep]} size={100}
-          style={{ animation: phase===2?"none":"spinR 1s linear infinite", transformOrigin:"50% 50%" }} />
-        <div style={{ marginTop:28, fontFamily:"'Cinzel',serif", fontSize:18, color:colors[phase],
-          transition:"color .4s ease", fontWeight:700 }}>
-          {msgs[phase]}
+        <MazeMark pair={[C.gold,C.goldDeep]} size={100}
+          style={{ animation:"spinR 1s linear infinite", transformOrigin:"50% 50%" }} />
+        <div style={{ marginTop:28, fontFamily:"'Cinzel',serif", fontSize:18, color:C.copper, fontWeight:700 }}>
+          Saving your application…
         </div>
+        <div style={{ marginTop:8, color:C.muted, fontSize:13 }}>Taking you to Stripe to complete payment</div>
         {plan && (
           <div style={{ marginTop:14, color:C.muted, fontSize:13 }}>
             {plan.type.charAt(0).toUpperCase()+plan.type.slice(1)} · {plan.months} months
@@ -928,7 +897,7 @@
   /* ---------- mount ---------- */
   const goHome = () => { window.location.href = "index.html"; };
   ReactDOM.createRoot(document.getElementById("root"))
-    .render(<FilmSchoolForm onBack={goHome} onDone={goHome} />);
+    .render(<FilmSchoolForm onBack={goHome} />);
   </script>
 
   <!-- Bootstrap: compile the JSX above with the classic runtime (so the output

@@ -406,6 +406,9 @@
                 onClick={()=>{ set("month1",m); set("month2",""); set("month3",""); }} />
             ))}
           </div>
+          <FunFact icon="🎬" title="Did you know?">
+            Every cycle runs over three months — so {firstName} will make a brand-new film every 3 months.
+          </FunFact>
         </div>
       );
 
@@ -429,6 +432,9 @@
               ))}
             </div>
             <ModSummary month1={d.month1} />
+            <FunFact icon="⏱️" title="Did you know?">
+              Students get 4 hours of expert teaching every single week to bring their films to life.
+            </FunFact>
           </div>
         );
       }
@@ -733,6 +739,20 @@
         <span style={{ color:C.copper, fontSize:13, lineHeight:1.5 }}>
           <b>Choices are final.</b> Once submitted, module selections cannot be changed for this cycle.
         </span>
+      </div>
+    );
+  }
+
+  function FunFact({ icon, title, children }) {
+    return (
+      <div style={{ marginTop:20, background:`${C.gold}10`, border:`1px solid ${C.gold}3A`, borderRadius:12,
+        padding:"12px 16px", display:"flex", gap:12, alignItems:"flex-start" }}>
+        <span style={{ fontSize:18, flexShrink:0 }}>{icon}</span>
+        <div style={{ flex:1 }}>
+          <div style={{ color:C.gold, fontWeight:700, fontSize:13, letterSpacing:".04em",
+            textTransform:"uppercase" }}>{title}</div>
+          <div style={{ color:C.text, fontSize:13.5, lineHeight:1.5, marginTop:3 }}>{children}</div>
+        </div>
       </div>
     );
   }

@@ -17,9 +17,10 @@ two ways to set them:
 
 ### Option A — GitHub Actions (no Cloudflare dashboard navigation required)
 
-A workflow at `.github/workflows/set-secrets.yml` pushes secret values
-straight into the live Worker via `wrangler secret put`, driven entirely by
-GitHub repository secrets.
+A workflow at `.github/workflows/set-secrets.yml` ("Deploy and set secrets")
+deploys the Worker from this repo and attaches all secret values, driven
+entirely by GitHub repository secrets. This bypasses the Cloudflare
+dashboard and the Git-integration build completely.
 
 1. In Cloudflare, create an API token: **My Profile → API Tokens → Create
    Token → use the "Edit Cloudflare Workers" template**. Copy the token.
@@ -35,10 +36,10 @@ GitHub repository secrets.
    - `RESEND_API_KEY` — from resend.com
    - `RESEND_FROM` — e.g. `"Adders Film School <noreply@yourdomain.com>"`, domain verified in Resend
    - `STRIPE_WEBHOOK_SECRET` — from the Stripe webhook you create below
-4. In GitHub: **Actions tab → "Set Cloudflare Secrets" → Run workflow**.
+4. In GitHub: **Actions tab → "Deploy and set secrets" → Run workflow**.
 
-Re-run the workflow any time a secret value changes. This does not deploy
-new code — it only attaches secrets to the Worker that's already live.
+Re-run the workflow any time the code or a secret value changes — it
+redeploys the Worker and re-attaches every secret.
 
 ### Option B — Wrangler CLI
 

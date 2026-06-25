@@ -2,6 +2,7 @@ src
 wrangler.jsonc
 .assetsignore
 .git
+.github
 .gitignore
 node_modules
 README.md

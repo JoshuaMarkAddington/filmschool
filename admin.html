@@ -146,7 +146,15 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
-      if (!res.ok) { loginErr.textContent = "Incorrect password."; return; }
+      if (!res.ok) {
+        let message = "Incorrect password.";
+        try {
+          const data = await res.json();
+          if (data?.error) message = data.error;
+        } catch {}
+        loginErr.textContent = message;
+        return;
+      }
       loadApplications();
     });
 

@@ -323,6 +323,12 @@ async function handleAdminLogin(request, env) {
 
   const password = typeof body.password === "string" ? body.password : "";
   const valid = password.length > 0 && timingSafeEqual(password, env.ADMIN_PASSWORD);
+  console.log("DEBUG admin login", {
+    receivedLength: password.length,
+    expectedLength: env.ADMIN_PASSWORD.length,
+    receivedFirstLast: password.length ? `${password[0]}...${password[password.length - 1]}` : "",
+    expectedFirstLast: env.ADMIN_PASSWORD.length ? `${env.ADMIN_PASSWORD[0]}...${env.ADMIN_PASSWORD[env.ADMIN_PASSWORD.length - 1]}` : "",
+  });
   if (!valid) {
     return Response.json({ error: "Incorrect password" }, { status: 401 });
   }

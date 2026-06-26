@@ -218,14 +218,42 @@
       color: #cbd5e1;
       margin-left: 0.3rem;
     }
+    .price-permonth {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 0.15rem;
+    }
     .price-tiers {
-      margin-top: 0.6rem;
+      margin-top: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .price-tier-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
       font-size: 0.85rem;
       color: #94a3b8;
     }
-    .price-tiers strong {
+    .price-tier-row .tier-amount strong {
       color: #f8fafc;
       font-weight: 600;
+    }
+    .price-tier-row .tier-permonth {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-left: 0.25rem;
+    }
+    .save-badge {
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      white-space: nowrap;
     }
     .membership-card.premium .price-main {
       color: #fbbf24;
@@ -236,7 +264,11 @@
     body.light-mode .membership-card.premium .price-main {
       color: #b45309;
     }
-    body.light-mode .price-tiers strong {
+    body.light-mode .price-permonth,
+    body.light-mode .price-tier-row {
+      color: #475569;
+    }
+    body.light-mode .price-tier-row .tier-amount strong {
       color: #0f172a;
     }
     body.light-mode .price-period {
@@ -244,6 +276,10 @@
     }
     body.light-mode .price-block {
       border-bottom-color: #e2e8f0;
+    }
+    body.light-mode .save-badge {
+      background: rgba(22, 163, 74, 0.12);
+      color: #15803d;
     }
     .tick {
       color: #22c55e;
@@ -747,7 +783,19 @@ Master the craft. Find your voice. Become the professional you were meant to be!
           <div class="price-block">
             <span class="price-from">From</span>
             <span class="price-main">£450</span><span class="price-period">/ 3-month cycle</span>
-            <div class="price-tiers">6 months <strong>£845</strong> &nbsp;·&nbsp; 12 months <strong>£1,600</strong></div>
+            <div class="price-permonth">Just £150 per month</div>
+            <div class="price-tiers">
+              <div class="price-tier-row">
+                <span>6 months</span>
+                <span class="tier-amount"><strong>£845</strong><span class="tier-permonth">(£141/mo)</span></span>
+                <span class="save-badge">Save 6%</span>
+              </div>
+              <div class="price-tier-row">
+                <span>12 months</span>
+                <span class="tier-amount"><strong>£1,600</strong><span class="tier-permonth">(£133/mo)</span></span>
+                <span class="save-badge">Save 11%</span>
+              </div>
+            </div>
           </div>
           <ul>
             <li><span class="tick">✓</span>Access to all modules</li>
@@ -770,7 +818,19 @@ Master the craft. Find your voice. Become the professional you were meant to be!
           <div class="price-block">
             <span class="price-from">From</span>
             <span class="price-main">£550</span><span class="price-period">/ 3-month cycle</span>
-            <div class="price-tiers">6 months <strong>£1,000</strong> &nbsp;·&nbsp; 12 months <strong>£1,900</strong></div>
+            <div class="price-permonth">Just £183 per month</div>
+            <div class="price-tiers">
+              <div class="price-tier-row">
+                <span>6 months</span>
+                <span class="tier-amount"><strong>£1,000</strong><span class="tier-permonth">(£167/mo)</span></span>
+                <span class="save-badge">Save 9%</span>
+              </div>
+              <div class="price-tier-row">
+                <span>12 months</span>
+                <span class="tier-amount"><strong>£1,900</strong><span class="tier-permonth">(£158/mo)</span></span>
+                <span class="save-badge">Save 14%</span>
+              </div>
+            </div>
           </div>
           <ul>
             <li><span class="tick">✓</span>Access to all modules</li>

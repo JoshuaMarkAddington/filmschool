@@ -296,6 +296,148 @@
       margin-bottom: 0.2rem;
     }
 
+    /* ===== Why We're Different — comparison section ===== */
+    .about-section {
+      max-width: 72rem;
+      margin: 0 auto;
+    }
+    .about-subhead {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin: -0.5rem 0 2rem;
+    }
+    .about-intro {
+      max-width: 50rem;
+      margin: 0 auto 3rem;
+    }
+    .about-intro p {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      margin: 0 0 1.25rem;
+    }
+    .about-intro .founder-note {
+      color: #f8fafc;
+      font-style: italic;
+      border-left: 3px solid #ea580c;
+      padding-left: 1.25rem;
+      text-align: left;
+      max-width: 44rem;
+      margin: 2rem auto 0;
+    }
+    .compare-block {
+      margin-bottom: 2.5rem;
+    }
+    .compare-title {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      max-width: 60rem;
+      margin: 0 auto;
+    }
+    .compare-card {
+      border-radius: 1rem;
+      padding: 1.5rem;
+      position: relative;
+    }
+    .compare-label {
+      display: inline-block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+      margin-bottom: 0.85rem;
+      padding: 0.28rem 0.75rem;
+      border-radius: 999px;
+    }
+    .compare-card p {
+      color: #e2e8f0;
+      margin: 0;
+      font-size: 1rem;
+    }
+    .compare-them {
+      background: linear-gradient(145deg, #1e293b, #131c2e);
+      border: 1px solid #334155;
+    }
+    .compare-them .compare-label {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+    }
+    .compare-us {
+      background: linear-gradient(145deg, #2a1810, #1a1208);
+      border: 1px solid #ea580c;
+      box-shadow: 0 8px 28px rgba(234, 88, 12, 0.18);
+    }
+    .compare-us .compare-label {
+      background: rgba(234, 88, 12, 0.2);
+      color: #fb923c;
+    }
+
+    /* ===== Choose Your Path intro + closing culmination ===== */
+    .path-intro {
+      max-width: 46rem;
+      margin: 0 auto 2.5rem;
+      text-align: center;
+    }
+    .path-intro p {
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      margin: 0.75rem 0;
+    }
+    .path-kicker {
+      color: #fb923c;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+    }
+    .culmination {
+      max-width: 48rem;
+      margin: 3rem auto 0;
+      text-align: center;
+    }
+    .culmination p {
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      margin: 0.75rem 0;
+    }
+    .culmination .culmination-emphasis {
+      color: #f8fafc;
+      font-style: italic;
+      font-size: 1.2rem;
+    }
+
+    /* Light-mode treatment for the new sections */
+    body.light-mode .about-subhead,
+    body.light-mode .about-intro p,
+    body.light-mode .path-intro p,
+    body.light-mode .culmination p {
+      color: #334155;
+    }
+    body.light-mode .about-intro .founder-note,
+    body.light-mode .compare-card p,
+    body.light-mode .culmination .culmination-emphasis {
+      color: #1e293b;
+    }
+    body.light-mode .compare-them {
+      background: linear-gradient(145deg, #ffffff, #f1f5f9);
+      border-color: #cbd5e1;
+    }
+    body.light-mode .compare-us {
+      background: linear-gradient(145deg, #fff7ed, #ffedd5);
+      border-color: #ea580c;
+    }
+    body.light-mode .path-kicker {
+      color: #c2410c;
+    }
+
     /* Mobile Responsive */
     @media (max-width: 768px) {
       .membership-card {
@@ -303,6 +445,9 @@
       }
       .module-card {
         margin-bottom: 1rem;
+      }
+      .compare-grid {
+        grid-template-columns: 1fr;
       }
     }
 
@@ -417,12 +562,9 @@ Master the craft. Find your voice. Become the professional you were meant to be!
 </div>
 
 <button id="about-toggle-btn" class="about-btn">About Us</button>  
-<div id="about-content" class="about-content" style="display: none;">  
-  <p class="mb-5 text-white text-lg">You have stories that the world hasn't seen yet. Our mission is to give you the professional-grade tools and the technical mastery to tell them—without compromise. From your first draft in WriterDuet to the final 4K HDR master in DaVinci Resolve, you aren't just a student; you are a filmmaker preparing to make your impact in the industry.</p>  
-  <p class="mb-5 text-white text-lg"><em>CHOOSE YOUR PATH:</em> Our 3-month membership cycles are designed to help you build a custom career. Every session, you hand-pick two - three core modules to master.</p>
-  <p class="mb-5 text-white text-lg">Every 3-month cycle culminates in your own <strong>4K HDR short film</strong> — a real production, shot and finished on the same professional-grade gear and software you'll have trained on, so you leave each cycle with a polished piece for your portfolio.</p>
-  <p class="mb-5 text-white text-lg"><em>3 months to launch your project. A lifetime to master the art.</em></p>
-  <p class="text-white text-lg font-semibold">Ready to take your first steps? Explore our memberships below and start your journey toward becoming a filmmaker!</p>  
+<div id="about-content" class="about-content" style="display: none;">
+  <p class="mb-5 text-white text-lg">You have stories that the world hasn't seen yet. Our mission is to give you the professional-grade tools and the technical mastery to tell them—without compromise. From your first draft in WriterDuet to the final 4K HDR master in DaVinci Resolve, you aren't just a student; you are a filmmaker preparing to make your impact in the industry.</p>
+  <p class="text-white text-lg font-semibold">Scroll down to see why we're different — and how we'll help you become the filmmaker you were meant to be.</p>
 </div>
 
 <style>
@@ -474,9 +616,78 @@ Master the craft. Find your voice. Become the professional you were meant to be!
   });
 </script>
     </section>
+
+    <!-- ===== Why Standard Film Academies Fall Short ===== -->
+    <section class="py-16 px-4">
+      <div class="about-section">
+        <h2 class="text-3xl md:text-5xl font-bold text-center mb-3">Why Standard Film Academies Fall Short</h2>
+        <p class="about-subhead">(And How We Are Changing the Game)</p>
+
+        <div class="about-intro">
+          <p>When a young person is passionate about cinema, they don't just want to stand in front of a lens—they want to understand how magic is made. Unfortunately, many traditional youth film academies haven't updated their approach in a decade.</p>
+          <p>Too often, standard programs hand students outdated, consumer-grade cameras and treat the session like an after-school hobby club. Even worse, they skip the actual craft of filmmaking entirely—limiting their focus to basic camera framing and leaving students completely in the dark about scriptwriting, directing, editing, screen-specific musicals, and everything post-production.</p>
+          <p class="founder-note">I founded Adders Film School because we believe young creatives deserve better than a watered-down experience. We don't just make videos; we train the next generation of filmmakers.</p>
+        </div>
+
+        <h3 class="text-2xl md:text-3xl font-bold text-center mb-10">The Reality vs. Adders Film School</h3>
+
+        <!-- Comparison 1 -->
+        <div class="compare-block">
+          <h3 class="compare-title">Industry-Standard Technology</h3>
+          <div class="compare-grid">
+            <div class="compare-card compare-them">
+              <span class="compare-label">The Standard Academy</span>
+              <p>Filming on obsolete, low-resolution cameras that don't match today's industry.</p>
+            </div>
+            <div class="compare-card compare-us">
+              <span class="compare-label">Our Standard</span>
+              <p>The movie world has moved to cutting-edge cinema tech. We train our students using 12K camera systems to produce stunning, cinematic 4K HDR final films. If they want to work in the industry, they should train on the gear the industry actually uses.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparison 2 -->
+        <div class="compare-block">
+          <h3 class="compare-title">The Complete Script-to-Screen Process</h3>
+          <div class="compare-grid">
+            <div class="compare-card compare-them">
+              <span class="compare-label">The Standard Academy</span>
+              <p>Limiting the experience to basic acting for camera or simply recording drama scenes.</p>
+            </div>
+            <div class="compare-card compare-us">
+              <span class="compare-label">Our Standard</span>
+              <p>Cinema is an ecosystem. We teach every aspect of the process. Our students don't just hit record; they master every element of the filmmaking journey.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparison 3 -->
+        <div class="compare-block">
+          <h3 class="compare-title">Mastering the Post-Production Pipeline</h3>
+          <div class="compare-grid">
+            <div class="compare-card compare-them">
+              <span class="compare-label">The Standard Academy</span>
+              <p>Leaving students out of the editing room entirely, meaning they never learn how a story is actually put together.</p>
+            </div>
+            <div class="compare-card compare-us">
+              <span class="compare-label">Our Standard</span>
+              <p>A film is truly made in the edit. We dive deep into post-production, editing, and sound design, giving students the tools to take their vision from a blank page all the way to the final cut.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Membership Section -->
     <section class="py-16 px-4">
       <h2 class="text-3xl font-bold text-center mb-8">Membership Plans</h2>
+
+      <!-- Choose Your Path intro -->
+      <div class="path-intro">
+        <p class="path-kicker">Choose Your Path</p>
+        <p>Our 3-month membership cycles are designed to help you build a custom career. Every session, you hand-pick two to three core modules to master.</p>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         <!-- Standard Membership -->
         <div class="membership-card">
@@ -512,6 +723,15 @@ Master the craft. Find your voice. Become the professional you were meant to be!
             <li><span class="tick">✓</span>Showreel after 24 months</li>
           </ul>
           <button class="premium-btn" onclick="window.location.href='apply.html'">Premium</button>
+        </div>
+      </div>
+
+      <!-- Closing culmination + call to action -->
+      <div class="culmination">
+        <p>Every 3-month cycle culminates in your own <strong>4K HDR short film</strong> — a real production, shot and finished on the same professional-grade gear and software you'll have trained on, so you leave each cycle with a polished film to take home.</p>
+        <p class="culmination-emphasis">3 months to launch your project. A lifetime to master the art.</p>
+        <div style="margin-top: 1.5rem;">
+          <a href="apply.html" class="signup-btn">Experience the Difference — Sign Up Now!</a>
         </div>
       </div>
     </section>

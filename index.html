@@ -790,6 +790,42 @@ Master the craft. Find your voice. Become the professional you were meant to be!
     margin: 0.65rem 0 0;
   }
 </style>
+
+<!-- ===== Featured Video — autoplays muted beneath the masterclass advert ===== -->
+<div class="feature-video">
+  <div class="feature-video-frame">
+    <iframe
+      src="https://www.youtube.com/embed/qz9PT5xZgAA?autoplay=1&mute=1&loop=1&playlist=qz9PT5xZgAA&playsinline=1&rel=0"
+      title="Adders Film School"
+      frameborder="0"
+      allow="autoplay; encrypted-media; picture-in-picture"
+      allowfullscreen></iframe>
+  </div>
+</div>
+
+<style>
+  .feature-video {
+    width: 100%;
+    max-width: 38rem;
+    margin: 1.5rem auto 0;
+  }
+  .feature-video-frame {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+    border: 1px solid #334155;
+  }
+  .feature-video-frame iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>
     </section>
 
     <!-- ===== Why Standard Film Academies Fall Short ===== -->

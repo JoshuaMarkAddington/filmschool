@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Industry-Standard Tools — Adders Film School</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Base Dark Mode & High Contrast Typography */
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    /* Background Video */
+    .bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+    }
+    .video-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.75);
+      z-index: -1;
+    }
+    /* Deep Orange Headings */
+    h1, h2, h3 {
+      color: #ea580c;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    /* Dark Mode Toggle */
+    .dark-mode-toggle {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid #334155;
+      border-radius: 50%;
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    .dark-mode-toggle:hover {
+      background: #334155;
+    }
+    /* Back link */
+    .back-link {
+      display: inline-block;
+      color: #fb923c;
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+    .tools-section {
+      max-width: 60rem;
+      margin: 0 auto;
+    }
+    /* Required disclosure — sits directly beneath the page heading */
+    .disclosure {
+      max-width: 48rem;
+      margin: 0 auto 3rem;
+      background: linear-gradient(145deg, #2a1810, #1a1208);
+      border: 1px solid #ea580c;
+      border-left: 4px solid #ea580c;
+      border-radius: 0.85rem;
+      padding: 1.25rem 1.5rem;
+      color: #f1f5f9;
+      font-size: 1rem;
+    }
+    .disclosure p {
+      margin: 0;
+    }
+    /* Tool category cards */
+    .tool-card {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 1px solid #334155;
+      border-radius: 1rem;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .tool-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    }
+    .tool-card h3 {
+      font-size: 1.4rem;
+      margin: 0 0 0.75rem;
+    }
+    .tool-card p {
+      color: #cbd5e1;
+      margin: 0;
+      font-size: 1.02rem;
+    }
+
+    /* Footer */
+    .site-footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      position: relative;
+      z-index: 10;
+    }
+    .footer-disclosure {
+      max-width: 44rem;
+      margin: 0 auto 0.75rem;
+      color: #cbd5e1;
+    }
+
+    /* ============ LIGHT MODE ============ */
+    body.light-mode {
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    body.light-mode .video-overlay {
+      background: rgba(248, 250, 252, 0.85);
+    }
+    body.light-mode h1,
+    body.light-mode h2,
+    body.light-mode h3 {
+      color: #c2410c;
+    }
+    body.light-mode .tool-card {
+      background: linear-gradient(145deg, #ffffff, #f1f5f9);
+      border-color: #cbd5e1;
+    }
+    body.light-mode .tool-card p {
+      color: #334155;
+    }
+    body.light-mode .disclosure {
+      background: linear-gradient(145deg, #fff7ed, #ffedd5);
+      border-color: #ea580c;
+      color: #1e293b;
+    }
+    body.light-mode .footer-disclosure {
+      color: #475569;
+    }
+    body.light-mode .dark-mode-toggle {
+      background: #ffffff;
+      color: #0f172a;
+      border-color: #cbd5e1;
+    }
+    body.light-mode .dark-mode-toggle:hover {
+      background: #e2e8f0;
+    }
+    body.light-mode .back-link {
+      color: #c2410c;
+    }
+  </style>
+</head>
+<body>
+  <!-- Dark Mode Toggle -->
+  <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
+
+  <!-- Background Video -->
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="website-video1.mp4" type="video/mp4">
+  </video>
+  <div class="video-overlay"></div>
+
+  <main class="relative z-10">
+    <section class="py-16 px-4">
+      <div class="tools-section">
+        <a href="index.html" class="back-link">← Back to home</a>
+        <h1 class="text-4xl md:text-6xl font-bold text-center mb-6">Industry-Standard Tools</h1>
+
+        <!-- Required disclosure — directly beneath the page heading -->
+        <div class="disclosure">
+          <p>Adders Film School is currently in development ahead of our 1st September opening. All equipment, software, and studio facilities described on this site reflect our confirmed curriculum and procurement plan, and will be in place for the start of classes. No claims on this site imply that training, equipment, or facilities are currently in use prior to opening.</p>
+        </div>
+
+        <div class="tool-card">
+          <h3>Cinematography</h3>
+          <p>Students will train on the Blackmagic URSA Cine 12K LF, paired with DZOFilm Arles Prime lenses, giving them hands-on experience with the same resolution and optical quality used on major professional productions. Camera movement will be taught using the Tilta Nucleus-M II wireless follow-focus system, and all setups will be supported on Manfrotto tripods including the 504X Twin Fast fluid head — professional-grade support gear used throughout the industry.</p>
+        </div>
+
+        <div class="tool-card">
+          <h3>Lighting</h3>
+          <p>Our lighting curriculum is built around Nanlite Forza fixtures (60CR and 300B/500B series), teaching students to shape mood and atmosphere with the same tools used by working gaffers and DPs.</p>
+        </div>
+
+        <div class="tool-card">
+          <h3>Sound</h3>
+          <p>Production sound modules will use Schoeps MK41, SuperCMIT 2U, and CMC 1U microphones — reference-standard mics used in high-end film and broadcast sound — with Beyerdynamic DT 770 Pro headphones for monitoring, and SYNCO Xtalk wireless headsets for crew communication on set.</p>
+        </div>
+
+        <div class="tool-card">
+          <h3>Post-Production</h3>
+          <p>Editing, colour grading, and VFX will be taught on DaVinci Resolve Studio, running on workstations built around AMD Threadripper processors and the latest NVIDIA GPUs — the horsepower needed to handle 12K footage without compromise. VFX training will include Ultimate Blockbuster Drive assets from Big Films.</p>
+        </div>
+
+        <div class="tool-card">
+          <h3>Scriptwriting</h3>
+          <p>Our scriptwriting module is built around WriterDuet, the industry-standard collaborative screenwriting platform used across film and TV development.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p class="footer-disclosure">Adders Film School opens 1st September 2026. Equipment and facilities listed reflect our confirmed procurement plan for opening day.</p>
+    <p>&copy; 2026 Adders Film School. All rights reserved.</p>
+  </footer>
+
+  <script>
+    function updateThemeIcon() {
+      const btn = document.querySelector('.dark-mode-toggle');
+      if (!btn) return;
+      btn.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
+    }
+    function toggleDarkMode() {
+      const isLight = document.body.classList.toggle('light-mode');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      updateThemeIcon();
+    }
+    if (localStorage.getItem('theme') === 'light') {
+      document.body.classList.add('light-mode');
+    }
+    updateThemeIcon();
+  </script>
+</body>
+</html>

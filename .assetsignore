@@ -5,4 +5,7 @@ wrangler.jsonc
 .github
 .gitignore
 node_modules
+package.json
+package-lock.json
+schema-auditions.sql
 README.md

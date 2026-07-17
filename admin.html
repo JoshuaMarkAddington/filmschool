@@ -36,6 +36,10 @@
     .pill.paid { background: #5BC08A22; color: #5BC08A; }
     .pill.pending { background: #E0894A22; color: #E0894A; }
     .empty { padding: 40px; text-align: center; color: #8A93A8; }
+    .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .tab { width: auto; margin: 0; padding: 9px 18px; font-size: 13px; font-weight: 700; border-radius: 999px;
+      background: transparent; border: 1px solid #1B2440; color: #8A93A8; }
+    .tab.active { background: linear-gradient(180deg,#E0894A,#B5651D); color: #070B14; border-color: transparent; }
   </style>
 </head>
 <body>
@@ -51,11 +55,15 @@
 
   <div id="dash">
     <div class="topbar">
-      <h1>Applications <span class="muted" id="count" style="font-size:14px;"></span></h1>
+      <h1 id="title">Applications <span class="muted" id="count" style="font-size:14px;"></span></h1>
       <div style="display:flex; gap:10px;">
         <button id="exportBtn">Export CSV</button>
         <button id="logoutBtn">Log out</button>
       </div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" id="tabApplications">Memberships</button>
+      <button class="tab" id="tabAuditions">Intensive-course auditions</button>
     </div>
     <div class="scroll">
       <table id="table">
@@ -66,7 +74,7 @@
   </div>
 
   <script>
-    const COLUMNS = [
+    const APPLICATION_COLUMNS = [
       ["created_at","Submitted"],["status","Status"],
       ["student_name","Student"],["student_dob","Student DOB"],
       ["month1","Month 1"],["month2","Month 2"],["month3","Month 3"],["new_to_film","New to film"],
@@ -81,14 +89,37 @@
       ["plan_type","Plan"],["plan_months","Months"],["id","Application ID"],
     ];
 
+    const AUDITION_COLUMNS = [
+      ["created_at","Submitted"],["status","Status"],
+      ["student_name","Student"],["student_dob","Student DOB"],
+      ["discipline","Auditioning for"],["new_to_performing","New to performing"],
+      ["guardian_name","Guardian"],["guardian_dob","Guardian DOB"],
+      ["address_line1","Address 1"],["address_line2","Address 2"],["city","City"],["county","County"],["postcode","Postcode"],
+      ["email","Email"],["phone","Phone"],
+      ["emergency_same","Emergency = guardian"],["emergency_name","Emergency name"],["emergency_phone","Emergency phone"],["emergency_relation","Emergency relation"],
+      ["allergies","Allergies"],["allergies_detail","Allergies detail"],
+      ["additional_needs","Additional needs"],["additional_needs_detail","Additional needs detail"],
+      ["health_issues","Health issues"],["health_issues_detail","Health issues detail"],
+      ["consent_filming","Consent: filming"],["consent_policy","Consent: policy"],
+      ["id","Audition ID"],
+    ];
+
+    const VIEWS = {
+      applications: { columns: APPLICATION_COLUMNS, endpoint: "/api/admin/applications", key: "applications", title: "Applications", empty: "No applications yet." },
+      auditions:    { columns: AUDITION_COLUMNS,    endpoint: "/api/admin/auditions",    key: "auditions",    title: "Auditions",    empty: "No audition sign-ups yet." },
+    };
+    const BOOL_COLS = ["new_to_film","new_to_performing","emergency_same","allergies","additional_needs","health_issues","consent_filming","consent_policy"];
+
     const loginCard = document.getElementById("login");
     const dash = document.getElementById("dash");
     const loginErr = document.getElementById("loginErr");
+    let view = "applications";
     let rows = [];
+    let COLUMNS = VIEWS[view].columns;
 
     function fmt(col, val) {
       if (val === null || val === undefined) return "";
-      if (["new_to_film","emergency_same","allergies","additional_needs","health_issues","consent_filming","consent_policy"].includes(col)) {
+      if (BOOL_COLS.includes(col)) {
         return val ? "Yes" : "No";
       }
       if (col === "created_at") return new Date(val + "Z").toLocaleString();
@@ -101,7 +132,7 @@
       thead.innerHTML = "<tr>" + COLUMNS.map(([,label]) => `<th>${label}</th>`).join("") + "</tr>";
       document.getElementById("count").textContent = `(${rows.length})`;
       if (!rows.length) {
-        tbody.innerHTML = `<tr><td colspan="${COLUMNS.length}" class="empty">No applications yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${COLUMNS.length}" class="empty">${VIEWS[view].empty}</td></tr>`;
         return;
       }
       tbody.innerHTML = rows.map(r => {
@@ -126,14 +157,28 @@
       return [header, ...lines].join("\n");
     }
 
-    async function loadApplications() {
-      const res = await fetch("/api/admin/applications", { credentials: "same-origin" });
+    async function loadData() {
+      const cfg = VIEWS[view];
+      COLUMNS = cfg.columns;
+      const res = await fetch(cfg.endpoint, { credentials: "same-origin" });
       if (res.status === 401) { showLogin(); return; }
       const data = await res.json();
-      rows = data.applications || [];
+      rows = data[cfg.key] || [];
+      document.getElementById("title").firstChild.textContent = cfg.title + " ";
       render();
       showDash();
     }
+
+    function selectView(next) {
+      if (view === next) return;
+      view = next;
+      document.getElementById("tabApplications").classList.toggle("active", view === "applications");
+      document.getElementById("tabAuditions").classList.toggle("active", view === "auditions");
+      loadData();
+    }
+
+    document.getElementById("tabApplications").addEventListener("click", () => selectView("applications"));
+    document.getElementById("tabAuditions").addEventListener("click", () => selectView("auditions"));
 
     function showDash() { loginCard.style.display = "none"; dash.style.display = "block"; }
     function showLogin() { dash.style.display = "none"; loginCard.style.display = "flex"; }
@@ -155,7 +200,7 @@
         loginErr.textContent = message;
         return;
       }
-      loadApplications();
+      loadData();
     });
 
     document.getElementById("password").addEventListener("keydown", e => {
@@ -171,11 +216,11 @@
       const blob = new Blob([toCsv()], { type: "text/csv" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `applications-${new Date().toISOString().slice(0,10)}.csv`;
+      a.download = `${view}-${new Date().toISOString().slice(0,10)}.csv`;
       a.click();
     });
 
-    loadApplications();
+    loadData();
   </script>
 </body>
 </html>

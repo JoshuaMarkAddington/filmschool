@@ -193,6 +193,110 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 26px rgba(245, 158, 11, 0.6);
     }
+    /* ===== Two-Week Intensive Course card ===== */
+    .intensive-card {
+      position: relative;
+      max-width: 32rem;
+      margin: 0 auto;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 1px solid #f59e0b;
+      border-radius: 1rem;
+      padding: 2rem 1.75rem;
+      text-align: center;
+      box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.2), 0 20px 40px rgba(245, 158, 11, 0.12);
+      overflow: hidden;
+    }
+    .intensive-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #ea580c, #f97316, #f59e0b);
+    }
+    .intensive-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #1e293b;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+      margin-bottom: 1rem;
+    }
+    .intensive-card h3 {
+      font-size: 1.5rem;
+      margin: 0 0 1.25rem;
+    }
+    .intensive-fees {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .intensive-fee {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.15rem;
+    }
+    .intensive-fee-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
+    }
+    .intensive-fee-amount {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fbbf24;
+      line-height: 1;
+    }
+    .intensive-fee-note {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+    .intensive-fee-divider {
+      width: 1px;
+      background: #334155;
+    }
+    .intensive-strand-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8;
+      margin: 0 0 0.5rem;
+    }
+    .intensive-strands {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.75rem;
+      display: inline-flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      text-align: left;
+    }
+    .intensive-strands li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    body.light-mode .intensive-card {
+      background: linear-gradient(145deg, #fffdf7, #fef3c7);
+      border-color: #f59e0b;
+    }
+    body.light-mode .intensive-fee-amount {
+      color: #b45309;
+    }
+    body.light-mode .intensive-fee-label,
+    body.light-mode .intensive-fee-note,
+    body.light-mode .intensive-strand-label {
+      color: #475569;
+    }
+
     /* Price block on membership cards */
     .price-block {
       padding: 0.25rem 1.5rem 1rem;
@@ -1074,6 +1178,48 @@ Master the craft. Find your voice. Become the professional you were meant to be!
         <div style="margin-top: 1.5rem;">
           <a href="apply.html" class="signup-btn">Experience the Difference — Sign Up Now!</a>
         </div>
+      </div>
+    </section>
+
+    <!-- ===== Two-Week Intensive Course — audition sign-up ===== -->
+    <section class="py-16 px-4" id="intensive-course">
+      <h2 class="text-3xl font-bold text-center mb-8">Two-Week Intensive Course</h2>
+
+      <div class="path-intro">
+        <p class="path-kicker">Audition Now</p>
+        <p>A fast, focused two-week intensive for performers aged <strong>13–24</strong>. Sign up below to
+          secure your audition — then choose the strand you want to be seen for.</p>
+      </div>
+
+      <div class="intensive-card">
+        <span class="intensive-badge">Auditions Open</span>
+        <h3>Intensive Course Audition</h3>
+
+        <div class="intensive-fees">
+          <div class="intensive-fee">
+            <span class="intensive-fee-label">Audition</span>
+            <span class="intensive-fee-amount">£25</span>
+            <span class="intensive-fee-note">Due at sign-up</span>
+          </div>
+          <div class="intensive-fee-divider"></div>
+          <div class="intensive-fee">
+            <span class="intensive-fee-label">Course</span>
+            <span class="intensive-fee-amount">£100</span>
+            <span class="intensive-fee-note">If offered a place</span>
+          </div>
+        </div>
+
+        <p class="intensive-strand-label">Audition for one of:</p>
+        <ul class="intensive-strands">
+          <li><span class="tick">✓</span>Dance</li>
+          <li><span class="tick">✓</span>Singing</li>
+          <li><span class="tick">✓</span>Dancing &amp; Singing</li>
+          <li><span class="tick">✓</span>Acting</li>
+        </ul>
+
+        <!-- Course description to follow — drop the full details in here. -->
+
+        <a href="audition.html" class="signup-btn">Sign Up for the Audition</a>
       </div>
     </section>
 

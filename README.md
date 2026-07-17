@@ -66,3 +66,28 @@ every applicant.
 The policy document shown in step "Policy Agreement" of the application form
 is still a placeholder — send the real policy text/PDF and it'll be dropped
 into `apply.html` in place of that note.
+
+## Intensive-course audition sign-up
+
+`audition.html` is a second sign-up form — same style as `apply.html` — for
+the two-week intensive course. It asks the same questions as the membership
+form but, instead of modules, the applicant picks one strand to audition for
+(Dance / Singing / Dancing & Singing / Acting) and is open to ages **13–24**.
+It saves to a separate `auditions` table (`POST /api/audition`) and both the
+audition sign-up and its payment appear under the "Intensive-course auditions"
+tab in `/admin`.
+
+Two setup steps are needed before it's live:
+
+1. **Database table.** Create the `auditions` table once (already created on
+   the production D1, but re-run any time you rebuild the database):
+
+   ```sh
+   npx wrangler d1 execute filmschool --remote --file=schema-auditions.sql
+   ```
+
+2. **Stripe link for the £25 audition fee.** In `audition.html`, replace the
+   `AUDITION_STRIPE_LINK` placeholder with a real Stripe Payment Link for £25
+   (created exactly like the membership links). The course fee (£100) is
+   collected separately from students who are offered a place, so it needs no
+   link here.

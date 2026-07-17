@@ -36,6 +36,16 @@
     .pill.paid { background: #5BC08A22; color: #5BC08A; }
     .pill.pending { background: #E0894A22; color: #E0894A; }
     .empty { padding: 40px; text-align: center; color: #8A93A8; }
+    .dash-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 12px; flex-wrap: wrap; }
+    .dash-head h1 { font-size: 24px; }
+    .dash-head button { width: auto; margin: 0; padding: 9px 16px; font-size: 13px; background: transparent;
+      border: 1px solid #1B2440; color: #8A93A8; }
+    .section { margin-bottom: 40px; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 12px; flex-wrap: wrap; }
+    .section-head h2 { font-family: 'Cinzel', serif; font-size: 18px; margin: 0; color: #F4F1EA; }
+    .section-head .count { color: #8A93A8; font-size: 14px; font-weight: 400; margin-left: 6px; }
+    .export-btn { width: auto; margin: 0; padding: 8px 15px; font-size: 12.5px; background: transparent;
+      border: 1px solid #1B2440; color: #8A93A8; }
   </style>
 </head>
 <body>
@@ -50,23 +60,42 @@
   </div>
 
   <div id="dash">
-    <div class="topbar">
-      <h1>Applications <span class="muted" id="count" style="font-size:14px;"></span></h1>
-      <div style="display:flex; gap:10px;">
-        <button id="exportBtn">Export CSV</button>
-        <button id="logoutBtn">Log out</button>
+    <div class="dash-head">
+      <h1>Adders Film School — Admin</h1>
+      <button id="logoutBtn">Log out</button>
+    </div>
+
+    <!-- Membership sign-ups -->
+    <div class="section">
+      <div class="section-head">
+        <h2>Membership Sign-Ups <span class="count" id="applications-count"></span></h2>
+        <button class="export-btn" data-export="applications">Export CSV</button>
+      </div>
+      <div class="scroll">
+        <table id="applications-table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
-    <div class="scroll">
-      <table id="table">
-        <thead></thead>
-        <tbody></tbody>
-      </table>
+
+    <!-- Performance audition sign-ups -->
+    <div class="section">
+      <div class="section-head">
+        <h2>Performance Audition Sign-Ups <span class="count" id="auditions-count"></span></h2>
+        <button class="export-btn" data-export="auditions">Export CSV</button>
+      </div>
+      <div class="scroll">
+        <table id="auditions-table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
   <script>
-    const COLUMNS = [
+    const APPLICATION_COLUMNS = [
       ["created_at","Submitted"],["status","Status"],
       ["student_name","Student"],["student_dob","Student DOB"],
       ["month1","Month 1"],["month2","Month 2"],["month3","Month 3"],["new_to_film","New to film"],
@@ -81,31 +110,64 @@
       ["plan_type","Plan"],["plan_months","Months"],["id","Application ID"],
     ];
 
+    const AUDITION_COLUMNS = [
+      ["created_at","Submitted"],["status","Status"],
+      ["student_name","Student"],["student_dob","Student DOB"],
+      ["discipline","Auditioning for"],["new_to_performing","New to performing"],
+      ["guardian_name","Guardian"],["guardian_dob","Guardian DOB"],
+      ["address_line1","Address 1"],["address_line2","Address 2"],["city","City"],["county","County"],["postcode","Postcode"],
+      ["email","Email"],["phone","Phone"],
+      ["emergency_same","Emergency = guardian"],["emergency_name","Emergency name"],["emergency_phone","Emergency phone"],["emergency_relation","Emergency relation"],
+      ["allergies","Allergies"],["allergies_detail","Allergies detail"],
+      ["additional_needs","Additional needs"],["additional_needs_detail","Additional needs detail"],
+      ["health_issues","Health issues"],["health_issues_detail","Health issues detail"],
+      ["consent_filming","Consent: filming"],["consent_policy","Consent: policy"],
+      ["id","Audition ID"],
+    ];
+
+    // Each section loads independently from its own endpoint into its own table.
+    const SECTIONS = {
+      applications: {
+        columns: APPLICATION_COLUMNS, endpoint: "/api/admin/applications", key: "applications",
+        table: "applications-table", count: "applications-count", empty: "No membership sign-ups yet.",
+        filename: "membership-signups",
+      },
+      auditions: {
+        columns: AUDITION_COLUMNS, endpoint: "/api/admin/auditions", key: "auditions",
+        table: "auditions-table", count: "auditions-count", empty: "No audition sign-ups yet.",
+        filename: "audition-signups",
+      },
+    };
+    const BOOL_COLS = ["new_to_film","new_to_performing","emergency_same","allergies","additional_needs","health_issues","consent_filming","consent_policy"];
+
     const loginCard = document.getElementById("login");
     const dash = document.getElementById("dash");
     const loginErr = document.getElementById("loginErr");
-    let rows = [];
+    const data = { applications: [], auditions: [] };
 
     function fmt(col, val) {
       if (val === null || val === undefined) return "";
-      if (["new_to_film","emergency_same","allergies","additional_needs","health_issues","consent_filming","consent_policy"].includes(col)) {
+      if (BOOL_COLS.includes(col)) {
         return val ? "Yes" : "No";
       }
       if (col === "created_at") return new Date(val + "Z").toLocaleString();
       return String(val);
     }
 
-    function render() {
-      const thead = document.querySelector("#table thead");
-      const tbody = document.querySelector("#table tbody");
-      thead.innerHTML = "<tr>" + COLUMNS.map(([,label]) => `<th>${label}</th>`).join("") + "</tr>";
-      document.getElementById("count").textContent = `(${rows.length})`;
+    function render(name) {
+      const cfg = SECTIONS[name];
+      const rows = data[name];
+      const cols = cfg.columns;
+      const table = document.getElementById(cfg.table);
+      table.querySelector("thead").innerHTML = "<tr>" + cols.map(([,label]) => `<th>${label}</th>`).join("") + "</tr>";
+      document.getElementById(cfg.count).textContent = `(${rows.length})`;
+      const tbody = table.querySelector("tbody");
       if (!rows.length) {
-        tbody.innerHTML = `<tr><td colspan="${COLUMNS.length}" class="empty">No applications yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${cols.length}" class="empty">${cfg.empty}</td></tr>`;
         return;
       }
       tbody.innerHTML = rows.map(r => {
-        const cells = COLUMNS.map(([col]) => {
+        const cells = cols.map(([col]) => {
           if (col === "status") {
             const cls = r.status === "paid" ? "paid" : "pending";
             return `<td><span class="pill ${cls}">${r.status}</span></td>`;
@@ -120,19 +182,24 @@
       return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     }
 
-    function toCsv() {
-      const header = COLUMNS.map(([,label]) => `"${label}"`).join(",");
-      const lines = rows.map(r => COLUMNS.map(([col]) => `"${String(fmt(col, r[col])).replace(/"/g,'""')}"`).join(","));
+    function toCsv(name) {
+      const cols = SECTIONS[name].columns;
+      const header = cols.map(([,label]) => `"${label}"`).join(",");
+      const lines = data[name].map(r => cols.map(([col]) => `"${String(fmt(col, r[col])).replace(/"/g,'""')}"`).join(","));
       return [header, ...lines].join("\n");
     }
 
-    async function loadApplications() {
-      const res = await fetch("/api/admin/applications", { credentials: "same-origin" });
-      if (res.status === 401) { showLogin(); return; }
-      const data = await res.json();
-      rows = data.applications || [];
-      render();
+    // Loads every section. Returns false if the session is not (or no longer) valid.
+    async function loadAll() {
+      for (const name of Object.keys(SECTIONS)) {
+        const res = await fetch(SECTIONS[name].endpoint, { credentials: "same-origin" });
+        if (res.status === 401) { showLogin(); return false; }
+        const body = await res.json();
+        data[name] = body[SECTIONS[name].key] || [];
+        render(name);
+      }
       showDash();
+      return true;
     }
 
     function showDash() { loginCard.style.display = "none"; dash.style.display = "block"; }
@@ -149,13 +216,13 @@
       if (!res.ok) {
         let message = "Incorrect password.";
         try {
-          const data = await res.json();
-          if (data?.error) message = data.error;
+          const body = await res.json();
+          if (body?.error) message = body.error;
         } catch {}
         loginErr.textContent = message;
         return;
       }
-      loadApplications();
+      loadAll();
     });
 
     document.getElementById("password").addEventListener("keydown", e => {
@@ -167,15 +234,18 @@
       showLogin();
     });
 
-    document.getElementById("exportBtn").addEventListener("click", () => {
-      const blob = new Blob([toCsv()], { type: "text/csv" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `applications-${new Date().toISOString().slice(0,10)}.csv`;
-      a.click();
+    document.querySelectorAll("[data-export]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const name = btn.getAttribute("data-export");
+        const blob = new Blob([toCsv(name)], { type: "text/csv" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `${SECTIONS[name].filename}-${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+      });
     });
 
-    loadApplications();
+    loadAll();
   </script>
 </body>
 </html>

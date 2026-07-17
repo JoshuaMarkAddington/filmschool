@@ -36,10 +36,16 @@
     .pill.paid { background: #5BC08A22; color: #5BC08A; }
     .pill.pending { background: #E0894A22; color: #E0894A; }
     .empty { padding: 40px; text-align: center; color: #8A93A8; }
-    .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-    .tab { width: auto; margin: 0; padding: 9px 18px; font-size: 13px; font-weight: 700; border-radius: 999px;
-      background: transparent; border: 1px solid #1B2440; color: #8A93A8; }
-    .tab.active { background: linear-gradient(180deg,#E0894A,#B5651D); color: #070B14; border-color: transparent; }
+    .dash-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 12px; flex-wrap: wrap; }
+    .dash-head h1 { font-size: 24px; }
+    .dash-head button { width: auto; margin: 0; padding: 9px 16px; font-size: 13px; background: transparent;
+      border: 1px solid #1B2440; color: #8A93A8; }
+    .section { margin-bottom: 40px; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 12px; flex-wrap: wrap; }
+    .section-head h2 { font-family: 'Cinzel', serif; font-size: 18px; margin: 0; color: #F4F1EA; }
+    .section-head .count { color: #8A93A8; font-size: 14px; font-weight: 400; margin-left: 6px; }
+    .export-btn { width: auto; margin: 0; padding: 8px 15px; font-size: 12.5px; background: transparent;
+      border: 1px solid #1B2440; color: #8A93A8; }
   </style>
 </head>
 <body>
@@ -54,22 +60,37 @@
   </div>
 
   <div id="dash">
-    <div class="topbar">
-      <h1 id="title">Applications <span class="muted" id="count" style="font-size:14px;"></span></h1>
-      <div style="display:flex; gap:10px;">
-        <button id="exportBtn">Export CSV</button>
-        <button id="logoutBtn">Log out</button>
+    <div class="dash-head">
+      <h1>Adders Film School — Admin</h1>
+      <button id="logoutBtn">Log out</button>
+    </div>
+
+    <!-- Membership sign-ups -->
+    <div class="section">
+      <div class="section-head">
+        <h2>Membership Sign-Ups <span class="count" id="applications-count"></span></h2>
+        <button class="export-btn" data-export="applications">Export CSV</button>
+      </div>
+      <div class="scroll">
+        <table id="applications-table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
       </div>
     </div>
-    <div class="tabs">
-      <button class="tab active" id="tabApplications">Memberships</button>
-      <button class="tab" id="tabAuditions">Intensive-course auditions</button>
-    </div>
-    <div class="scroll">
-      <table id="table">
-        <thead></thead>
-        <tbody></tbody>
-      </table>
+
+    <!-- Performance audition sign-ups -->
+    <div class="section">
+      <div class="section-head">
+        <h2>Performance Audition Sign-Ups <span class="count" id="auditions-count"></span></h2>
+        <button class="export-btn" data-export="auditions">Export CSV</button>
+      </div>
+      <div class="scroll">
+        <table id="auditions-table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -104,18 +125,25 @@
       ["id","Audition ID"],
     ];
 
-    const VIEWS = {
-      applications: { columns: APPLICATION_COLUMNS, endpoint: "/api/admin/applications", key: "applications", title: "Applications", empty: "No applications yet." },
-      auditions:    { columns: AUDITION_COLUMNS,    endpoint: "/api/admin/auditions",    key: "auditions",    title: "Auditions",    empty: "No audition sign-ups yet." },
+    // Each section loads independently from its own endpoint into its own table.
+    const SECTIONS = {
+      applications: {
+        columns: APPLICATION_COLUMNS, endpoint: "/api/admin/applications", key: "applications",
+        table: "applications-table", count: "applications-count", empty: "No membership sign-ups yet.",
+        filename: "membership-signups",
+      },
+      auditions: {
+        columns: AUDITION_COLUMNS, endpoint: "/api/admin/auditions", key: "auditions",
+        table: "auditions-table", count: "auditions-count", empty: "No audition sign-ups yet.",
+        filename: "audition-signups",
+      },
     };
     const BOOL_COLS = ["new_to_film","new_to_performing","emergency_same","allergies","additional_needs","health_issues","consent_filming","consent_policy"];
 
     const loginCard = document.getElementById("login");
     const dash = document.getElementById("dash");
     const loginErr = document.getElementById("loginErr");
-    let view = "applications";
-    let rows = [];
-    let COLUMNS = VIEWS[view].columns;
+    const data = { applications: [], auditions: [] };
 
     function fmt(col, val) {
       if (val === null || val === undefined) return "";
@@ -126,17 +154,20 @@
       return String(val);
     }
 
-    function render() {
-      const thead = document.querySelector("#table thead");
-      const tbody = document.querySelector("#table tbody");
-      thead.innerHTML = "<tr>" + COLUMNS.map(([,label]) => `<th>${label}</th>`).join("") + "</tr>";
-      document.getElementById("count").textContent = `(${rows.length})`;
+    function render(name) {
+      const cfg = SECTIONS[name];
+      const rows = data[name];
+      const cols = cfg.columns;
+      const table = document.getElementById(cfg.table);
+      table.querySelector("thead").innerHTML = "<tr>" + cols.map(([,label]) => `<th>${label}</th>`).join("") + "</tr>";
+      document.getElementById(cfg.count).textContent = `(${rows.length})`;
+      const tbody = table.querySelector("tbody");
       if (!rows.length) {
-        tbody.innerHTML = `<tr><td colspan="${COLUMNS.length}" class="empty">${VIEWS[view].empty}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${cols.length}" class="empty">${cfg.empty}</td></tr>`;
         return;
       }
       tbody.innerHTML = rows.map(r => {
-        const cells = COLUMNS.map(([col]) => {
+        const cells = cols.map(([col]) => {
           if (col === "status") {
             const cls = r.status === "paid" ? "paid" : "pending";
             return `<td><span class="pill ${cls}">${r.status}</span></td>`;
@@ -151,34 +182,25 @@
       return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     }
 
-    function toCsv() {
-      const header = COLUMNS.map(([,label]) => `"${label}"`).join(",");
-      const lines = rows.map(r => COLUMNS.map(([col]) => `"${String(fmt(col, r[col])).replace(/"/g,'""')}"`).join(","));
+    function toCsv(name) {
+      const cols = SECTIONS[name].columns;
+      const header = cols.map(([,label]) => `"${label}"`).join(",");
+      const lines = data[name].map(r => cols.map(([col]) => `"${String(fmt(col, r[col])).replace(/"/g,'""')}"`).join(","));
       return [header, ...lines].join("\n");
     }
 
-    async function loadData() {
-      const cfg = VIEWS[view];
-      COLUMNS = cfg.columns;
-      const res = await fetch(cfg.endpoint, { credentials: "same-origin" });
-      if (res.status === 401) { showLogin(); return; }
-      const data = await res.json();
-      rows = data[cfg.key] || [];
-      document.getElementById("title").firstChild.textContent = cfg.title + " ";
-      render();
+    // Loads every section. Returns false if the session is not (or no longer) valid.
+    async function loadAll() {
+      for (const name of Object.keys(SECTIONS)) {
+        const res = await fetch(SECTIONS[name].endpoint, { credentials: "same-origin" });
+        if (res.status === 401) { showLogin(); return false; }
+        const body = await res.json();
+        data[name] = body[SECTIONS[name].key] || [];
+        render(name);
+      }
       showDash();
+      return true;
     }
-
-    function selectView(next) {
-      if (view === next) return;
-      view = next;
-      document.getElementById("tabApplications").classList.toggle("active", view === "applications");
-      document.getElementById("tabAuditions").classList.toggle("active", view === "auditions");
-      loadData();
-    }
-
-    document.getElementById("tabApplications").addEventListener("click", () => selectView("applications"));
-    document.getElementById("tabAuditions").addEventListener("click", () => selectView("auditions"));
 
     function showDash() { loginCard.style.display = "none"; dash.style.display = "block"; }
     function showLogin() { dash.style.display = "none"; loginCard.style.display = "flex"; }
@@ -194,13 +216,13 @@
       if (!res.ok) {
         let message = "Incorrect password.";
         try {
-          const data = await res.json();
-          if (data?.error) message = data.error;
+          const body = await res.json();
+          if (body?.error) message = body.error;
         } catch {}
         loginErr.textContent = message;
         return;
       }
-      loadData();
+      loadAll();
     });
 
     document.getElementById("password").addEventListener("keydown", e => {
@@ -212,15 +234,18 @@
       showLogin();
     });
 
-    document.getElementById("exportBtn").addEventListener("click", () => {
-      const blob = new Blob([toCsv()], { type: "text/csv" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `${view}-${new Date().toISOString().slice(0,10)}.csv`;
-      a.click();
+    document.querySelectorAll("[data-export]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const name = btn.getAttribute("data-export");
+        const blob = new Blob([toCsv(name)], { type: "text/csv" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `${SECTIONS[name].filename}-${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+      });
     });
 
-    loadData();
+    loadAll();
   </script>
 </body>
 </html>

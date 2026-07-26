@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact — Adders Film School</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Dark Mode Toggle -->
+  <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
+
+  <!-- Background Video -->
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="website-video1.mp4" type="video/mp4">
+  </video>
+  <div class="video-overlay"></div>
+
+  <!-- Site Navigation -->
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand">Adders Film School</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="membership.html">Memberships</a>
+      <a href="masterclass.html">Masterclass</a>
+      <a href="contact.html" class="active">Contact</a>
+    </div>
+  </nav>
+
+  <main class="relative z-10">
+    <!-- Contact Us Section -->
+    <section class="py-16 px-4" id="contact">
+      <h2 class="text-3xl font-bold text-center mb-8">Contact Us</h2>
+      <div class="contact-section">
+        <p class="contact-item">
+          <span class="contact-label">Email</span>
+          <a href="mailto:office@addersentertainment.org">office@addersentertainment.org</a>
+        </p>
+        <p class="contact-item">
+          <span class="contact-label">Phone</span>
+          <a href="tel:+447450344224">07450 344224</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center py-8 text-gray-400 text-sm relative z-10">
+    <p style="max-width: 44rem; margin: 0 auto 0.75rem;">Adders Film School opens 1st September 2026. Equipment and facilities listed reflect our confirmed procurement plan for opening day.</p>
+    <p style="margin: 0 0 0.75rem;"><a href="industry-standard-tools.html" style="color: #fb923c; text-decoration: none; font-weight: 600;">Industry-Standard Tools</a></p>
+    <p>&copy; 2026 Adders Film School. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Update the toggle icon to reflect the current mode.
+    function updateThemeIcon() {
+      const btn = document.querySelector('.dark-mode-toggle');
+      if (!btn) return;
+      btn.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
+    }
+
+    function toggleDarkMode() {
+      const isLight = document.body.classList.toggle('light-mode');
+      // Remember the choice so it sticks on refresh / next visit.
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      updateThemeIcon();
+    }
+
+    // Apply the saved preference as soon as the page loads.
+    if (localStorage.getItem('theme') === 'light') {
+      document.body.classList.add('light-mode');
+    }
+    updateThemeIcon();
+  </script>
+</body>
+</html>

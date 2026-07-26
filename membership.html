@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memberships — Adders Film School</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Dark Mode Toggle -->
+  <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
+
+  <!-- Background Video -->
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="website-video1.mp4" type="video/mp4">
+  </video>
+  <div class="video-overlay"></div>
+
+  <!-- Site Navigation -->
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-brand">Adders Film School</a>
+    <div class="site-nav-links">
+      <a href="index.html">Home</a>
+      <a href="membership.html" class="active">Memberships</a>
+      <a href="masterclass.html">Masterclass</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </nav>
+
+  <main class="relative z-10">
+    <!-- Membership Section -->
+    <section class="py-16 px-4">
+      <h2 class="text-3xl font-bold text-center mb-8">Membership Plans</h2>
+
+      <!-- Choose Your Path intro -->
+      <div class="path-intro">
+        <p class="path-kicker">Choose Your Path</p>
+        <p>Our 3-month membership cycles are designed to help you build a custom career. Every session, you hand-pick two to three core modules to master.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <!-- Standard Membership -->
+        <div class="membership-card">
+          <h3>Standard Membership</h3>
+          <div class="price-block">
+            <span class="price-from">From</span>
+            <span class="price-main">£450</span><span class="price-period">/ 3-month cycle</span>
+            <div class="price-permonth">Just £150 per month</div>
+            <div class="price-tiers">
+              <div class="price-tier-row">
+                <span>6 months</span>
+                <span class="tier-amount"><strong>£845</strong><span class="tier-permonth">(£141/mo)</span></span>
+                <span class="save-badge">Save £55</span>
+              </div>
+              <div class="price-tier-row">
+                <span>12 months</span>
+                <span class="tier-amount"><strong>£1,600</strong><span class="tier-permonth">(£133/mo)</span></span>
+                <span class="save-badge">Save £200</span>
+              </div>
+            </div>
+          </div>
+          <ul>
+            <li><span class="tick">✓</span>Access to all modules</li>
+            <li><span class="tick">✓</span>Professional Equipment</li>
+            <li><span class="tick">✓</span>Davinci Resolve</li>
+            <li><span class="tick">✓</span>WriterDuet</li>
+            <li><span class="tick">✓</span>4K HDR Films</li>
+            <li><span class="no-tick">✗</span>Framed Posters</li>
+            <li><span class="no-tick">✗</span>Adders Pen, Notepad & Bottle</li>
+            <li><span class="no-tick">✗</span>T-Shirt</li>
+            <li><span class="no-tick">✗</span>TOTUM card after 6 months</li>
+            <li><span class="tick">✓</span>Showreel after 24 months</li>
+          </ul>
+          <button class="standard-btn" onclick="window.location.href='apply.html'">Standard</button>
+        </div>
+        <!-- Premium Membership -->
+        <div class="membership-card premium">
+          <span class="premium-badge">Most Popular</span>
+          <h3>Premium Membership</h3>
+          <div class="price-block">
+            <span class="price-from">From</span>
+            <span class="price-main">£550</span><span class="price-period">/ 3-month cycle</span>
+            <div class="price-permonth">Just £183 per month</div>
+            <div class="price-tiers">
+              <div class="price-tier-row">
+                <span>6 months</span>
+                <span class="tier-amount"><strong>£1,000</strong><span class="tier-permonth">(£167/mo)</span></span>
+                <span class="save-badge">Save £100</span>
+              </div>
+              <div class="price-tier-row">
+                <span>12 months</span>
+                <span class="tier-amount"><strong>£1,900</strong><span class="tier-permonth">(£158/mo)</span></span>
+                <span class="save-badge">Save £300</span>
+              </div>
+            </div>
+          </div>
+          <ul>
+            <li><span class="tick">✓</span>Access to all modules</li>
+            <li><span class="tick">✓</span>Professional Equipment</li>
+            <li><span class="tick">✓</span>Davinci Resolve</li>
+            <li><span class="tick">✓</span>WriterDuet</li>
+            <li><span class="tick">✓</span>4K HDR Films</li>
+            <li><span class="tick">✓</span>Framed Posters</li>
+            <li><span class="tick">✓</span>Adders Pen, Notepad & Bottle</li>
+            <li><span class="tick">✓</span>T-Shirt</li>
+            <li><span class="tick">✓</span>TOTUM card after 6 months</li>
+            <li><span class="tick">✓</span>Showreel after 24 months</li>
+          </ul>
+          <button class="premium-btn" onclick="window.location.href='apply.html'">Premium</button>
+        </div>
+      </div>
+
+      <!-- Closing culmination + call to action -->
+      <div class="culmination">
+        <p>Every 3-month cycle culminates in your own <strong>4K HDR short film</strong> — a real production, shot and finished on the same professional-grade gear and software you'll have trained on, so you leave each cycle with a polished film to take home.</p>
+        <p class="culmination-emphasis">3 months to launch your project. A lifetime to master the art.</p>
+        <div style="margin-top: 1.5rem;">
+          <a href="apply.html" class="signup-btn">Experience the Difference — Sign Up Now!</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center py-8 text-gray-400 text-sm relative z-10">
+    <p style="max-width: 44rem; margin: 0 auto 0.75rem;">Adders Film School opens 1st September 2026. Equipment and facilities listed reflect our confirmed procurement plan for opening day.</p>
+    <p style="margin: 0 0 0.75rem;"><a href="industry-standard-tools.html" style="color: #fb923c; text-decoration: none; font-weight: 600;">Industry-Standard Tools</a></p>
+    <p>&copy; 2026 Adders Film School. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Update the toggle icon to reflect the current mode.
+    function updateThemeIcon() {
+      const btn = document.querySelector('.dark-mode-toggle');
+      if (!btn) return;
+      btn.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
+    }
+
+    function toggleDarkMode() {
+      const isLight = document.body.classList.toggle('light-mode');
+      // Remember the choice so it sticks on refresh / next visit.
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      updateThemeIcon();
+    }
+
+    // Apply the saved preference as soon as the page loads.
+    if (localStorage.getItem('theme') === 'light') {
+      document.body.classList.add('light-mode');
+    }
+    updateThemeIcon();
+  </script>
+</body>
+</html>

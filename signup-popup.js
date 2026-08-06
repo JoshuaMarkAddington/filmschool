@@ -54,7 +54,6 @@
     '<div class="afs-popup">' +
       '<button type="button" class="afs-popup-close" aria-label="Close">&times;</button>' +
       '<div class="afs-popup-form-wrap">' +
-        '<img class="afs-popup-logo" src="' + LOGO + '" alt="Adders Film School">' +
         '<h2 class="afs-popup-header" id="afs-popup-header">Sign up now!</h2>' +
         '<p class="afs-popup-sub">Receive discounts and latest information</p>' +
         '<form class="afs-popup-form" novalidate>' +

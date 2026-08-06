@@ -55,13 +55,12 @@
       '<button type="button" class="afs-popup-close" aria-label="Close">&times;</button>' +
       '<div class="afs-popup-form-wrap">' +
         '<img class="afs-popup-logo" src="' + LOGO + '" alt="Adders Film School">' +
-        '<h2 class="afs-popup-header" id="afs-popup-header">Sign up for discounts &amp; early access</h2>' +
-        '<p class="afs-popup-sub">Be first to hear about new courses, masterclasses and members-only offers.</p>' +
+        '<h2 class="afs-popup-header" id="afs-popup-header">Sign up now!</h2>' +
+        '<p class="afs-popup-sub">Receive discounts and latest information</p>' +
         '<form class="afs-popup-form" novalidate>' +
           '<input type="text" name="name" autocomplete="name" placeholder="Your name (optional)">' +
           '<input type="email" name="email" autocomplete="email" placeholder="Email address">' +
           '<input type="tel" name="phone" autocomplete="tel" placeholder="Phone number">' +
-          '<p class="afs-popup-hint">Just leave us an email or a phone number — whichever you prefer.</p>' +
           '<p class="afs-popup-error" role="alert"></p>' +
           '<button type="submit" class="afs-popup-submit">Sign Up Now</button>' +
         '</form>' +

@@ -91,3 +91,50 @@ Two setup steps are needed before it's live:
    (created exactly like the membership links). The course fee (£100) is
    collected separately from students who are offered a place, so it needs no
    link here.
+
+## Discounts & early-access sign-up pop-up
+
+Every public page (`index.html`, `membership.html`, `masterclass.html`,
+`contact.html`) shows a centred pop-up shortly after it loads — the company
+logo, a "Sign up for discounts & early access" header, and name / email /
+phone fields (`signup-popup.js` + styles in `styles.css`). The visitor must
+give **at least one** of email or phone. On submit the logo spins and a
+"Thank you!" message confirms the sign-up. To avoid nagging, the pop-up never
+reappears after someone signs up, and waits a week after a dismissal (tracked
+in the browser's `localStorage`).
+
+Sign-ups POST to `/api/subscribe`, which stores the lead in a new
+`subscribers` D1 table and then, best-effort:
+
+- emails the visitor a "Welcome to Adders Film School" message (if they gave an
+  email) via Resend — reuses the existing `RESEND_API_KEY` / `RESEND_FROM`
+  secrets, so no extra email setup is needed
+- texts the visitor a welcome message (if they gave a phone number) — see below
+- pings `ADMIN_NOTIFY_EMAIL` so you know a new lead came in
+
+All sign-ups appear under a new **"Discounts & News Sign-Ups"** list in
+`/admin`, alongside the membership and audition lists, with CSV export.
+
+Two setup steps:
+
+1. **Database table.** Create the `subscribers` table once:
+
+   ```sh
+   npx wrangler d1 execute filmschool --remote --file=schema-subscribers.sql
+   ```
+
+2. **Welcome text via CircleLoop (optional).** CircleLoop has no public API,
+   but it can send an SMS from a **Zapier "Send SMS" action**. Wire it up once:
+
+   - In Zapier, create a Zap with a **"Webhooks by Zapier → Catch Hook"**
+     trigger. Copy the webhook URL it gives you.
+   - Add a **CircleLoop → "Send SMS"** action to that Zap. Map the recipient
+     to the hook's `phone` field and the body to its `message` field (the
+     Worker POSTs `{ phone, name, message }` as JSON).
+   - Set the hook URL as the `SMS_WEBHOOK_URL` secret on the Worker, either as
+     a GitHub repository secret (the "Deploy and set secrets" workflow now
+     picks it up) or via `npx wrangler secret put SMS_WEBHOOK_URL`.
+
+   Until `SMS_WEBHOOK_URL` is set, phone sign-ups are still saved and shown in
+   admin — they just won't trigger a text (the "Welcome text sent" column shows
+   "No"). Email sign-ups work with no extra setup.

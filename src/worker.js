@@ -11,6 +11,9 @@ export default {
     if (url.pathname === "/api/audition" && request.method === "POST") {
       return handleAudition(request, env);
     }
+    if (url.pathname === "/api/subscribe" && request.method === "POST") {
+      return handleSubscribe(request, env);
+    }
     if (url.pathname === "/api/stripe/webhook" && request.method === "POST") {
       return handleStripeWebhook(request, env);
     }
@@ -25,6 +28,9 @@ export default {
     }
     if (url.pathname === "/api/admin/auditions" && request.method === "GET") {
       return handleAdminAuditions(request, env);
+    }
+    if (url.pathname === "/api/admin/subscribers" && request.method === "GET") {
+      return handleAdminSubscribers(request, env);
     }
 
     return env.ASSETS.fetch(request);
@@ -218,6 +224,135 @@ async function sendAuditionReceivedEmails(env, app, origin) {
 }
 
 /* ===========================================================================
+   NEWSLETTER SIGN-UP — the site-wide "discounts & early access" pop-up posts
+   here. Unlike the membership/audition forms there's no payment: we just store
+   the lead, email them a welcome (if they gave an email) and text them a
+   welcome (if they gave a phone number). At least one contact method is
+   required; both e-mailing and texting are best-effort and never block the
+   sign-up from being recorded.
+   =========================================================================== */
+async function handleSubscribe(request, env) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  const name = typeof body.name === "string" ? body.name.trim() : "";
+  const email = typeof body.email === "string" ? body.email.trim() : "";
+  const phone = typeof body.phone === "string" ? body.phone.trim() : "";
+  const source = typeof body.source === "string" ? body.source.slice(0, 120) : null;
+
+  // Phone or email — at least one is required.
+  if (!email && !phone) {
+    return Response.json(
+      { error: "Please give us either an email address or a phone number." },
+      { status: 400 }
+    );
+  }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return Response.json({ error: "That email address doesn't look right." }, { status: 400 });
+  }
+
+  const id = crypto.randomUUID();
+
+  // Send the welcome email/text first so we can record whether each succeeded.
+  let emailSent = false;
+  let smsSent = false;
+
+  if (email) {
+    try {
+      emailSent = await sendSubscriberWelcomeEmail(env, { name, email });
+    } catch (err) {
+      console.error("subscriber welcome email failed", err);
+    }
+  }
+
+  if (phone) {
+    try {
+      smsSent = await sendSubscriberWelcomeSms(env, { name, phone });
+    } catch (err) {
+      console.error("subscriber welcome SMS failed", err);
+    }
+  }
+
+  await env.DB.prepare(`
+    INSERT INTO subscribers (id, name, email, phone, source, email_sent, sms_sent)
+    VALUES (?,?,?,?,?,?,?)
+  `).bind(
+    id, name || null, email || null, phone || null, source,
+    emailSent ? 1 : 0, smsSent ? 1 : 0
+  ).run();
+
+  // Let the school know a new lead came in — best-effort.
+  if (env.ADMIN_NOTIFY_EMAIL) {
+    try {
+      await sendEmail(env, {
+        to: env.ADMIN_NOTIFY_EMAIL,
+        subject: `New newsletter sign-up${name ? `: ${name}` : ""}`,
+        html: `
+          <p>Someone signed up for discounts &amp; early access via the website pop-up.</p>
+          <ul>
+            <li><b>Name:</b> ${escapeHtml(name) || "—"}</li>
+            <li><b>Email:</b> ${escapeHtml(email) || "—"}</li>
+            <li><b>Phone:</b> ${escapeHtml(phone) || "—"}</li>
+            <li><b>From page:</b> ${escapeHtml(source) || "—"}</li>
+          </ul>
+          <p>See the full list under "Discounts &amp; News Sign-Ups" in the admin dashboard at /admin.</p>
+        `,
+      });
+    } catch (err) {
+      console.error("subscriber admin notification failed", err);
+    }
+  }
+
+  return Response.json({ ok: true, id });
+}
+
+async function sendSubscriberWelcomeEmail(env, { name, email }) {
+  const greeting = name ? `Hi ${escapeHtml(name)},` : "Hi there,";
+  return sendEmail(env, {
+    to: email,
+    subject: "Welcome to Adders Film School!",
+    html: `
+      <p>${greeting}</p>
+      <p>Welcome to Adders Film School — thanks for signing up for discounts &amp; early access!</p>
+      <p>You're now on the list to hear first about new courses, masterclasses, audition
+      dates and members-only discounts before anyone else.</p>
+      <p>We'll be in touch soon. In the meantime, if you have any questions at all, just
+      reply to this email.</p>
+      <p>— Adders Film School</p>
+    `,
+  });
+}
+
+/* CircleLoop has no public API, but it can send an SMS from a Zapier "Send SMS"
+   action. We POST the number + message to a Zapier "Catch Hook" webhook URL
+   (stored as the SMS_WEBHOOK_URL secret); the Zap then fires the CircleLoop
+   text. Returns true only if the webhook accepted the request. */
+async function sendSubscriberWelcomeSms(env, { name, phone }) {
+  if (!env.SMS_WEBHOOK_URL) {
+    console.error("SMS is not configured (SMS_WEBHOOK_URL missing)");
+    return false;
+  }
+  const message =
+    `${name ? name + ", welcome" : "Welcome"} to Adders Film School! ` +
+    `You're signed up for discounts & early access — we'll be in touch soon.`;
+
+  const res = await fetch(env.SMS_WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone, name, message }),
+  });
+  if (!res.ok) {
+    console.error("SMS webhook failed", res.status, await res.text());
+    return false;
+  }
+  return true;
+}
+
+/* ===========================================================================
    STRIPE WEBHOOK — confirms a payment actually completed and flips the
    application's status, rather than trusting the client-side redirect.
    =========================================================================== */
@@ -304,10 +439,13 @@ async function verifyStripeSignature(payload, sigHeader, secret) {
    applicant, and to the school so you immediately know someone signed up),
    then a payment-confirmed pair once Stripe confirms the charge.
    =========================================================================== */
+// Returns true only if Resend accepted the message. Existing callers ignore
+// the return value (email is best-effort); the newsletter sign-up uses it to
+// record an accurate "welcome email sent" flag.
 async function sendEmail(env, { to, subject, html }) {
   if (!env.RESEND_API_KEY || !env.RESEND_FROM) {
     console.error("Resend is not configured (RESEND_API_KEY / RESEND_FROM missing)");
-    return;
+    return false;
   }
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -319,7 +457,9 @@ async function sendEmail(env, { to, subject, html }) {
   });
   if (!res.ok) {
     console.error("Resend send failed", res.status, await res.text());
+    return false;
   }
+  return true;
 }
 
 function escapeHtml(s) {
@@ -527,4 +667,16 @@ async function handleAdminAuditions(request, env) {
   ).all();
 
   return Response.json({ auditions: results });
+}
+
+async function handleAdminSubscribers(request, env) {
+  if (!(await isValidSession(request, env))) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { results } = await env.DB.prepare(
+    `SELECT * FROM subscribers ORDER BY created_at DESC`
+  ).all();
+
+  return Response.json({ subscribers: results });
 }

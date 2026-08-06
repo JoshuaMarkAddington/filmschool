@@ -8,4 +8,5 @@ node_modules
 package.json
 package-lock.json
 schema-auditions.sql
+schema-subscribers.sql
 README.md

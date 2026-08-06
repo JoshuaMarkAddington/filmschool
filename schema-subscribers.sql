@@ -3,7 +3,11 @@
 -- leads, not membership/audition applications: a name plus at least one of an
 -- email address or a phone number, and nothing sensitive.
 --
--- Apply against the D1 database bound as DB (see wrangler.jsonc):
+-- The Worker creates this table automatically on first use (see
+-- ensureSubscribersTable in src/worker.js) — running this file by hand is
+-- optional and only useful for inspecting the schema or seeding a local dev
+-- database. To apply it manually against the D1 database bound as DB (see
+-- wrangler.jsonc):
 --   npx wrangler d1 execute filmschool --remote --file=schema-subscribers.sql
 CREATE TABLE IF NOT EXISTS subscribers (
   id TEXT PRIMARY KEY,

@@ -231,6 +231,24 @@ async function sendAuditionReceivedEmails(env, app, origin) {
    required; both e-mailing and texting are best-effort and never block the
    sign-up from being recorded.
    =========================================================================== */
+// Creates the `subscribers` table on first use so there's no manual D1 setup
+// step — CREATE TABLE IF NOT EXISTS is cheap and idempotent, safe to run on
+// every request that touches this table.
+async function ensureSubscribersTable(env) {
+  await env.DB.exec(`
+    CREATE TABLE IF NOT EXISTS subscribers (
+      id TEXT PRIMARY KEY,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      name TEXT,
+      email TEXT,
+      phone TEXT,
+      source TEXT,
+      email_sent INTEGER NOT NULL DEFAULT 0,
+      sms_sent INTEGER NOT NULL DEFAULT 0
+    )
+  `.trim());
+}
+
 async function handleSubscribe(request, env) {
   let body;
   try {
@@ -256,6 +274,8 @@ async function handleSubscribe(request, env) {
   }
 
   const id = crypto.randomUUID();
+
+  await ensureSubscribersTable(env);
 
   // Send the welcome email/text first so we can record whether each succeeded.
   let emailSent = false;
@@ -673,6 +693,8 @@ async function handleAdminSubscribers(request, env) {
   if (!(await isValidSession(request, env))) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  await ensureSubscribersTable(env);
 
   const { results } = await env.DB.prepare(
     `SELECT * FROM subscribers ORDER BY created_at DESC`

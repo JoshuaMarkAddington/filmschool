@@ -118,18 +118,24 @@ All sign-ups appear under a new **"Discounts & News Sign-Ups"** list in
 
 One optional setup step:
 
-- **Welcome text via CircleLoop.** CircleLoop has no public API,
-  but it can send an SMS from a **Zapier "Send SMS" action**. Wire it up once:
+- **Welcome text via CircleLoop.** CircleLoop has no public API, but it can
+  send an SMS from a **Zapier "Send SMS" action**. "Webhooks by Zapier" (Catch
+  Hook) is a paid-plan-only trigger, so this uses **"Email by Zapier"**
+  instead — a free trigger that fires when an email lands in a
+  Zapier-provided inbox address. Wire it up once:
 
-  - In Zapier, create a Zap with a **"Webhooks by Zapier → Catch Hook"**
-    trigger. Copy the webhook URL it gives you.
-  - Add a **CircleLoop → "Send SMS"** action to that Zap. Map the recipient
-    to the hook's `phone` field and the body to its `message` field (the
-    Worker POSTs `{ phone, name, message }` as JSON).
-  - Set the hook URL as the `SMS_WEBHOOK_URL` secret on the Worker, either as
-    a GitHub repository secret (the "Deploy and set secrets" workflow now
-    picks it up) or via `npx wrangler secret put SMS_WEBHOOK_URL`.
+  - In Zapier, create a Zap with an **"Email by Zapier" → "New Inbound Email"**
+    trigger. It gives you a unique address like
+    `something123@robot.zapier.com` — copy it.
+  - Add a **CircleLoop → "Send SMS"** action to that Zap. Map the recipient to
+    the trigger's **Subject** field and the message to its **Body Plain**
+    field (the Worker emails that address with the phone number as the
+    subject and the welcome message as the body — no extra parsing step
+    needed).
+  - Set that inbox address as the `ZAPIER_SMS_EMAIL` secret on the Worker,
+    either as a GitHub repository secret (the "Deploy and set secrets"
+    workflow picks it up) or via `npx wrangler secret put ZAPIER_SMS_EMAIL`.
 
-  Until `SMS_WEBHOOK_URL` is set, phone sign-ups are still saved and shown in
+  Until `ZAPIER_SMS_EMAIL` is set, phone sign-ups are still saved and shown in
   admin — they just won't trigger a text (the "Welcome text sent" column shows
   "No"). Email sign-ups work with no extra setup.

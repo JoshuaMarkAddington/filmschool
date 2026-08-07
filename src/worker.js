@@ -348,28 +348,26 @@ async function sendSubscriberWelcomeEmail(env, { name, email }) {
 }
 
 /* CircleLoop has no public API, but it can send an SMS from a Zapier "Send SMS"
-   action. We POST the number + message to a Zapier "Catch Hook" webhook URL
-   (stored as the SMS_WEBHOOK_URL secret); the Zap then fires the CircleLoop
-   text. Returns true only if the webhook accepted the request. */
+   action. "Webhooks by Zapier" (Catch Hook) is a paid-plan-only trigger, so
+   instead we use "Email by Zapier" — a free trigger that fires when an email
+   arrives at a Zapier-provided inbox address (stored as the ZAPIER_SMS_EMAIL
+   secret). The subject line is just the phone number and the body is the
+   message, so the Zap can map them straight into CircleLoop's "Send SMS"
+   action with no extra parsing step. Returns true only if the email sent. */
 async function sendSubscriberWelcomeSms(env, { name, phone }) {
-  if (!env.SMS_WEBHOOK_URL) {
-    console.error("SMS is not configured (SMS_WEBHOOK_URL missing)");
+  if (!env.ZAPIER_SMS_EMAIL) {
+    console.error("SMS is not configured (ZAPIER_SMS_EMAIL missing)");
     return false;
   }
   const message =
     `${name ? name + ", welcome" : "Welcome"} to Adders Film School! ` +
     `You're signed up for discounts & early access — we'll be in touch soon.`;
 
-  const res = await fetch(env.SMS_WEBHOOK_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone, name, message }),
+  return sendEmail(env, {
+    to: env.ZAPIER_SMS_EMAIL,
+    subject: phone,
+    html: `<p>${escapeHtml(message)}</p>`,
   });
-  if (!res.ok) {
-    console.error("SMS webhook failed", res.status, await res.text());
-    return false;
-  }
-  return true;
 }
 
 /* ===========================================================================

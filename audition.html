@@ -3,714 +3,204 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Audition Sign-Up — Adders Film School Intensive Course</title>
+  <title>Intensive Course Auditions — Adders Film School</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
-  <!-- React + Babel via CDN (the site already loads tooling from CDNs) -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
   <style>
-    html, body { height: 100%; }
+    :root {
+      --bg: #070B14;
+      --bg2: #0E1525;
+      --text: #F4F1EA;
+      --muted: #8A93A8;
+      --line: #1B2440;
+      --copper: #E0894A;
+      --copperDeep: #B5651D;
+      --gold: #E8B84B;
+      --goldDeep: #B8902E;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
     body {
-      margin: 0;
-      background: #070B14;
-      color: #F4F1EA;
+      background: radial-gradient(ellipse 80% 40% at 50% -5%, rgba(224,137,74,0.12), transparent 55%), var(--bg);
+      color: var(--text);
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+      min-height: 100vh;
     }
-    #root { width: 100vw; height: 100vh; }
-    input, textarea, button { font-family: inherit; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
 
-    /* Step + element animations referenced by the form */
-    @keyframes stepFwd { from { opacity:0; transform:translateX(34px); } to { opacity:1; transform:none; } }
-    @keyframes stepBk  { from { opacity:0; transform:translateX(-34px); } to { opacity:1; transform:none; } }
-    @keyframes slideDown { from { opacity:0; max-height:0; } to { opacity:1; max-height:240px; } }
-    @keyframes spinR { to { transform: rotate(360deg); } }
-    @keyframes fade { from { opacity:0; } to { opacity:1; } }
-    @keyframes mzFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-    .mz-idle { animation: mzFloat 3.4s ease-in-out infinite; }
+    .backlink {
+      display: inline-block; color: var(--muted); text-decoration: none;
+      font-size: 14px; font-weight: 600; margin-bottom: 28px;
+    }
+    .backlink:hover { color: var(--copper); }
 
-    /* tidy scrollbars inside the form */
-    *::-webkit-scrollbar { width: 9px; height: 9px; }
-    *::-webkit-scrollbar-thumb { background: #1B2440; border-radius: 8px; }
+    .hero { text-align: center; margin-bottom: 44px; }
+    .mark { width: 96px; height: 96px; object-fit: contain; margin: 0 auto 20px; display: block; }
+    .badge {
+      display: inline-block; background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #1e293b; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 0.35rem 0.85rem; border-radius: 999px; margin-bottom: 18px;
+    }
+    h1 { font-family: 'Cinzel', serif; font-size: 2rem; margin: 0 0 14px; line-height: 1.2; }
+    .lead { color: var(--muted); font-size: 1.02rem; max-width: 560px; margin: 0 auto; }
+
+    .fees {
+      display: flex; align-items: stretch; justify-content: center; gap: 1.5rem;
+      margin: 30px auto 0; max-width: 420px;
+      background: var(--bg2); border: 1px solid var(--line); border-radius: 16px; padding: 22px 18px;
+    }
+    .fee { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+    .fee-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .fee-amount { font-size: 2rem; font-weight: 800; color: var(--gold); line-height: 1; font-family: 'Cinzel', serif; }
+    .fee-note { font-size: 0.78rem; color: var(--muted); text-align: center; }
+    .fee-divider { width: 1px; background: var(--line); }
+
+    section.block { margin-top: 48px; }
+    h2 {
+      font-family: 'Cinzel', serif; font-size: 1.4rem; margin: 0 0 6px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .block > p.sub { color: var(--muted); font-size: 0.95rem; margin: 0 0 20px; }
+
+    /* Age-bracket audition sections */
+    .sections { display: grid; gap: 14px; }
+    .sec-card {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      background: var(--bg2); border: 1px solid var(--line); border-left: 4px solid var(--copper);
+      border-radius: 14px; padding: 18px 22px;
+    }
+    .sec-age { font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); }
+    .sec-age small { display: block; font-family: 'Inter', sans-serif; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+    .sec-time {
+      text-align: right; font-weight: 700; font-size: 1.05rem; color: var(--gold); white-space: nowrap;
+    }
+    .sec-time small { display: block; font-size: 0.72rem; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.04em; margin-top: 3px; }
+
+    /* Requirements / what to bring */
+    .reqs { display: grid; gap: 12px; }
+    .req {
+      display: flex; gap: 14px; align-items: flex-start;
+      background: var(--bg2); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px;
+    }
+    .req-icon { font-size: 1.3rem; line-height: 1.4; flex-shrink: 0; }
+    .req-title { font-weight: 700; font-size: 0.98rem; margin: 0 0 3px; }
+    .req-body { color: var(--muted); font-size: 0.9rem; margin: 0; }
+
+    .cta-wrap { margin-top: 52px; text-align: center; }
+    .audition-now {
+      display: inline-block; background: linear-gradient(135deg, #fb923c, #ea580c 55%, #dc2626);
+      color: #fff; font-weight: 700; font-size: 1.15rem; padding: 1.05rem 3.2rem;
+      border-radius: 0.85rem; text-decoration: none; letter-spacing: 0.02em;
+      border: 1px solid rgba(255,255,255,0.25);
+      box-shadow: 0 8px 28px rgba(234,88,12,0.55);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .audition-now:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 38px rgba(234,88,12,0.75); }
+    .cta-note { color: var(--muted); font-size: 0.85rem; margin-top: 16px; }
+
+    @media (max-width: 520px) {
+      h1 { font-size: 1.6rem; }
+      .fees { flex-direction: column; gap: 18px; }
+      .fee-divider { width: auto; height: 1px; }
+      .sec-card { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .sec-time { text-align: left; }
+    }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div class="wrap">
+    <a class="backlink" href="index.html">‹ Back to the website</a>
 
-  <!-- Form source. Held as plain text and compiled by the bootstrap script
-       at the bottom of the page, rather than relying on Babel's auto-runner
-       (whose default JSX-runtime config conflicts with the classic runtime
-       we need when running from a plain <script> tag). This mirrors the
-       membership application form in apply.html, adapted for the two-week
-       intensive-course audition. -->
-  <script type="text/plain" id="form-src">
-  const { useState, useEffect } = React;
+    <div class="hero">
+      <img class="mark" src="Adders Film School Logo 110825.png" alt="Adders Film School">
+      <span class="badge">Auditions Open</span>
+      <h1>Two-Week Intensive Course Auditions</h1>
+      <p class="lead">
+        A fast, focused two-week intensive for young performers. This audition is your
+        chance to be seen — read everything below so you arrive ready, then sign up and
+        secure your slot.
+      </p>
 
-  /* =====================================================================
-     DESIGN TOKENS / DEPENDENCIES
-     Palette, logo marks and helpers shared with the membership form.
-     ===================================================================== */
-
-  // Cinematic dark palette — copper/gold to match the Adders brand.
-  const C = {
-    bg:        "#070B14",
-    bg2:       "#0E1525",
-    text:      "#F4F1EA",
-    muted:     "#8A93A8",
-    line:      "#1B2440",
-    copper:    "#E0894A",
-    copperDeep:"#B5651D",
-    gold:      "#E8B84B",
-    goldDeep:  "#B8902E",
-    blue:      "#5B8DEF",
-  };
-
-  const PALETTE = { filmschool: [C.copper, C.gold] };
-
-  // Logo mark — renders the Adders Film School logo image.
-  function MazeMark({ pair, size = 80, className, style }) {
-    return (
-      <img src="Adders Film School Logo 110825.png" alt="Adders Film School"
-        className={className}
-        style={{ width: size, height: size, objectFit: "contain", display: "block", ...style }} />
-    );
-  }
-
-  /* ---------- discipline data (audition strand the student is applying for) ---------- */
-  const DISCIPLINES = [
-    "Dance",
-    "Singing",
-    "Dancing & Singing",
-    "Acting",
-  ];
-
-  const DISCIPLINE_INFO = {
-    "Dance": "Audition as a dancer. Bring a short piece in any style you like — we're looking for musicality, movement and stage presence.",
-    "Singing": "Audition as a vocalist. Prepare a song that shows off your range and character — accompaniment or a backing track is welcome.",
-    "Dancing & Singing": "Audition across both strands. Ideal for triple-threat performers who want to be seen for movement and voice together.",
-    "Acting": "Audition as an actor. Prepare a short monologue or be ready to work from sides on the day — we want to see truthful, watchable performance.",
-  };
-
-  /* =====================================================================
-     INTENSIVE COURSE — AUDITION SIGN-UP FORM — one question at a time
-     ===================================================================== */
-
-  // Fees for the two-week intensive course. The sign-up on this page is for
-  // the AUDITION only (£25). The course fee (£100) is payable separately by
-  // students who are offered a place after a successful audition.
-  const AUDITION_FEE = 25;
-  const COURSE_FEE = 100;
-
-  // Real Stripe Payment Link for the £25 audition fee.
-  //
-  // ⚠️ SET UP REQUIRED: replace the placeholder below with the real Stripe
-  // Payment Link for the £25 audition (create it in the Stripe dashboard,
-  // exactly as the membership links in apply.html were created). Until this
-  // is a real link, the "Pay" button will not reach a working checkout.
-  const AUDITION_STRIPE_LINK = "https://buy.stripe.com/REPLACE_WITH_REAL_25_AUDITION_LINK";
-
-  function ageInYears(dob) {
-    const birth = new Date(dob);
-    if (isNaN(birth)) return null;
-    const today = new Date();
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--;
-    return age;
-  }
-  // The intensive course is open to performers aged 13–24.
-  function isEligibleAge(dob) {
-    const age = ageInYears(dob);
-    return age !== null && age >= 13 && age <= 24;
-  }
-
-  const EMPTY = {
-    studentName:"", studentDob:"",
-    discipline:"",
-    newToPerforming:null,
-    guardianName:"", guardianDob:"",
-    addressLine1:"", addressLine2:"", city:"", county:"", postcode:"",
-    email:"", phone:"",
-    emergencySame:null, emergencyName:"", emergencyPhone:"", emergencyRelation:"",
-    allergies:null, allergiesDetail:"",
-    additionalNeeds:null, additionalNeedsDetail:"",
-    healthIssues:null, healthIssuesDetail:"",
-    consentFilming:false, consentPolicy:false,
-  };
-
-  const FSTEPS = [
-    "intro","studentName","studentDob","discipline","newToPerforming",
-    "guardianName","guardianDob","address","email","phone","emergency",
-    "allergies","additionalNeeds","healthIssues","consents","policy","payment",
-  ];
-
-  function AuditionForm({ onBack }) {
-    const [idx, setIdx] = useState(0);
-    const [dir, setDir] = useState("fwd");
-    const [ak, setAk] = useState(0);
-    const [d, setD] = useState(EMPTY);
-    const [paying, setPaying] = useState(false);
-    const [payError, setPayError] = useState("");
-    const set = (k,v) => setD(p => ({...p,[k]:v}));
-
-    const total = FSTEPS.length;
-    const step = FSTEPS[idx];
-    const pct = Math.round((idx / (total - 1)) * 100);
-
-    const canGo = () => {
-      switch(step){
-        case "intro": return true;
-        case "studentName": return d.studentName.trim().length > 1;
-        case "studentDob": return !!d.studentDob && isEligibleAge(d.studentDob);
-        case "discipline": return !!d.discipline;
-        case "newToPerforming": return d.newToPerforming !== null;
-        case "guardianName": return d.guardianName.trim().length > 1;
-        case "guardianDob": return !!d.guardianDob;
-        case "address": return d.addressLine1.trim().length > 2 && d.city.trim().length > 1 && d.postcode.trim().length > 3;
-        case "email": return /\S+@\S+\.\S+/.test(d.email);
-        case "phone": return d.phone.trim().length > 7;
-        case "emergency": return d.emergencySame !== null && (d.emergencySame || (d.emergencyName.trim().length > 1 && d.emergencyPhone.trim().length > 7));
-        case "allergies": return d.allergies !== null && (d.allergies === false || d.allergiesDetail.trim().length > 1);
-        case "additionalNeeds": return d.additionalNeeds !== null && (d.additionalNeeds === false || d.additionalNeedsDetail.trim().length > 1);
-        case "healthIssues": return d.healthIssues !== null && (d.healthIssues === false || d.healthIssuesDetail.trim().length > 1);
-        case "consents": return d.consentFilming && d.consentPolicy;
-        case "policy": return true;
-        case "payment": return true;
-        default: return true;
-      }
-    };
-
-    const next = () => { if(!canGo()) return; setDir("fwd"); setAk(k=>k+1); setIdx(i=>Math.min(i+1,total-1)); };
-    const prev = () => { setDir("bk"); setAk(k=>k+1); setIdx(i=>Math.max(i-1,0)); };
-
-    // Save the audition sign-up to our records, then hand off to the real
-    // Stripe Payment Link for the £25 audition fee. Stripe — not this page —
-    // takes the card details and handles the charge.
-    const handlePay = async () => {
-      if(!canGo()) return;
-      setPayError("");
-      setPaying(true);
-      try {
-        const res = await fetch("/api/audition", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(d),
-        });
-        if(!res.ok) throw new Error("save_failed");
-        const { id } = await res.json();
-        if(!AUDITION_STRIPE_LINK || AUDITION_STRIPE_LINK.includes("REPLACE_WITH_REAL")) throw new Error("no_link");
-        const url = new URL(AUDITION_STRIPE_LINK);
-        url.searchParams.set("client_reference_id", id);
-        if(d.email) url.searchParams.set("prefilled_email", d.email);
-        window.location.href = url.toString();
-      } catch (e) {
-        setPaying(false);
-        setPayError("We couldn't save your audition sign-up — please check your connection and try again.");
-      }
-    };
-
-    const btnLabel = step==="intro" ? "Begin audition sign-up"
-      : step==="policy" ? "Review the audition fee →"
-      : step==="payment" ? `Pay £${AUDITION_FEE} — secure checkout`
-      : "Continue →";
-
-    const handleContinue = step==="payment" ? handlePay : next;
-    const firstName = d.studentName ? d.studentName.split(" ")[0] : "the student";
-
-    return (
-      <div style={{ width:"100%", height:"100%", display:"flex", flexDirection:"column",
-        background: step==="payment"
-          ? `radial-gradient(ellipse 90% 50% at 50% -10%, ${C.gold}18, ${C.copper}10, transparent 60%), ${C.bg}`
-          : `radial-gradient(ellipse 80% 40% at 50% -5%, ${C.copper}1A, transparent 55%), ${C.bg}` }}>
-
-        {/* top bar: back + subtle progress */}
-        <div style={{ display:"flex", alignItems:"center", padding:"18px 28px 0", gap:14, flexShrink:0 }}>
-          {step !== "done" && (
-            <button onClick={idx===0 ? onBack : prev}
-              style={{ background:"transparent", border:`1px solid ${C.line}`, color:C.muted,
-                borderRadius:9, padding:"7px 14px", cursor:"pointer", fontSize:14, fontWeight:600, flexShrink:0 }}>
-              ‹ {idx===0 ? "Back" : "Prev"}
-            </button>
-          )}
-          <div style={{ flex:1, height:3, background:"#1B2440", borderRadius:4, overflow:"hidden" }}>
-            <div style={{ width:`${pct}%`, height:"100%", borderRadius:4, transition:"width .45s ease",
-              background:`linear-gradient(90deg,${C.copperDeep},${C.copper})` }} />
-          </div>
-          <div style={{ width:50, flexShrink:0 }} />
+      <div class="fees">
+        <div class="fee">
+          <span class="fee-label">Audition</span>
+          <span class="fee-amount">£25</span>
+          <span class="fee-note">Due at sign-up</span>
         </div>
-
-        {/* animated step content */}
-        <div key={ak} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center",
-          justifyContent:"center", padding:"24px 32px", overflowY:"auto",
-          animation:`${dir==="fwd"?"stepFwd":"stepBk"} .3s cubic-bezier(.25,.46,.45,.94) both` }}>
-          <FormContent step={step} d={d} set={set} firstName={firstName} />
+        <div class="fee-divider"></div>
+        <div class="fee">
+          <span class="fee-label">Course</span>
+          <span class="fee-amount">£100</span>
+          <span class="fee-note">Only if offered a place</span>
         </div>
-
-        {/* bottom CTA */}
-        {step !== "done" && (
-          <div style={{ padding: step==="intro" ? "10px 32px 90px" : "10px 32px 30px", flexShrink:0, maxWidth:500, width:"100%", alignSelf:"center" }}>
-            <button onClick={handleContinue} style={{
-              width:"100%", padding:"16px 20px", fontSize:16, fontWeight:700, cursor: canGo()?"pointer":"not-allowed",
-              border:"none", borderRadius:13, letterSpacing:0.3, transition:"opacity .15s, transform .1s",
-              opacity: canGo()?1:0.3,
-              background: canGo()
-                ? step==="payment"
-                  ? `linear-gradient(180deg,${C.gold},${C.goldDeep})`
-                  : `linear-gradient(180deg,${C.copper},${C.copperDeep})`
-                : "#2A3650",
-              color:"#070B14",
-            }}
-              onMouseDown={e=>e.currentTarget.style.transform="scale(.98)"}
-              onMouseUp={e=>e.currentTarget.style.transform="scale(1)"}
-              onMouseLeave={e=>e.currentTarget.style.transform="scale(1)"}
-            >{btnLabel}</button>
-            {step==="payment" && (
-              <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8, marginTop:10, color:C.muted, fontSize:12.5 }}>
-                <span>🔒</span> Secured by Stripe — your card details never touch our servers
-              </div>
-            )}
-            {payError && (
-              <div style={{ color:"#E0894A", fontSize:13, textAlign:"center", marginTop:10 }}>{payError}</div>
-            )}
-          </div>
-        )}
-
-        {/* Stripe processing overlay */}
-        {paying && <PayingOverlay />}
       </div>
-    );
-  }
+    </div>
 
-  /* ---------- step renderer ---------- */
-  function FormContent({ step, d, set, firstName }) {
-    const Q = ({children,sub}) => (
-      <div style={{ textAlign:"center", marginBottom:28, maxWidth:520 }}>
-        <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:26, lineHeight:1.25, color:C.text, fontWeight:700, margin:0 }}>{children}</h2>
-        {sub && <p style={{ color:C.muted, fontSize:14, lineHeight:1.6, marginTop:10 }}>{sub}</p>}
+    <!-- ===== Audition sections by age bracket ===== -->
+    <section class="block">
+      <h2>🎬 Audition Sections</h2>
+      <p class="sub">
+        Auditions run in sections by age. Please arrive for the time that matches the
+        student's age bracket — you'll confirm the bracket when you sign up.
+      </p>
+      <div class="sections">
+        <div class="sec-card">
+          <div class="sec-age">13–14 <small>Age bracket</small></div>
+          <div class="sec-time">10:00am – 12:00pm <small>Section 1</small></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-age">15–16 <small>Age bracket</small></div>
+          <div class="sec-time">12:30pm – 2:30pm <small>Section 2</small></div>
+        </div>
+        <div class="sec-card">
+          <div class="sec-age">17–18 <small>Age bracket</small></div>
+          <div class="sec-time">3:00pm – 5:00pm <small>Section 3</small></div>
+        </div>
       </div>
-    );
+    </section>
 
-    switch(step){
-
-      case "intro": return (
-        <div style={{ display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center", maxWidth:460 }}>
-          <MazeMark pair={PALETTE.filmschool} size={420} className="mz-idle" />
-          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:28, color:C.text, marginTop:22, lineHeight:1.2 }}>Two-Week Intensive Course</h2>
-          <p style={{ color:C.muted, fontSize:14.5, lineHeight:1.75, marginTop:14 }}>
-            This sign-up secures your <b style={{ color:C.text }}>audition</b> for our two-week intensive course.
-            We'll walk you through everything we need — take your time, your progress is saved as you go.
-          </p>
-          <div style={{ marginTop:22, display:"flex", flexDirection:"column", gap:10, alignItems:"center" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:10, color:C.gold, fontSize:13, fontWeight:600,
-              border:`1px solid ${C.gold}44`, padding:"10px 18px", borderRadius:30, background:`${C.gold}0E` }}>
-              🎭 Audition fee £{AUDITION_FEE} · Course fee £{COURSE_FEE} if offered a place
-            </div>
-            <div style={{ display:"flex", alignItems:"center", gap:10, color:C.copper, fontSize:13, fontWeight:600,
-              border:`1px solid ${C.copper}44`, padding:"10px 18px", borderRadius:30, background:`${C.copper}0E` }}>
-              ⚡ Open to performers aged 13–24
-            </div>
-          </div>
-        </div>
-      );
-
-      case "studentName": return (
-        <div style={{ width:"100%", maxWidth:460 }}>
-          <Q>What is the student's full name?</Q>
-          <FInput value={d.studentName} onChange={e=>set("studentName",e.target.value)} placeholder="e.g. Jamie Rivers" autoFocus />
-        </div>
-      );
-
-      case "studentDob": return (
-        <div style={{ width:"100%", maxWidth:460 }}>
-          <Q sub="The intensive course is open to performers aged 13–24.">When was {firstName} born?</Q>
-          <FInput type="date" value={d.studentDob} onChange={e=>set("studentDob",e.target.value)} />
-          {d.studentDob && !isEligibleAge(d.studentDob) && (
-            <div style={{ color:C.copper, fontSize:13, marginTop:10 }}>
-              Sorry — the intensive course is only open to performers aged 13 to 24. Please double-check the date entered.
-            </div>
-          )}
-        </div>
-      );
-
-      case "discipline": return (
-        <div style={{ width:"100%", maxWidth:520 }}>
-          <Q sub={`Choose the strand ${firstName} would like to audition for.`}>What is {firstName} auditioning for?</Q>
-          <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
-            {DISCIPLINES.map(m=>(
-              <DisciplineCard key={m} name={m} selected={d.discipline===m}
-                onClick={()=>set("discipline",m)} />
-            ))}
-          </div>
-        </div>
-      );
-
-      case "newToPerforming": return (
-        <div style={{ width:"100%", maxWidth:420, display:"flex", flexDirection:"column", alignItems:"center" }}>
-          <Q sub="This helps us pitch the audition at the right level. There's no wrong answer!">
-            Is {firstName} new to performing?
-          </Q>
-          <div style={{ display:"flex", gap:16, width:"100%", maxWidth:300 }}>
-            {[["Yes",true],["No",false]].map(([label,val])=>(
-              <button key={label} onClick={()=>set("newToPerforming",val)} style={{
-                flex:1, padding:"22px 0", borderRadius:14, border:`2px solid ${d.newToPerforming===val?C.copper:C.line}`,
-                background:d.newToPerforming===val?`${C.copper}18`:C.bg2, cursor:"pointer",
-                color:d.newToPerforming===val?C.copper:C.text, fontSize:20, fontWeight:700,
-                fontFamily:"'Cinzel',serif", transition:"all .15s ease",
-              }}>{label}</button>
-            ))}
-          </div>
-        </div>
-      );
-
-      case "guardianName": return (
-        <div style={{ width:"100%", maxWidth:460 }}>
-          <Q sub="The parent or guardian for under-18s, or the student themselves if over 18.">Parent or guardian's full name</Q>
-          <FInput value={d.guardianName} onChange={e=>set("guardianName",e.target.value)} placeholder="Full name" autoFocus />
-        </div>
-      );
-
-      case "guardianDob": return (
-        <div style={{ width:"100%", maxWidth:460 }}>
-          <Q>{d.guardianName?d.guardianName.split(" ")[0]+"'s":"Guardian's"} date of birth</Q>
-          <FInput type="date" value={d.guardianDob} onChange={e=>set("guardianDob",e.target.value)} />
-        </div>
-      );
-
-      case "address": return (
-        <div style={{ width:"100%", maxWidth:480 }}>
-          <Q sub="Address Line 2, County are optional — the rest are required.">What is your home address?</Q>
-          <div style={{ display:"flex", flexDirection:"column", gap:11 }}>
-            <div>
-              <div style={{ color:C.muted, fontSize:12, fontWeight:600, letterSpacing:0.3, marginBottom:5 }}>Address Line 1 *</div>
-              <FInput value={d.addressLine1} onChange={e=>set("addressLine1",e.target.value)} placeholder="House number and street" autoFocus />
-            </div>
-            <div>
-              <div style={{ color:C.muted, fontSize:12, fontWeight:600, letterSpacing:0.3, marginBottom:5 }}>Address Line 2</div>
-              <FInput value={d.addressLine2} onChange={e=>set("addressLine2",e.target.value)} placeholder="Apartment, flat, suite (optional)" />
-            </div>
-            <div style={{ display:"flex", gap:11 }}>
-              <div style={{ flex:1 }}>
-                <div style={{ color:C.muted, fontSize:12, fontWeight:600, letterSpacing:0.3, marginBottom:5 }}>City *</div>
-                <FInput value={d.city} onChange={e=>set("city",e.target.value)} placeholder="City" />
-              </div>
-              <div style={{ flex:1 }}>
-                <div style={{ color:C.muted, fontSize:12, fontWeight:600, letterSpacing:0.3, marginBottom:5 }}>County</div>
-                <FInput value={d.county} onChange={e=>set("county",e.target.value)} placeholder="County (optional)" />
-              </div>
-            </div>
-            <div style={{ maxWidth:200 }}>
-              <div style={{ color:C.muted, fontSize:12, fontWeight:600, letterSpacing:0.3, marginBottom:5 }}>Postcode *</div>
-              <FInput value={d.postcode} onChange={e=>set("postcode",e.target.value.toUpperCase())} placeholder="e.g. SW1A 1AA" />
-            </div>
-          </div>
-        </div>
-      );
-
-      case "email": return (
-        <div style={{ width:"100%", maxWidth:460 }}>
-          <Q sub="We'll send your audition details and confirmation here.">
-            Best email to reach you?
-          </Q>
-          <FInput type="email" value={d.email} onChange={e=>set("email",e.target.value)} placeholder="your@email.com" autoFocus />
-        </div>
-      );
-
-      case "phone": return (
-        <div style={{ width:"100%", maxWidth:460 }}>
-          <Q>And your phone number?</Q>
-          <FInput type="tel" value={d.phone} onChange={e=>set("phone",e.target.value)} placeholder="+44 7700 900000" autoFocus />
-        </div>
-      );
-
-      case "emergency": return (
-        <div style={{ width:"100%", maxWidth:480 }}>
-          <Q sub="Who should we contact if there's an emergency during the audition?">Emergency contact</Q>
-          <div style={{ display:"flex", flexDirection:"column", gap:12, marginBottom:18 }}>
-            {[[true,`Use ${d.guardianName||"parent/guardian"} details above`,d.phone||"Same contact info"],
-              [false,"Someone different","I'll add their details below"]].map(([val,label,sub])=>(
-              <button key={String(val)} onClick={()=>set("emergencySame",val)} style={{
-                padding:"15px 18px", borderRadius:14, border:`2px solid ${d.emergencySame===val?C.copper:C.line}`,
-                background:d.emergencySame===val?`${C.copper}14`:C.bg2, cursor:"pointer", textAlign:"left",
-                transition:"all .15s ease",
-              }}>
-                <div style={{ color:d.emergencySame===val?C.copper:C.text, fontWeight:700, fontSize:14 }}>{label}</div>
-                <div style={{ color:C.muted, fontSize:12, marginTop:3 }}>{sub}</div>
-              </button>
-            ))}
-          </div>
-          {d.emergencySame===false && (
-            <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
-              <FInput value={d.emergencyName} onChange={e=>set("emergencyName",e.target.value)} placeholder="Their full name" />
-              <FInput type="tel" value={d.emergencyPhone} onChange={e=>set("emergencyPhone",e.target.value)} placeholder="Their phone number" />
-              <FInput value={d.emergencyRelation} onChange={e=>set("emergencyRelation",e.target.value)} placeholder="Relationship to student (e.g. Grandparent, Aunt)" />
-            </div>
-          )}
-        </div>
-      );
-
-      case "allergies": return (
-        <MedStep question={`Does ${firstName} have any allergies?`}
-          hint="Food, medication, environmental — include anything that's relevant."
-          val={d.allergies} detail={d.allergiesDetail}
-          onVal={v=>set("allergies",v)} onDetail={v=>set("allergiesDetail",v)} />
-      );
-
-      case "additionalNeeds": return (
-        <MedStep question="Any additional needs or disabilities?"
-          hint="Any support we should put in place to make the audition the best it can be."
-          val={d.additionalNeeds} detail={d.additionalNeedsDetail}
-          onVal={v=>set("additionalNeeds",v)} onDetail={v=>set("additionalNeedsDetail",v)} />
-      );
-
-      case "healthIssues": return (
-        <MedStep question="Any health issues we should know about?"
-          hint="Conditions, medications, or anything that may affect the student during the audition."
-          val={d.healthIssues} detail={d.healthIssuesDetail}
-          onVal={v=>set("healthIssues",v)} onDetail={v=>set("healthIssuesDetail",v)} />
-      );
-
-      case "consents": return (
-        <div style={{ width:"100%", maxWidth:520 }}>
-          <div style={{ textAlign:"center", marginBottom:26 }}>
-            <MazeMark pair={PALETTE.filmschool} size={52} />
-            <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:22, color:C.text, marginTop:14, marginBottom:0 }}>Almost there</h2>
-            <p style={{ color:C.muted, fontSize:14, marginTop:8, lineHeight:1.6 }}>
-              We need your agreement on two important points before we confirm your audition.
+    <!-- ===== What to wear / bring ===== -->
+    <section class="block">
+      <h2>👟 What to Wear &amp; Bring</h2>
+      <p class="sub">Come prepared so you can give your very best on the day.</p>
+      <div class="reqs">
+        <div class="req">
+          <span class="req-icon">🖤</span>
+          <div>
+            <p class="req-title">All black clothing</p>
+            <p class="req-body">
+              Wear all black with no logos or patterns. Small logos are fine — just avoid
+              anything bold or distracting.
             </p>
           </div>
-          <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
-            <ConsentCard checked={d.consentFilming} onChange={v=>set("consentFilming",v)}
-              title="Consent to film the student"
-              desc="Because this is a film school, students will be filmed as part of the audition and for promotional purposes. I give consent for the student to be filmed during the audition and for appropriate footage to be used by Adders Film School." />
-            <ConsentCard checked={d.consentPolicy} onChange={v=>set("consentPolicy",v)}
-              title="I accept the terms and policy"
-              desc="I confirm I have read and understood the Adders Film School policy agreement (shown on the next screen) and I agree to abide by its terms on behalf of myself and the student." />
+        </div>
+        <div class="req">
+          <span class="req-icon">🩰</span>
+          <div>
+            <p class="req-title">Footwear for dancing</p>
+            <p class="req-body">Wear footwear that is appropriate and safe for dancing.</p>
           </div>
         </div>
-      );
-
-      case "policy": return (
-        <div style={{ width:"100%", maxWidth:580 }}>
-          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:22, color:C.text, textAlign:"center", marginBottom:18 }}>
-            Policy Agreement
-          </h2>
-          <div style={{ background:C.bg2, border:`1px solid ${C.line}`, borderRadius:14, padding:"22px 24px",
-            maxHeight:360, overflowY:"auto", color:C.muted, fontSize:13.5, lineHeight:1.85 }}>
-            <div style={{ color:C.copper, fontFamily:"'Cinzel',serif", fontWeight:700, fontSize:16, marginBottom:16 }}>
-              Adders Entertainment Group — Policies
-            </div>
-            <p><b>1. Code of Conduct.</b> All members, parents and guardians are expected to treat staff, students and the studio with courtesy and respect at all times. Disruptive, abusive or unsafe behaviour may result in suspension or removal from the programme without refund.</p>
-            <p><b>2. Attendance.</b> Auditions and sessions run to a fixed timetable. Persistent lateness or unexplained absence may affect a student's place on the programme. Please notify us in advance if a student cannot attend.</p>
-            <p><b>3. Health, Safety &amp; Medical Information.</b> Any allergies, additional needs or health issues declared on this form will be kept on file and used solely to keep the student safe. Parents/guardians must keep this information up to date.</p>
-            <p><b>4. Filming &amp; Use of Footage.</b> The audition and course involve filming as part of the curriculum. By submitting this form and consenting, you agree that footage of the student may be captured and used for educational purposes and, where separately consented to, promotional use by Adders Entertainment Group.</p>
-            <p><b>5. Payments &amp; Fees.</b> The audition fee is due at checkout. The course fee is payable separately by students who are offered and accept a place after a successful audition. The audition fee secures an audition slot only and does not guarantee a place on the course.</p>
-            <p><b>6. Cancellations.</b> Requests to cancel or change a booking should be sent to us in writing as early as possible. Refunds, where applicable, are handled on a case-by-case basis in line with our cancellation policy.</p>
-            <p><b>7. Safeguarding.</b> We take the welfare of all students seriously. Any safeguarding concerns will be handled in accordance with our safeguarding procedures and reported to the appropriate authorities where required.</p>
-            <p><b>8. Data Protection.</b> Information submitted on this form is stored securely and used only for the purposes of administering the programme. It is not shared with third parties except where required to deliver the service (e.g. payment processing).</p>
-            <p><b>9. Changes to this Policy.</b> Adders Entertainment Group may update these policies from time to time. Continued participation in the programme constitutes acceptance of the current policy.</p>
-            <p style={{ marginTop:14 }}>
-              <a href="/policy.pdf" target="_blank" rel="noopener noreferrer" style={{ color:C.blue, fontWeight:600 }}>
-                📄 Download the full policy document (PDF)
-              </a>
-            </p>
+        <div class="req">
+          <span class="req-icon">💧</span>
+          <div>
+            <p class="req-title">Stay hydrated — bring water</p>
+            <p class="req-body">Bring a water bottle and keep hydrated throughout your section.</p>
           </div>
-          <div style={{ color:C.muted, fontSize:12.5, textAlign:"center", marginTop:14 }}>
-            You confirmed acceptance on the previous screen. Submitting confirms your audition sign-up.
-          </div>
-        </div>
-      );
-
-      case "payment": return <PaymentStep d={d} firstName={firstName} />;
-
-      default: return null;
-    }
-  }
-
-  /* ---------- form helpers ---------- */
-  const FI = {
-    width:"100%", boxSizing:"border-box", background:C.bg2, border:`2px solid ${C.line}`,
-    borderRadius:12, padding:"16px 18px", color:C.text, fontSize:16, outline:"none",
-  };
-  const FInput = (props) => (
-    <input {...props} style={FI}
-      onFocus={e=>{e.target.style.borderColor=C.copper}}
-      onBlur={e=>{e.target.style.borderColor=C.line}} />
-  );
-
-  function DisciplineCard({ name, selected, onClick }) {
-    const [info, setInfo] = useState(false);
-    const desc = DISCIPLINE_INFO[name];
-    return (
-      <div style={{
-        borderRadius:13, border:`2px solid ${selected?C.copper:info?`${C.copper}66`:C.line}`,
-        background: selected ? `linear-gradient(135deg,${C.copper}1E,${C.copperDeep}14)` : C.bg2,
-        transition:"all .14s ease", overflow:"hidden",
-      }}>
-        <div style={{ display:"flex", alignItems:"center", gap:10, padding:"14px 16px" }}>
-          <button onClick={onClick} style={{
-            flex:1, display:"flex", alignItems:"center", justifyContent:"space-between", gap:12,
-            background:"transparent", border:"none", textAlign:"left", cursor:"pointer", padding:0,
-          }}>
-            <span style={{ color:selected?C.copper:C.text, fontWeight:selected?700:400, fontSize:15, lineHeight:1.3 }}>{name}</span>
-            {selected && <span style={{ color:C.copper, fontSize:18, flexShrink:0 }}>✓</span>}
-          </button>
-          {desc && (
-            <button onClick={()=>setInfo(o=>!o)} aria-label={`About ${name}`} title="More info" style={{
-              flexShrink:0, width:26, height:26, borderRadius:"50%", cursor:"pointer",
-              border:`1.5px solid ${info?C.copper:C.muted}`, background:info?C.copper:"transparent",
-              color:info?"#070B14":C.muted, fontFamily:"Georgia, serif", fontStyle:"italic",
-              fontWeight:700, fontSize:14, display:"grid", placeItems:"center", transition:"all .15s ease", lineHeight:1,
-            }}>i</button>
-          )}
-        </div>
-        {info && desc && (
-          <div style={{ padding:"0 16px 15px", animation:"slideDown .2s ease both" }}>
-            <div style={{ borderTop:`1px solid ${C.copper}2E`, paddingTop:12, color:C.muted, fontSize:13, lineHeight:1.65 }}>
-              {desc}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  function MedStep({ question, hint, val, detail, onVal, onDetail }) {
-    return (
-      <div style={{ width:"100%", maxWidth:480 }}>
-        <div style={{ textAlign:"center", marginBottom:hint?6:24 }}>
-          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:24, lineHeight:1.3, color:C.text, fontWeight:700, margin:0 }}>{question}</h2>
-          {hint && <p style={{ color:C.muted, fontSize:14, lineHeight:1.6, marginTop:8, marginBottom:22 }}>{hint}</p>}
-        </div>
-        <div style={{ display:"flex", gap:16, marginBottom:18 }}>
-          {[["No",false],["Yes",true]].map(([label,v])=>(
-            <button key={label} onClick={()=>onVal(v)} style={{
-              flex:1, padding:"20px 0", borderRadius:14, border:`2px solid ${val===v?C.copper:C.line}`,
-              background:val===v?`${C.copper}18`:C.bg2, cursor:"pointer",
-              color:val===v?C.copper:C.text, fontSize:18, fontWeight:700,
-              fontFamily:"'Cinzel',serif", transition:"all .15s ease",
-            }}>{label}</button>
-          ))}
-        </div>
-        {val===true && (
-          <textarea value={detail} onChange={e=>onDetail(e.target.value)}
-            placeholder="Please give us details so we can make sure we're fully prepared..."
-            rows={4} style={{...FI, resize:"vertical", fontFamily:"inherit", lineHeight:1.6, marginTop:4}}
-            onFocus={e=>e.target.style.borderColor=C.copper} onBlur={e=>e.target.style.borderColor=C.line} />
-        )}
-      </div>
-    );
-  }
-
-  function ConsentCard({ checked, onChange, title, desc }) {
-    return (
-      <button onClick={()=>onChange(!checked)} style={{
-        padding:"18px 20px", borderRadius:16, textAlign:"left", cursor:"pointer", width:"100%",
-        border:`2px solid ${checked?C.copper:C.line}`, background:checked?`${C.copper}10`:C.bg2,
-        transition:"all .18s ease", display:"flex", gap:14, alignItems:"flex-start",
-      }}>
-        <div style={{ width:22, height:22, borderRadius:6, flexShrink:0, marginTop:2,
-          border:`2px solid ${checked?C.copper:C.muted}`, background:checked?C.copper:"transparent",
-          display:"grid", placeItems:"center" }}>
-          {checked && <span style={{ color:"#070B14", fontSize:13, fontWeight:900, lineHeight:1 }}>✓</span>}
-        </div>
-        <div>
-          <div style={{ color:checked?C.copper:C.text, fontWeight:700, fontSize:15, marginBottom:6 }}>{title}</div>
-          <div style={{ color:C.muted, fontSize:13, lineHeight:1.65 }}>{desc}</div>
-        </div>
-      </button>
-    );
-  }
-
-  /* ---------- payment step ---------- */
-  function PaymentStep({ d, firstName }) {
-    return (
-      <div style={{ width:"100%", maxWidth:560 }}>
-        <div style={{ textAlign:"center", marginBottom:28 }}>
-          <MazeMark pair={PALETTE.filmschool} size={52} className="mz-idle" />
-          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:26, color:C.text, marginTop:14, marginBottom:0 }}>Confirm your audition</h2>
-          <p style={{ color:C.muted, fontSize:14, lineHeight:1.6, marginTop:8 }}>
-            You're signing {firstName} up to audition for the two-week intensive course.
-          </p>
-        </div>
-
-        <div style={{ borderRadius:18, border:`2px solid ${C.gold}`, overflow:"hidden",
-          background:`linear-gradient(135deg,${C.gold}16,${C.gold}08)` }}>
-          <div style={{ padding:"22px 24px" }}>
-            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
-              <div>
-                <div style={{ fontFamily:"'Cinzel',serif", color:C.gold, fontWeight:700, fontSize:19 }}>Audition</div>
-                <div style={{ color:C.text, fontSize:13, marginTop:4 }}>Strand: <b>{d.discipline || "—"}</b></div>
-              </div>
-              <div style={{ textAlign:"right" }}>
-                <span style={{ color:C.gold, fontWeight:700, fontSize:30, fontFamily:"'Cinzel',serif" }}>£{AUDITION_FEE}</span>
-              </div>
-            </div>
-            <div style={{ borderTop:`1px solid ${C.gold}2E`, marginTop:14, paddingTop:14, color:C.muted, fontSize:13, lineHeight:1.65 }}>
-              This payment secures your audition slot only. If {firstName} is offered a place, the
-              two-week intensive course fee of <b style={{ color:C.text }}>£{COURSE_FEE}</b> is payable separately.
-            </div>
-          </div>
-        </div>
-
-        <div style={{ marginTop:20, background:C.bg2, border:`1px solid ${C.line}`, borderRadius:12, padding:"13px 18px",
-          display:"flex", justifyContent:"space-between", alignItems:"center" }}>
-          <span style={{ color:C.muted, fontSize:13 }}>Due today:</span>
-          <span style={{ color:C.text, fontWeight:700, fontSize:14 }}>
-            Audition fee — <span style={{ color:C.gold }}>£{AUDITION_FEE}</span>
-          </span>
         </div>
       </div>
-    );
-  }
+    </section>
 
-  /* ---------- paying overlay ---------- */
-  function PayingOverlay() {
-    return (
-      <div style={{ position:"absolute", inset:0, zIndex:50, display:"flex", flexDirection:"column",
-        alignItems:"center", justifyContent:"center",
-        background:`rgba(7,11,20,.92)`, backdropFilter:"blur(8px)",
-        animation:"fade .25s ease both" }}>
-        <MazeMark pair={[C.gold,C.goldDeep]} size={100}
-          style={{ animation:"spinR 1s linear infinite", transformOrigin:"50% 50%" }} />
-        <div style={{ marginTop:28, fontFamily:"'Cinzel',serif", fontSize:18, color:C.copper, fontWeight:700 }}>
-          Saving your audition sign-up…
-        </div>
-        <div style={{ marginTop:8, color:C.muted, fontSize:13 }}>Taking you to Stripe to complete payment</div>
-        <div style={{ marginTop:14, color:C.muted, fontSize:13 }}>Audition fee · £{AUDITION_FEE}</div>
-      </div>
-    );
-  }
-
-  /* ---------- mount ---------- */
-  const goHome = () => { window.location.href = "index.html"; };
-  ReactDOM.createRoot(document.getElementById("root"))
-    .render(<AuditionForm onBack={goHome} />);
-  </script>
-
-  <!-- Bootstrap: compile the JSX above with the classic runtime (so the output
-       calls the global React.createElement) and run it. -->
-  <script>
-    (function () {
-      try {
-        var src = document.getElementById("form-src").textContent;
-        var out = Babel.transform(src, { presets: [["react", { runtime: "classic" }]] }).code;
-        var s = document.createElement("script");
-        s.textContent = out;
-        document.body.appendChild(s);
-      } catch (e) {
-        console.error(e);
-        document.getElementById("root").innerHTML =
-          '<div style="color:#F4F1EA;font-family:sans-serif;padding:48px;text-align:center;max-width:480px;margin:0 auto;">' +
-          "<h2 style=\"font-family:'Cinzel',serif\">We hit a snag loading the form</h2>" +
-          '<p style="color:#8A93A8;line-height:1.6">Please refresh the page. If it keeps happening, get in touch and we\'ll sort it.</p>' +
-          '<p style="margin-top:24px"><a href="index.html" style="color:#E0894A">‹ Back to the website</a></p></div>';
-      }
-    })();
-  </script>
+    <!-- ===== Call to action ===== -->
+    <div class="cta-wrap">
+      <a class="audition-now" href="audition-signup.html">Audition Now</a>
+      <p class="cta-note">You'll be asked to accept our terms before secure payment via Stripe.</p>
+    </div>
+  </div>
 </body>
 </html>

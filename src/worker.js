@@ -47,12 +47,6 @@ function isEligibleAge(dob) {
   return age !== null && age >= 13 && age <= 17;
 }
 
-// Two-week intensive-course auditions: open to performers aged 13–24.
-function isEligibleAuditionAge(dob) {
-  const age = ageInYears(dob);
-  return age !== null && age >= 13 && age <= 24;
-}
-
 async function handleApply(request, env) {
   let body;
   try {
@@ -116,10 +110,20 @@ async function handleApply(request, env) {
 }
 
 /* ===========================================================================
-   INTENSIVE-COURSE AUDITION SIGN-UP — mirrors handleApply but writes to the
-   separate `auditions` table. The sign-up is for the £25 audition only; the
-   £100 course fee is handled separately for students offered a place.
+   INTENSIVE-COURSE AUDITION SIGN-UP — writes to the separate `auditions`
+   table. The sign-up is for the £25 audition only; the £100 course fee is
+   handled separately for students offered a place. Auditions run in sections
+   by age bracket, each with its own time slot.
    =========================================================================== */
+
+// Age bracket → audition section time. The bracket is the source of truth;
+// the time is derived server-side so it can't be spoofed from the client.
+const AUDITION_SECTIONS = {
+  "13-14": "10:00am – 12:00pm",
+  "15-16": "12:30pm – 2:30pm",
+  "17-18": "3:00pm – 5:00pm",
+};
+
 async function handleAudition(request, env) {
   let body;
   try {
@@ -128,52 +132,35 @@ async function handleAudition(request, env) {
     return Response.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const required = ["studentName", "guardianName", "email", "discipline"];
+  const required = ["studentName", "guardianName", "email", "ageBracket"];
   for (const field of required) {
     if (!body[field]) {
       return Response.json({ error: `Missing field: ${field}` }, { status: 400 });
     }
   }
-  const ALLOWED_DISCIPLINES = ["Dance", "Singing", "Dancing & Singing", "Acting"];
-  if (!ALLOWED_DISCIPLINES.includes(body.discipline)) {
-    return Response.json({ error: "Invalid discipline" }, { status: 400 });
-  }
-  if (!isEligibleAuditionAge(body.studentDob)) {
-    return Response.json({ error: "Student must be between 13 and 24 years old" }, { status: 400 });
+  const auditionTime = AUDITION_SECTIONS[body.ageBracket];
+  if (!auditionTime) {
+    return Response.json({ error: "Invalid age bracket" }, { status: 400 });
   }
 
   const id = crypto.randomUUID();
 
   await env.DB.prepare(`
     INSERT INTO auditions (
-      id, discipline, student_name, student_dob, new_to_performing,
-      guardian_name, guardian_dob,
-      address_line1, address_line2, city, county, postcode,
-      email, phone,
-      emergency_same, emergency_name, emergency_phone, emergency_relation,
-      allergies, allergies_detail,
-      additional_needs, additional_needs_detail,
-      health_issues, health_issues_detail,
-      consent_filming, consent_policy,
-      stripe_client_reference_id
-    ) VALUES (?,?,?,?,?, ?,?, ?,?,?,?,?, ?,?, ?,?,?,?, ?,?, ?,?, ?,?, ?,?, ?)
+      id, age_bracket, audition_time, student_name,
+      guardian_name, email, phone, emergency_phone,
+      consent_legal, stripe_client_reference_id
+    ) VALUES (?,?,?,?, ?,?,?,?, ?,?)
   `).bind(
-    id, body.discipline, body.studentName, body.studentDob || null, body.newToPerforming ? 1 : 0,
-    body.guardianName, body.guardianDob || null,
-    body.addressLine1 || null, body.addressLine2 || null, body.city || null, body.county || null, body.postcode || null,
-    body.email, body.phone || null,
-    body.emergencySame ? 1 : 0, body.emergencyName || null, body.emergencyPhone || null, body.emergencyRelation || null,
-    body.allergies ? 1 : 0, body.allergiesDetail || null,
-    body.additionalNeeds ? 1 : 0, body.additionalNeedsDetail || null,
-    body.healthIssues ? 1 : 0, body.healthIssuesDetail || null,
-    body.consentFilming ? 1 : 0, body.consentPolicy ? 1 : 0,
-    id
+    id, body.ageBracket, auditionTime, body.studentName,
+    body.guardianName, body.email, body.phone || null, body.emergencyPhone || null,
+    body.consentLegal ? 1 : 0, id
   ).run();
 
   // Email notifications are best-effort — a failure here must never block
   // the applicant from reaching Stripe checkout.
   try {
-    await sendAuditionReceivedEmails(env, { ...body, id }, new URL(request.url).origin);
+    await sendAuditionReceivedEmails(env, { ...body, id, auditionTime }, new URL(request.url).origin);
   } catch (err) {
     console.error("audition email failed", err);
   }
@@ -189,9 +176,10 @@ async function sendAuditionReceivedEmails(env, app, origin) {
       <p>Hi ${escapeHtml(app.guardianName)},</p>
       <p>Thanks for signing <b>${escapeHtml(app.studentName)}</b> up to audition for our two-week
       intensive course.</p>
-      <p>Audition strand: <b>${escapeHtml(app.discipline)}</b></p>
-      <p>We're sending over our <a href="${origin}/policy.pdf">policy document</a> for your reference. If you have any
-      questions at all, please feel free to get in touch with us.</p>
+      <p>Age bracket: <b>${escapeHtml(app.ageBracket)}</b><br/>
+      Audition section time: <b>${escapeHtml(app.auditionTime)}</b></p>
+      <p>Please remember: wear all black clothing (no logos or patterns — small logos are fine),
+      footwear appropriate for dancing, and bring water to stay hydrated.</p>
       <p>You're about to be taken to Stripe to pay the £25 audition fee securely. If ${escapeHtml(app.studentName)}
       is offered a place, the £100 course fee is payable separately.</p>
       <p>— Adders Film School</p>
@@ -205,13 +193,15 @@ async function sendAuditionReceivedEmails(env, app, origin) {
       html: `
         <p>A new intensive-course audition sign-up was submitted (payment not yet confirmed).</p>
         <ul>
-          <li><b>Student:</b> ${escapeHtml(app.studentName)} (DOB ${escapeHtml(app.studentDob)})</li>
-          <li><b>Auditioning for:</b> ${escapeHtml(app.discipline)}</li>
-          <li><b>Guardian:</b> ${escapeHtml(app.guardianName)}</li>
+          <li><b>Student:</b> ${escapeHtml(app.studentName)}</li>
+          <li><b>Age bracket:</b> ${escapeHtml(app.ageBracket)}</li>
+          <li><b>Section time:</b> ${escapeHtml(app.auditionTime)}</li>
+          <li><b>Parent / responsible adult:</b> ${escapeHtml(app.guardianName)}</li>
           <li><b>Email:</b> ${escapeHtml(app.email)}</li>
           <li><b>Phone:</b> ${escapeHtml(app.phone)}</li>
+          <li><b>Emergency contact:</b> ${escapeHtml(app.emergencyPhone)}</li>
         </ul>
-        <p>View full details (medical/emergency info, address) in the admin dashboard at /admin.</p>
+        <p>View full details in the admin dashboard at /admin.</p>
       `,
     });
   }
@@ -402,8 +392,11 @@ async function sendAuditionConfirmedEmails(env, app, origin) {
       <p>Hi ${escapeHtml(app.guardian_name)},</p>
       <p>The £25 audition fee for <b>${escapeHtml(app.student_name)}</b> has been received — the audition for our
       two-week intensive course is confirmed.</p>
-      <p>Audition strand: <b>${escapeHtml(app.discipline)}</b></p>
-      <p>We'll be in touch with the audition date, time and venue. If ${escapeHtml(app.student_name)} is offered a
+      <p>Age bracket: <b>${escapeHtml(app.age_bracket)}</b><br/>
+      Audition section time: <b>${escapeHtml(app.audition_time)}</b></p>
+      <p>Please remember on the day: all black clothing (no logos or patterns — small logos are fine),
+      footwear appropriate for dancing, and bring water to stay hydrated.</p>
+      <p>We'll be in touch with the audition date and venue. If ${escapeHtml(app.student_name)} is offered a
       place, the £100 course fee will be payable separately.</p>
       <p>If you have any questions in the meantime, just get in touch.</p>
       <p>— Adders Film School</p>
@@ -414,7 +407,7 @@ async function sendAuditionConfirmedEmails(env, app, origin) {
     await sendEmail(env, {
       to: env.ADMIN_NOTIFY_EMAIL,
       subject: `Audition payment confirmed: ${app.student_name}`,
-      html: `<p><b>${escapeHtml(app.student_name)}</b>'s £25 audition fee (${escapeHtml(app.discipline)}) has been confirmed via Stripe.</p>`,
+      html: `<p><b>${escapeHtml(app.student_name)}</b>'s £25 audition fee (age bracket ${escapeHtml(app.age_bracket)}, ${escapeHtml(app.audition_time)}) has been confirmed via Stripe.</p>`,
     });
   }
 }

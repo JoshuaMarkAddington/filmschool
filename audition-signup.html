@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audition Sign-Up — Adders Film School Intensive Course</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- React + Babel via CDN (the site already loads tooling from CDNs) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: #070B14;
+      color: #F4F1EA;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root { width: 100vw; height: 100vh; }
+    input, textarea, button { font-family: inherit; }
+
+    /* Step + element animations referenced by the form */
+    @keyframes stepFwd { from { opacity:0; transform:translateX(34px); } to { opacity:1; transform:none; } }
+    @keyframes stepBk  { from { opacity:0; transform:translateX(-34px); } to { opacity:1; transform:none; } }
+    @keyframes spinR { to { transform: rotate(360deg); } }
+    @keyframes fade { from { opacity:0; } to { opacity:1; } }
+    @keyframes mzFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .mz-idle { animation: mzFloat 3.4s ease-in-out infinite; }
+
+    /* tidy scrollbars inside the form */
+    *::-webkit-scrollbar { width: 9px; height: 9px; }
+    *::-webkit-scrollbar-thumb { background: #1B2440; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Form source. Held as plain text and compiled by the bootstrap script
+       at the bottom of the page, rather than relying on Babel's auto-runner
+       (whose default JSX-runtime config conflicts with the classic runtime
+       we need when running from a plain <script> tag). This is the audition
+       sign-up for the two-week intensive course. -->
+  <script type="text/plain" id="form-src">
+  const { useState } = React;
+
+  /* =====================================================================
+     DESIGN TOKENS
+     Cinematic dark palette — copper/gold to match the Adders brand.
+     ===================================================================== */
+  const C = {
+    bg:        "#070B14",
+    bg2:       "#0E1525",
+    text:      "#F4F1EA",
+    muted:     "#8A93A8",
+    line:      "#1B2440",
+    copper:    "#E0894A",
+    copperDeep:"#B5651D",
+    gold:      "#E8B84B",
+    goldDeep:  "#B8902E",
+    blue:      "#5B8DEF",
+  };
+
+  // Logo mark — renders the Adders Film School logo image.
+  function MazeMark({ size = 80, className, style }) {
+    return (
+      <img src="Adders Film School Logo 110825.png" alt="Adders Film School"
+        className={className}
+        style={{ width: size, height: size, objectFit: "contain", display: "block", ...style }} />
+    );
+  }
+
+  /* =====================================================================
+     AUDITION SECTIONS BY AGE BRACKET
+     The age bracket the student falls into decides which section (time
+     slot) they audition in. These labels are shown on selection and on
+     the confirmation screen, and the time is saved with the sign-up.
+     ===================================================================== */
+  const AGE_BRACKETS = [
+    { value: "13-14", label: "13–14", time: "10:00am – 12:00pm", section: "Section 1" },
+    { value: "15-16", label: "15–16", time: "12:30pm – 2:30pm", section: "Section 2" },
+    { value: "17-18", label: "17–18", time: "3:00pm – 5:00pm",  section: "Section 3" },
+  ];
+  const bracketInfo = (v) => AGE_BRACKETS.find(b => b.value === v) || null;
+
+  /* =====================================================================
+     FEES
+     The sign-up on this page is for the AUDITION only (£25). The course
+     fee (£100) is payable separately by students offered a place.
+     ===================================================================== */
+  const AUDITION_FEE = 25;
+  const COURSE_FEE = 100;
+
+  /* =====================================================================
+     ⚠️  STRIPE PAYMENT LINK — SET UP REQUIRED
+     Replace the placeholder below with your real Stripe Payment Link for
+     the £25 audition fee (you said you already have this product link
+     sorted — just paste it here). Until it's a real link, the "Pay"
+     button will not reach a working checkout.
+     ===================================================================== */
+  const AUDITION_STRIPE_LINK = "https://buy.stripe.com/REPLACE_WITH_REAL_25_AUDITION_LINK";
+
+  /* =====================================================================
+     ⚠️  LEGAL DOCUMENT / PARENTAL AGREEMENT — PLACEHOLDER
+     Paste the finished legal document for parents / responsible adults
+     between the markers below. It is shown in a scrollable panel and the
+     parent MUST tick "I have read and accept" before the Pay button
+     unlocks. Keep it as plain paragraphs (each wrapped in <p>…</p>), or
+     swap in your own markup — the acceptance gate does not depend on the
+     wording, only on the checkbox.
+     ===================================================================== */
+  const LEGAL_DOCUMENT = (
+    <React.Fragment>
+      {/* ----- BEGIN LEGAL DOCUMENT PLACEHOLDER ----- */}
+      <p style={{ color: C.copper, fontStyle: "italic" }}>
+        [ Placeholder — the parental / responsible-adult legal agreement will
+        be inserted here. Paste the finished document into audition-signup.html
+        where marked. ]
+      </p>
+      <p>
+        By continuing to payment, the parent or responsible adult confirms they
+        have read, understood and agreed to this document on behalf of themselves
+        and the student. This text is a placeholder and will be replaced with the
+        final legal wording before going live.
+      </p>
+      {/* ----- END LEGAL DOCUMENT PLACEHOLDER ----- */}
+    </React.Fragment>
+  );
+
+  const EMPTY = {
+    studentName: "",
+    ageBracket: "",
+    guardianName: "",
+    email: "",
+    phone: "",
+    emergencyPhone: "",
+    consentLegal: false,
+  };
+
+  const FSTEPS = [
+    "intro", "studentName", "ageBracket", "guardianName",
+    "email", "phone", "emergencyPhone", "legal", "payment",
+  ];
+
+  function AuditionForm({ onBack }) {
+    const [idx, setIdx] = useState(0);
+    const [dir, setDir] = useState("fwd");
+    const [ak, setAk] = useState(0);
+    const [d, setD] = useState(EMPTY);
+    const [paying, setPaying] = useState(false);
+    const [payError, setPayError] = useState("");
+    const set = (k, v) => setD(p => ({ ...p, [k]: v }));
+
+    const total = FSTEPS.length;
+    const step = FSTEPS[idx];
+    const pct = Math.round((idx / (total - 1)) * 100);
+
+    const canGo = () => {
+      switch (step) {
+        case "intro": return true;
+        case "studentName": return d.studentName.trim().length > 1;
+        case "ageBracket": return !!d.ageBracket;
+        case "guardianName": return d.guardianName.trim().length > 1;
+        case "email": return /\S+@\S+\.\S+/.test(d.email);
+        case "phone": return d.phone.trim().length > 7;
+        case "emergencyPhone": return d.emergencyPhone.trim().length > 7;
+        case "legal": return d.consentLegal === true;
+        case "payment": return true;
+        default: return true;
+      }
+    };
+
+    const next = () => { if (!canGo()) return; setDir("fwd"); setAk(k => k + 1); setIdx(i => Math.min(i + 1, total - 1)); };
+    const prev = () => { setDir("bk"); setAk(k => k + 1); setIdx(i => Math.max(i - 1, 0)); };
+
+    // Save the audition sign-up to our records, then hand off to the real
+    // Stripe Payment Link for the £25 audition fee. Stripe — not this page —
+    // takes the card details and handles the charge.
+    const handlePay = async () => {
+      if (!canGo()) return;
+      setPayError("");
+      setPaying(true);
+      try {
+        const b = bracketInfo(d.ageBracket);
+        const res = await fetch("/api/audition", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...d, auditionTime: b ? b.time : "" }),
+        });
+        if (!res.ok) throw new Error("save_failed");
+        const { id } = await res.json();
+        if (!AUDITION_STRIPE_LINK || AUDITION_STRIPE_LINK.includes("REPLACE_WITH_REAL")) throw new Error("no_link");
+        const url = new URL(AUDITION_STRIPE_LINK);
+        url.searchParams.set("client_reference_id", id);
+        if (d.email) url.searchParams.set("prefilled_email", d.email);
+        window.location.href = url.toString();
+      } catch (e) {
+        setPaying(false);
+        setPayError("We couldn't save your audition sign-up — please check your connection and try again.");
+      }
+    };
+
+    const btnLabel = step === "intro" ? "Begin audition sign-up"
+      : step === "legal" ? "Continue to payment →"
+      : step === "payment" ? `Pay £${AUDITION_FEE} — secure checkout`
+      : "Continue →";
+
+    const handleContinue = step === "payment" ? handlePay : next;
+    const firstName = d.studentName ? d.studentName.split(" ")[0] : "the student";
+
+    return (
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column",
+        background: step === "payment"
+          ? `radial-gradient(ellipse 90% 50% at 50% -10%, ${C.gold}18, ${C.copper}10, transparent 60%), ${C.bg}`
+          : `radial-gradient(ellipse 80% 40% at 50% -5%, ${C.copper}1A, transparent 55%), ${C.bg}` }}>
+
+        {/* top bar: back + subtle progress */}
+        <div style={{ display: "flex", alignItems: "center", padding: "18px 28px 0", gap: 14, flexShrink: 0 }}>
+          <button onClick={idx === 0 ? onBack : prev}
+            style={{ background: "transparent", border: `1px solid ${C.line}`, color: C.muted,
+              borderRadius: 9, padding: "7px 14px", cursor: "pointer", fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
+            ‹ {idx === 0 ? "Event info" : "Prev"}
+          </button>
+          <div style={{ flex: 1, height: 3, background: "#1B2440", borderRadius: 4, overflow: "hidden" }}>
+            <div style={{ width: `${pct}%`, height: "100%", borderRadius: 4, transition: "width .45s ease",
+              background: `linear-gradient(90deg,${C.copperDeep},${C.copper})` }} />
+          </div>
+          <div style={{ width: 50, flexShrink: 0 }} />
+        </div>
+
+        {/* animated step content */}
+        <div key={ak} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+          justifyContent: "center", padding: "24px 32px", overflowY: "auto",
+          animation: `${dir === "fwd" ? "stepFwd" : "stepBk"} .3s cubic-bezier(.25,.46,.45,.94) both` }}>
+          <FormContent step={step} d={d} set={set} firstName={firstName} />
+        </div>
+
+        {/* bottom CTA */}
+        <div style={{ padding: step === "intro" ? "10px 32px 60px" : "10px 32px 30px", flexShrink: 0, maxWidth: 500, width: "100%", alignSelf: "center" }}>
+          <button onClick={handleContinue} style={{
+            width: "100%", padding: "16px 20px", fontSize: 16, fontWeight: 700, cursor: canGo() ? "pointer" : "not-allowed",
+            border: "none", borderRadius: 13, letterSpacing: 0.3, transition: "opacity .15s, transform .1s",
+            opacity: canGo() ? 1 : 0.3,
+            background: canGo()
+              ? step === "payment"
+                ? `linear-gradient(180deg,${C.gold},${C.goldDeep})`
+                : `linear-gradient(180deg,${C.copper},${C.copperDeep})`
+              : "#2A3650",
+            color: "#070B14",
+          }}
+            onMouseDown={e => e.currentTarget.style.transform = "scale(.98)"}
+            onMouseUp={e => e.currentTarget.style.transform = "scale(1)"}
+            onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+          >{btnLabel}</button>
+          {step === "payment" && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 10, color: C.muted, fontSize: 12.5 }}>
+              <span>🔒</span> Secured by Stripe — your card details never touch our servers
+            </div>
+          )}
+          {payError && (
+            <div style={{ color: "#E0894A", fontSize: 13, textAlign: "center", marginTop: 10 }}>{payError}</div>
+          )}
+        </div>
+
+        {/* Stripe processing overlay */}
+        {paying && <PayingOverlay />}
+      </div>
+    );
+  }
+
+  /* ---------- step renderer ---------- */
+  function FormContent({ step, d, set, firstName }) {
+    const Q = ({ children, sub }) => (
+      <div style={{ textAlign: "center", marginBottom: 28, maxWidth: 520 }}>
+        <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 26, lineHeight: 1.25, color: C.text, fontWeight: 700, margin: 0 }}>{children}</h2>
+        {sub && <p style={{ color: C.muted, fontSize: 14, lineHeight: 1.6, marginTop: 10 }}>{sub}</p>}
+      </div>
+    );
+
+    switch (step) {
+
+      case "intro": return (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", maxWidth: 460 }}>
+          <MazeMark size={300} className="mz-idle" />
+          <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 28, color: C.text, marginTop: 22, lineHeight: 1.2 }}>Audition Sign-Up</h2>
+          <p style={{ color: C.muted, fontSize: 14.5, lineHeight: 1.75, marginTop: 14 }}>
+            This secures the student's <b style={{ color: C.text }}>audition</b> for our two-week intensive course.
+            It only takes a minute — we'll ask a few quick details, then take you to secure payment.
+          </p>
+          <div style={{ marginTop: 22, display: "flex", flexDirection: "column", gap: 10, alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, color: C.gold, fontSize: 13, fontWeight: 600,
+              border: `1px solid ${C.gold}44`, padding: "10px 18px", borderRadius: 30, background: `${C.gold}0E` }}>
+              🎭 Audition fee £{AUDITION_FEE} · Course fee £{COURSE_FEE} if offered a place
+            </div>
+          </div>
+        </div>
+      );
+
+      case "studentName": return (
+        <div style={{ width: "100%", maxWidth: 460 }}>
+          <Q>What is the student's full name?</Q>
+          <FInput value={d.studentName} onChange={e => set("studentName", e.target.value)} placeholder="e.g. Jamie Rivers" autoFocus />
+        </div>
+      );
+
+      case "ageBracket": return (
+        <div style={{ width: "100%", maxWidth: 480 }}>
+          <Q sub="Auditions run in sections by age — this decides the student's audition time.">
+            Which age bracket is {firstName} in?
+          </Q>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {AGE_BRACKETS.map(b => {
+              const selected = d.ageBracket === b.value;
+              return (
+                <button key={b.value} onClick={() => set("ageBracket", b.value)} style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14,
+                  padding: "16px 20px", borderRadius: 14, cursor: "pointer", textAlign: "left",
+                  border: `2px solid ${selected ? C.copper : C.line}`,
+                  background: selected ? `${C.copper}18` : C.bg2, transition: "all .15s ease",
+                }}>
+                  <div>
+                    <div style={{ fontFamily: "'Cinzel',serif", fontSize: 20, fontWeight: 700, color: selected ? C.copper : C.text }}>
+                      {b.label}
+                    </div>
+                    <div style={{ color: C.muted, fontSize: 12, marginTop: 2 }}>{b.section}</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ color: selected ? C.gold : C.text, fontWeight: 700, fontSize: 15 }}>{b.time}</div>
+                    <div style={{ color: C.muted, fontSize: 11.5, marginTop: 2 }}>Audition time</div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+
+      case "guardianName": return (
+        <div style={{ width: "100%", maxWidth: 460 }}>
+          <Q sub="The parent, guardian or responsible adult for the student.">Parent or responsible adult's name</Q>
+          <FInput value={d.guardianName} onChange={e => set("guardianName", e.target.value)} placeholder="Full name" autoFocus />
+        </div>
+      );
+
+      case "email": return (
+        <div style={{ width: "100%", maxWidth: 460 }}>
+          <Q sub="We'll send your audition confirmation and details here.">Best email to reach you?</Q>
+          <FInput type="email" value={d.email} onChange={e => set("email", e.target.value)} placeholder="your@email.com" autoFocus />
+        </div>
+      );
+
+      case "phone": return (
+        <div style={{ width: "100%", maxWidth: 460 }}>
+          <Q>And your contact phone number?</Q>
+          <FInput type="tel" value={d.phone} onChange={e => set("phone", e.target.value)} placeholder="+44 7700 900000" autoFocus />
+        </div>
+      );
+
+      case "emergencyPhone": return (
+        <div style={{ width: "100%", maxWidth: 460 }}>
+          <Q sub="A number we can reach in an emergency during the audition — ideally different from the one above.">
+            Emergency contact number
+          </Q>
+          <FInput type="tel" value={d.emergencyPhone} onChange={e => set("emergencyPhone", e.target.value)} placeholder="+44 7700 900000" autoFocus />
+        </div>
+      );
+
+      case "legal": return (
+        <div style={{ width: "100%", maxWidth: 580 }}>
+          <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 22, color: C.text, textAlign: "center", marginBottom: 8 }}>
+            Parental Agreement
+          </h2>
+          <p style={{ color: C.muted, fontSize: 13.5, textAlign: "center", marginTop: 0, marginBottom: 18 }}>
+            Please read the agreement below. You must accept it before payment.
+          </p>
+          <div style={{ background: C.bg2, border: `1px solid ${C.line}`, borderRadius: 14, padding: "22px 24px",
+            maxHeight: 300, overflowY: "auto", color: C.muted, fontSize: 13.5, lineHeight: 1.85 }}>
+            <div style={{ color: C.copper, fontFamily: "'Cinzel',serif", fontWeight: 700, fontSize: 16, marginBottom: 16 }}>
+              Adders Film School — Parental / Responsible-Adult Agreement
+            </div>
+            {LEGAL_DOCUMENT}
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <ConsentCard checked={d.consentLegal} onChange={v => set("consentLegal", v)}
+              title="I have read and accept this agreement"
+              desc="I am the parent or responsible adult for the student and I accept the terms of the agreement above on behalf of myself and the student." />
+          </div>
+        </div>
+      );
+
+      case "payment": return <PaymentStep d={d} firstName={firstName} />;
+
+      default: return null;
+    }
+  }
+
+  /* ---------- form helpers ---------- */
+  const FI = {
+    width: "100%", boxSizing: "border-box", background: C.bg2, border: `2px solid ${C.line}`,
+    borderRadius: 12, padding: "16px 18px", color: C.text, fontSize: 16, outline: "none",
+  };
+  const FInput = (props) => (
+    <input {...props} style={FI}
+      onFocus={e => { e.target.style.borderColor = C.copper }}
+      onBlur={e => { e.target.style.borderColor = C.line }} />
+  );
+
+  function ConsentCard({ checked, onChange, title, desc }) {
+    return (
+      <button onClick={() => onChange(!checked)} style={{
+        padding: "18px 20px", borderRadius: 16, textAlign: "left", cursor: "pointer", width: "100%",
+        border: `2px solid ${checked ? C.copper : C.line}`, background: checked ? `${C.copper}10` : C.bg2,
+        transition: "all .18s ease", display: "flex", gap: 14, alignItems: "flex-start",
+      }}>
+        <div style={{ width: 22, height: 22, borderRadius: 6, flexShrink: 0, marginTop: 2,
+          border: `2px solid ${checked ? C.copper : C.muted}`, background: checked ? C.copper : "transparent",
+          display: "grid", placeItems: "center" }}>
+          {checked && <span style={{ color: "#070B14", fontSize: 13, fontWeight: 900, lineHeight: 1 }}>✓</span>}
+        </div>
+        <div>
+          <div style={{ color: checked ? C.copper : C.text, fontWeight: 700, fontSize: 15, marginBottom: 6 }}>{title}</div>
+          <div style={{ color: C.muted, fontSize: 13, lineHeight: 1.65 }}>{desc}</div>
+        </div>
+      </button>
+    );
+  }
+
+  /* ---------- payment step ---------- */
+  function PaymentStep({ d, firstName }) {
+    const b = bracketInfo(d.ageBracket);
+    return (
+      <div style={{ width: "100%", maxWidth: 560 }}>
+        <div style={{ textAlign: "center", marginBottom: 28 }}>
+          <MazeMark size={52} className="mz-idle" />
+          <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 26, color: C.text, marginTop: 14, marginBottom: 0 }}>Confirm your audition</h2>
+          <p style={{ color: C.muted, fontSize: 14, lineHeight: 1.6, marginTop: 8 }}>
+            You're signing {firstName} up to audition for the two-week intensive course.
+          </p>
+        </div>
+
+        <div style={{ borderRadius: 18, border: `2px solid ${C.gold}`, overflow: "hidden",
+          background: `linear-gradient(135deg,${C.gold}16,${C.gold}08)` }}>
+          <div style={{ padding: "22px 24px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+              <div>
+                <div style={{ fontFamily: "'Cinzel',serif", color: C.gold, fontWeight: 700, fontSize: 19 }}>Audition</div>
+                <div style={{ color: C.text, fontSize: 13, marginTop: 4 }}>Age bracket: <b>{b ? b.label : "—"}</b></div>
+                {b && <div style={{ color: C.text, fontSize: 13, marginTop: 3 }}>Audition time: <b>{b.time}</b></div>}
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <span style={{ color: C.gold, fontWeight: 700, fontSize: 30, fontFamily: "'Cinzel',serif" }}>£{AUDITION_FEE}</span>
+              </div>
+            </div>
+            <div style={{ borderTop: `1px solid ${C.gold}2E`, marginTop: 14, paddingTop: 14, color: C.muted, fontSize: 13, lineHeight: 1.65 }}>
+              This payment secures your audition slot only. If {firstName} is offered a place, the
+              two-week intensive course fee of <b style={{ color: C.text }}>£{COURSE_FEE}</b> is payable separately.
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 20, background: C.bg2, border: `1px solid ${C.line}`, borderRadius: 12, padding: "13px 18px",
+          display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ color: C.muted, fontSize: 13 }}>Due today:</span>
+          <span style={{ color: C.text, fontWeight: 700, fontSize: 14 }}>
+            Audition fee — <span style={{ color: C.gold }}>£{AUDITION_FEE}</span>
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  /* ---------- paying overlay ---------- */
+  function PayingOverlay() {
+    return (
+      <div style={{ position: "absolute", inset: 0, zIndex: 50, display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center",
+        background: `rgba(7,11,20,.92)`, backdropFilter: "blur(8px)",
+        animation: "fade .25s ease both" }}>
+        <MazeMark size={100}
+          style={{ animation: "spinR 1s linear infinite", transformOrigin: "50% 50%" }} />
+        <div style={{ marginTop: 28, fontFamily: "'Cinzel',serif", fontSize: 18, color: C.copper, fontWeight: 700 }}>
+          Saving your audition sign-up…
+        </div>
+        <div style={{ marginTop: 8, color: C.muted, fontSize: 13 }}>Taking you to Stripe to complete payment</div>
+        <div style={{ marginTop: 14, color: C.muted, fontSize: 13 }}>Audition fee · £{AUDITION_FEE}</div>
+      </div>
+    );
+  }
+
+  /* ---------- mount ---------- */
+  const goInfo = () => { window.location.href = "audition.html"; };
+  ReactDOM.createRoot(document.getElementById("root"))
+    .render(<AuditionForm onBack={goInfo} />);
+  </script>
+
+  <!-- Bootstrap: compile the JSX above with the classic runtime (so the output
+       calls the global React.createElement) and run it. -->
+  <script>
+    (function () {
+      try {
+        var src = document.getElementById("form-src").textContent;
+        var out = Babel.transform(src, { presets: [["react", { runtime: "classic" }]] }).code;
+        var s = document.createElement("script");
+        s.textContent = out;
+        document.body.appendChild(s);
+      } catch (e) {
+        console.error(e);
+        document.getElementById("root").innerHTML =
+          '<div style="color:#F4F1EA;font-family:sans-serif;padding:48px;text-align:center;max-width:480px;margin:0 auto;">' +
+          "<h2 style=\"font-family:'Cinzel',serif\">We hit a snag loading the form</h2>" +
+          '<p style="color:#8A93A8;line-height:1.6">Please refresh the page. If it keeps happening, get in touch and we\'ll sort it.</p>' +
+          '<p style="margin-top:24px"><a href="audition.html" style="color:#E0894A">‹ Back to the event info</a></p></div>';
+      }
+    })();
+  </script>
+</body>
+</html>

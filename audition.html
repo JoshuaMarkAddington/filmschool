@@ -103,12 +103,46 @@
     .audition-now:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 38px rgba(234,88,12,0.75); }
     .cta-note { color: var(--muted); font-size: 0.85rem; margin-top: 16px; }
 
+    /* ===== Guest audition panel ===== */
+    .guest-card {
+      display: flex; align-items: center; gap: 22px;
+      background: var(--bg2); border: 1px solid var(--line); border-left: 4px solid var(--gold);
+      border-radius: 16px; padding: 22px 24px;
+    }
+    .guest-avatar, .guest-avatar-placeholder {
+      width: 96px; height: 96px; border-radius: 50%; flex-shrink: 0; object-fit: cover;
+    }
+    .guest-avatar-placeholder {
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #fbbf24, #ea580c);
+      color: #1e293b; font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.7rem;
+    }
+    .guest-name { font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 700; }
+    .guest-role {
+      color: var(--gold); font-size: 0.75rem; text-transform: uppercase;
+      letter-spacing: 0.06em; font-weight: 700; margin-top: 3px;
+    }
+    .guest-bio { color: var(--muted); font-size: 0.9rem; margin: 8px 0 0; }
+
+    /* ===== Flyer showcase ===== */
+    .flyer-card {
+      border-radius: 16px; overflow: hidden; border: 1px solid var(--line);
+      max-width: 340px; margin: 0 auto;
+    }
+    .flyer-img { width: 100%; display: block; }
+    .flyer-placeholder {
+      aspect-ratio: 3 / 4; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 10px; background: var(--bg2); color: var(--muted); font-size: 0.9rem;
+    }
+    .flyer-placeholder-icon { font-size: 2.4rem; }
+
     @media (max-width: 520px) {
       h1 { font-size: 1.6rem; }
       .fees { flex-direction: column; gap: 18px; }
       .fee-divider { width: auto; height: 1px; }
       .sec-card { flex-direction: column; align-items: flex-start; gap: 8px; }
       .sec-time { text-align: left; }
+      .guest-card { flex-direction: column; text-align: center; }
     }
   </style>
 </head>
@@ -121,9 +155,11 @@
       <span class="badge">Auditions Open</span>
       <h1>Two-Week Intensive Course Auditions</h1>
       <p class="lead">
-        A fast, focused two-week intensive for young performers. This audition is your
-        chance to be seen — read everything below so you arrive ready, then sign up and
-        secure your slot.
+        A fast, focused two-week intensive for young performers. Learn from industry
+        professionals, master choreography and vocal arrangements built for the stage, and
+        take it all to <strong>The Amphitheatre, Campbell Park</strong> — right in the heart
+        of Milton Keynes. This audition is your chance to be seen — read everything below
+        so you arrive ready, then sign up and secure your slot.
       </p>
 
       <div class="fees">
@@ -140,6 +176,63 @@
         </div>
       </div>
     </div>
+
+    <!-- ===== What you'll learn / the experience ===== -->
+    <section class="block">
+      <h2>✨ What You'll Learn</h2>
+      <p class="sub">This isn't just an audition — it's the start of a real performance experience.</p>
+      <div class="reqs">
+        <div class="req">
+          <span class="req-icon">🎓</span>
+          <div>
+            <p class="req-title">Learn from industry professionals</p>
+            <p class="req-body">Train and be mentored by working professionals from the film and performing arts industry.</p>
+          </div>
+        </div>
+        <div class="req">
+          <span class="req-icon">💃</span>
+          <div>
+            <p class="req-title">Choreography</p>
+            <p class="req-body">Learn full stage choreography, built specifically for this performance.</p>
+          </div>
+        </div>
+        <div class="req">
+          <span class="req-icon">🎤</span>
+          <div>
+            <p class="req-title">Vocal arrangements</p>
+            <p class="req-body">Work on vocal arrangements that bring the performance to life.</p>
+          </div>
+        </div>
+        <div class="req">
+          <span class="req-icon">🏟️</span>
+          <div>
+            <p class="req-title">The big stage</p>
+            <p class="req-body">Perform live at The Amphitheatre, Campbell Park — right in the heart of Milton Keynes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Guest audition panel ===== -->
+    <section class="block">
+      <h2>🌟 Guest Audition Panel</h2>
+      <p class="sub">This year we're joined by a very special guest on the panel.</p>
+      <div class="guest-card">
+        <!-- Placeholder avatar — swap for:
+             <img class="guest-avatar" src="stevi-ritchie.jpg" alt="Stevi Ritchie">
+             once the headshot file has been added to the repo. -->
+        <div class="guest-avatar-placeholder">SR</div>
+        <div>
+          <div class="guest-name">Stevi Ritchie</div>
+          <div class="guest-role">Guest Star — Audition Panel</div>
+          <p class="guest-bio">
+            Stevi Ritchie joins Adders Film School as this year's guest star on the audition
+            panel, bringing real industry experience straight to our students. <em>Full bio
+            coming soon.</em>
+          </p>
+        </div>
+      </div>
+    </section>
 
     <!-- ===== Audition sections by age bracket ===== -->
     <section class="block">
@@ -192,6 +285,21 @@
             <p class="req-title">Stay hydrated — bring water</p>
             <p class="req-body">Bring a water bottle and keep hydrated throughout your section.</p>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Flyer showcase ===== -->
+    <section class="block">
+      <h2>📣 Spread the Word</h2>
+      <p class="sub">Share the official flyer with anyone who should be auditioning.</p>
+      <div class="flyer-card">
+        <!-- Placeholder — swap for:
+             <img class="flyer-img" src="audition-flyer.jpg" alt="Adders Film School Audition flyer — Open Auditions & Masterclass, 25th August, Ages 13-18, Milton Keynes">
+             once the flyer file has been added to the repo. -->
+        <div class="flyer-placeholder">
+          <span class="flyer-placeholder-icon">🎬</span>
+          <span class="flyer-placeholder-text">Event flyer coming soon</span>
         </div>
       </div>
     </section>

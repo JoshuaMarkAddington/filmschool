@@ -111,9 +111,11 @@ async function handleApply(request, env) {
 
 /* ===========================================================================
    INTENSIVE-COURSE AUDITION SIGN-UP — writes to the separate `auditions`
-   table. The sign-up is for the £25 audition only; the £100 course fee is
-   handled separately for students offered a place. Auditions run in sections
-   by age bracket, each with its own time slot.
+   table. The sign-up is for the £25 audition & masterclass fee only. The
+   total programme fee is £225; for students offered a place that £25 is
+   deducted as a goodwill gesture, leaving a £200 balance payable in two
+   £100 instalments. Auditions run in sections by age bracket, each with
+   its own time slot.
    =========================================================================== */
 
 // Age bracket → audition section time. The bracket is the source of truth;
@@ -180,8 +182,10 @@ async function sendAuditionReceivedEmails(env, app, origin) {
       Audition section time: <b>${escapeHtml(app.auditionTime)}</b></p>
       <p>Please remember: wear all black clothing (no logos or patterns — small logos are fine),
       footwear appropriate for dancing, and bring water to stay hydrated.</p>
-      <p>You're about to be taken to Stripe to pay the £25 audition fee securely. If ${escapeHtml(app.studentName)}
-      is offered a place, the £100 course fee is payable separately.</p>
+      <p>You're about to be taken to Stripe to pay the £25 audition &amp; masterclass fee securely.</p>
+      <p>The total programme fee is £225. If ${escapeHtml(app.studentName)} is offered a place, your £25
+      is deducted from that total as a goodwill gesture, leaving a £200 balance — payable as £100 within
+      48 hours of the successful audition email, and £100 by 11:59pm on Thursday 3 September 2026.</p>
       <p>— Adders Film School</p>
     `,
   });
@@ -390,14 +394,16 @@ async function sendAuditionConfirmedEmails(env, app, origin) {
     subject: "Your Adders Film School audition is confirmed",
     html: `
       <p>Hi ${escapeHtml(app.guardian_name)},</p>
-      <p>The £25 audition fee for <b>${escapeHtml(app.student_name)}</b> has been received — the audition for our
-      two-week intensive course is confirmed.</p>
+      <p>The £25 audition &amp; masterclass fee for <b>${escapeHtml(app.student_name)}</b> has been received —
+      the audition for our two-week intensive course is confirmed.</p>
       <p>Age bracket: <b>${escapeHtml(app.age_bracket)}</b><br/>
       Audition section time: <b>${escapeHtml(app.audition_time)}</b></p>
       <p>Please remember on the day: all black clothing (no logos or patterns — small logos are fine),
       footwear appropriate for dancing, and bring water to stay hydrated.</p>
       <p>We'll be in touch with the audition date and venue. If ${escapeHtml(app.student_name)} is offered a
-      place, the £100 course fee will be payable separately.</p>
+      place, the total programme fee is £225 — your £25 is deducted from that as a goodwill gesture,
+      leaving a £200 balance. That can be spread across two payments: £100 within 48 hours of the
+      successful audition email, and £100 by 11:59pm on Thursday 3 September 2026.</p>
       <p>If you have any questions in the meantime, just get in touch.</p>
       <p>— Adders Film School</p>
     `,

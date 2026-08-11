@@ -90,11 +90,15 @@
 
   /* =====================================================================
      FEES
-     The sign-up on this page is for the AUDITION only (£25). The course
-     fee (£100) is payable separately by students offered a place.
+     Total programme fee is £225 per student. The sign-up on this page
+     takes the £25 audition & masterclass fee only. For students who pass
+     the audition, that £25 is deducted from the £225 as a goodwill
+     gesture, leaving a £200 balance payable separately (£100 deposit +
+     £100 final balance). See Clause 3 of the agreement below.
      ===================================================================== */
   const AUDITION_FEE = 25;
-  const COURSE_FEE = 100;
+  const BALANCE_FEE = 200;
+  const TOTAL_FEE = 225;
 
   /* =====================================================================
      ⚠️  STRIPE PAYMENT LINK — SET UP REQUIRED
@@ -115,17 +119,9 @@
      edited freely at any time.
 
      ⚠️  BRACKETED PLACEHOLDERS STILL TO FILL IN before this goes live:
-       [Company Address], [Company Registration No.], [Contact Email/Phone],
-       [SHOW / PRODUCTION NAME], [Venue TBC – Milton Keynes] (rehearsal
-       venue, twice), and the privacy-policy link in Clause 9.1.
-
-     ⚠️  DATES/FEES CHECK: the schedule and fees below (audition 25 Aug,
-     £100 deposit + £100 balance, rehearsals/performance 28 Aug–5 Sep at
-     Campbell Park) come from the source document supplied for this
-     agreement. Confirm they match the actual event this sign-up form is
-     for — the rest of the site currently describes a single £100 course
-     fee and an October start, which is a different shape to the
-     deposit/balance schedule here.
+       [Company Address] — postal address not yet supplied;
+       [TO BE CONFIRMED – Milton Keynes] — the audition/masterclass venue
+       and the rehearsal venue; and the privacy-policy link in Clause 9.1.
      ===================================================================== */
   const LegalH = ({ children }) => (
     <div style={{ color: C.copper, fontFamily: "'Cinzel',serif", fontWeight: 700, fontSize: 14.5, marginTop: 22, marginBottom: 8 }}>
@@ -166,20 +162,23 @@
     <React.Fragment>
       <div style={{ textAlign: "center", marginBottom: 6 }}>
         <div style={{ color: C.muted, fontSize: 12 }}>A trading name of Adders Entertainment Group Ltd</div>
+        <div style={{ color: C.muted, fontSize: 11.5, marginTop: 2 }}>
+          Company No. 16003448 · office@addersentertainment.org · 01908 464331
+        </div>
         <div style={{ color: C.muted, fontSize: 11.5, fontStyle: "italic", marginTop: 2 }}>
-          [Company Address] · [Company Registration No.] · [Contact Email/Phone]
+          [Company Address]
         </div>
       </div>
       <div style={{ textAlign: "center", color: C.text, fontWeight: 700, fontSize: 12.5, marginTop: 14, marginBottom: 2 }}>
         PARTICIPATION AGREEMENT &amp; TERMS AND CONDITIONS
       </div>
       <div style={{ textAlign: "center", color: C.muted, fontSize: 11.5, fontStyle: "italic", marginBottom: 18 }}>
-        [SHOW / PRODUCTION NAME] — Audition, Masterclass, Rehearsals and Performances
+        Adders Film School Showcase 2026 — Audition, Masterclass, Rehearsals and Performances
       </div>
 
       <LegalH>1. Parties and Definitions</LegalH>
-      <LegalP>This Participation Agreement ("the Agreement") is made between Adders Film School, a trading name of Adders Entertainment Group Ltd, of [Company Address] ("the Company") and the parent or legal guardian of the Student named in the signature section below ("the Parent/Guardian"), who enters into this Agreement on behalf of the Student.</LegalP>
-      <LegalClause n="1.1">"Programme" means the audition, masterclass, rehearsals and performances described in Clause 2.</LegalClause>
+      <LegalP>This Participation Agreement ("the Agreement") is made between Adders Film School, a trading name of Adders Entertainment Group Ltd (registered in England and Wales, company number 16003448), of [Company Address] ("the Company") and the parent or legal guardian of the Student named in the signature section below ("the Parent/Guardian"), who enters into this Agreement on behalf of the Student.</LegalP>
+      <LegalClause n="1.1">"Programme" means the audition, masterclass, rehearsals and performances for Adders Film School Showcase 2026, described in Clause 2.</LegalClause>
       <LegalClause n="1.2">"Student" means the child named in the signature section, on whose behalf the Parent/Guardian is entering into this Agreement.</LegalClause>
       <LegalClause n="1.3">By signing this Agreement — or, where this Agreement is accepted online, by ticking to confirm acceptance — the Parent/Guardian confirms they are the parent or legal guardian of the Student and have authority to agree to these terms on the Student's behalf.</LegalClause>
 
@@ -189,9 +188,9 @@
         head={["Event", "Date"]}
         rows={[
           ["Audition & Masterclass", "Tuesday 25 August 2026"],
-          ["Deposit payment deadline", "11:59pm, Thursday 27 August 2026"],
+          ["Deposit (£100) deadline", "Within 48 hours of the successful audition email"],
           ["Rehearsals & performances", "28 August – 5 September 2026 — see Clause 2.1"],
-          ["Final balance payment deadline", "11:59pm, Thursday 3 September 2026"],
+          ["Final balance (£100) deadline", "11:59pm, Thursday 3 September 2026"],
         ]}
       />
       <LegalH>2.1 Rehearsal and Performance Schedule</LegalH>
@@ -206,24 +205,30 @@
           ["Mon 31 Aug 2026", "3:00pm – 4:00pm", "Promotional performance (free entry)", "Milton Keynes Shopping Centre"],
           ["Wed 2 Sep 2026", "4:30pm – 7:30pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
           ["Thu 3 Sep 2026", "4:30pm – 7:30pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
-          ["Sat 5 Sep 2026", "11:00am – 5:00pm", "Performance Day", "Campbell Park, Milton Keynes"],
+          ["Sat 5 Sep 2026", "11:00am – 5:00pm", "Performance Day", "The Amphitheatre, Campbell Park, Milton Keynes"],
         ]}
       />
-      <LegalP>These dates and times are estimates only. An official timetable will be issued closer to the audition date, and may be subject to change. Rehearsal venue: [TO BE CONFIRMED – Milton Keynes]. Promotional performance venue: Milton Keynes Shopping Centre. Performance Day venue: Campbell Park, Milton Keynes.</LegalP>
+      <LegalP>These dates and times are estimates only. An official timetable will be issued closer to the audition date, and may be subject to change. All elements of the Programme take place in Milton Keynes. Audition &amp; masterclass venue: [TO BE CONFIRMED – Milton Keynes]. Rehearsal venue: [TO BE CONFIRMED – Milton Keynes]. Promotional performance venue: Milton Keynes Shopping Centre. Performance Day venue: The Amphitheatre, Campbell Park, Milton Keynes.</LegalP>
+
+      <LegalH>2.2 Venues and Changes to Venue</LegalH>
+      <LegalClause n="2.2.1">Where a venue is shown as "to be confirmed", the Company will confirm it to the Parent/Guardian in writing as soon as it is finalised.</LegalClause>
+      <LegalClause n="2.2.2">The Company reserves the right to change the venue for any part of the Programme, including the audition, masterclass, rehearsals or performances, where this is necessary due to unforeseen circumstances (including but not limited to venue unavailability, safety concerns, extreme weather, or other events outside the Company's reasonable control). Where a venue changes, the Company will notify the Parent/Guardian of the new venue in writing as soon as reasonably practicable. Any replacement venue will be within Milton Keynes or the surrounding area unless otherwise agreed with the Parent/Guardian.</LegalClause>
 
       <LegalH>3. Fees and Payment</LegalH>
-      <LegalClause n="3.1">Audition fee: £25, payable at the time of booking the audition. This fee includes attendance at the masterclass held on the same day. The audition fee is non-refundable, except as set out in Clause 4.</LegalClause>
-      <LegalClause n="3.2">Deposit: following a successful audition, a deposit of £100 is required to secure the Student's place in the Programme. This must be received by 11:59pm on Thursday 27 August 2026. The deposit is non-refundable, except as set out in Clause 4.</LegalClause>
-      <LegalClause n="3.3">Final balance: the remaining balance of £100 must be received by 11:59pm on Thursday 3 September 2026.</LegalClause>
-      <LegalClause n="3.4">Non-payment: if the deposit and/or final balance is not received by the applicable deadline, the Student will not be permitted to take part in rehearsals or perform, and the Company reserves the right to offer the Student's place to another participant. Any sums already paid remain non-refundable, except as set out in Clause 4.</LegalClause>
-      <LegalClause n="3.5">Except as set out in Clause 4, all fees paid under this Agreement are non-refundable, including where the Student withdraws, is withdrawn, or is unable to attend rehearsals or perform for any reason.</LegalClause>
+      <LegalClause n="3.1">Total Programme fee: £225 per Student. This covers the audition and masterclass, all rehearsals, and both performances described in Clause 2.</LegalClause>
+      <LegalClause n="3.2">Audition &amp; masterclass fee: £25, payable at the time of booking the audition. This fee includes attendance at the masterclass held on the same day. The audition fee is non-refundable, except as set out in Clause 4.</LegalClause>
+      <LegalClause n="3.3">Goodwill deduction: for Students who are successful at audition and are offered a place in the Programme, the £25 audition and masterclass fee already paid is deducted from the total Programme fee as a goodwill gesture. This leaves a remaining balance of £200, which may be spread across the two instalments set out in Clauses 3.4 and 3.5.</LegalClause>
+      <LegalClause n="3.4">First instalment (deposit): following a successful audition, a deposit of £100 (being the first instalment of the £200 balance) is required to secure the Student's place in the Programme. This must be received within 48 hours of the Parent/Guardian receiving the Company's successful audition email. The deposit is non-refundable, except as set out in Clause 4.</LegalClause>
+      <LegalClause n="3.5">Second instalment (final balance): the remaining £100 must be received by 11:59pm on Thursday 3 September 2026. The Parent/Guardian may pay this earlier, or pay the full £200 balance in a single payment, if they prefer.</LegalClause>
+      <LegalClause n="3.6">Non-payment: if the deposit and/or final balance is not received by the applicable deadline, the Student will not be permitted to take part in rehearsals or perform, and the Company reserves the right to offer the Student's place to another participant. Any sums already paid remain non-refundable, except as set out in Clause 4.</LegalClause>
+      <LegalClause n="3.7">Except as set out in Clause 4, all fees paid under this Agreement are non-refundable, including where the Student withdraws, is withdrawn, or is unable to attend rehearsals or perform for any reason.</LegalClause>
 
       <LegalH>4. Cancellation and Refunds</LegalH>
       <LegalClause n="4.1">If the audition and/or masterclass is cancelled by the Company due to unforeseen circumstances, all Parents/Guardians who have paid the audition fee will be refunded in full within 10 working days of the original audition/masterclass date.</LegalClause>
       <LegalClause n="4.2">If the Company is required to cancel or reschedule any rehearsal, the Milton Keynes Shopping Centre performance, or the main performance due to circumstances beyond its reasonable control (including illness, venue unavailability, extreme weather, or other events outside its control), the Company will use reasonable endeavours to reschedule. Where rescheduling is not possible, the Company will consider refunds on a case-by-case basis.</LegalClause>
 
       <LegalH>5. Performance Rights and Rehearsal Attendance</LegalH>
-      <LegalClause n="5.1">By signing this Agreement and securing the Student's place through payment of the deposit, the Parent/Guardian grants the Company the right for the Student to take part in and perform at both: (a) the promotional performance at Milton Keynes Shopping Centre on Monday 31 August 2026, which is free to attend with no admission charge; and (b) the main performance at Campbell Park, Milton Keynes on Saturday 5 September 2026.</LegalClause>
+      <LegalClause n="5.1">By signing this Agreement and securing the Student's place through payment of the deposit, the Parent/Guardian grants the Company the right for the Student to take part in and perform at both: (a) the promotional performance at Milton Keynes Shopping Centre on Monday 31 August 2026, which is free to attend with no admission charge; and (b) the main performance at The Amphitheatre, Campbell Park, Milton Keynes on Saturday 5 September 2026.</LegalClause>
       <LegalClause n="5.2">The Parent/Guardian will ensure the Student attends all rehearsals and sessions set out in the Rehearsal &amp; Performance Schedule (Clause 2.1), as updated by the Company's official timetable. Failure to attend required rehearsals may affect the Student's ability to take part in the performances.</LegalClause>
 
       <LegalH>6. Photography, Filming and Use of Images</LegalH>
@@ -424,7 +429,7 @@
           <div style={{ marginTop: 22, display: "flex", flexDirection: "column", gap: 10, alignItems: "center" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, color: C.gold, fontSize: 13, fontWeight: 600,
               border: `1px solid ${C.gold}44`, padding: "10px 18px", borderRadius: 30, background: `${C.gold}0E` }}>
-              🎭 Audition fee £{AUDITION_FEE} · Course fee £{COURSE_FEE} if offered a place
+              🎭 £{AUDITION_FEE} today · £{BALANCE_FEE} balance if offered a place (£{TOTAL_FEE} total)
             </div>
           </div>
         </div>
@@ -587,7 +592,10 @@
             </div>
             <div style={{ borderTop: `1px solid ${C.gold}2E`, marginTop: 14, paddingTop: 14, color: C.muted, fontSize: 13, lineHeight: 1.65 }}>
               This payment secures your audition slot only. If {firstName} is offered a place, the
-              two-week intensive course fee of <b style={{ color: C.text }}>£{COURSE_FEE}</b> is payable separately.
+              remaining balance of <b style={{ color: C.text }}>£{BALANCE_FEE}</b> is payable separately —
+              £100 within 48 hours of the successful audition email, and £100 by 11:59pm on
+              Thursday 3 September 2026. Your £{AUDITION_FEE} today counts towards the
+              £{TOTAL_FEE} total.
             </div>
           </div>
         </div>

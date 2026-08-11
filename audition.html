@@ -57,6 +57,11 @@
     .fee-amount { font-size: 2rem; font-weight: 800; color: var(--gold); line-height: 1; font-family: 'Cinzel', serif; }
     .fee-note { font-size: 0.78rem; color: var(--muted); text-align: center; }
     .fee-divider { width: 1px; background: var(--line); }
+    .fee-total {
+      color: var(--muted); font-size: 0.87rem; max-width: 460px;
+      margin: 14px auto 0; line-height: 1.55;
+    }
+    .fee-total strong { color: var(--text); }
 
     section.block { margin-top: 48px; }
     h2 {
@@ -170,11 +175,16 @@
         </div>
         <div class="fee-divider"></div>
         <div class="fee">
-          <span class="fee-label">Course</span>
-          <span class="fee-amount">£100</span>
-          <span class="fee-note">Only if offered a place</span>
+          <span class="fee-label">Then</span>
+          <span class="fee-amount">£200</span>
+          <span class="fee-note">Balance, only if offered a place</span>
         </div>
       </div>
+      <p class="fee-total">
+        <strong>£225 total per student.</strong> Your £25 audition fee is deducted from the
+        total as a goodwill gesture if you win a place — and the £200 balance can be spread
+        across two payments of £100.
+      </p>
     </div>
 
     <!-- ===== What you'll learn / the experience ===== -->
@@ -201,6 +211,20 @@
           <div>
             <p class="req-title">Vocal arrangements</p>
             <p class="req-body">Work on vocal arrangements that bring the performance to life.</p>
+          </div>
+        </div>
+        <div class="req">
+          <span class="req-icon">🎻</span>
+          <div>
+            <p class="req-title">Perform with a live orchestra</p>
+            <p class="req-body">Take to the stage backed by a live orchestra — an experience most performers wait years for.</p>
+          </div>
+        </div>
+        <div class="req">
+          <span class="req-icon">🎥</span>
+          <div>
+            <p class="req-title">Get filmed, broadcast and discovered</p>
+            <p class="req-body">This is a film school — your performance is captured and broadcast, so your work is seen.</p>
           </div>
         </div>
         <div class="req">

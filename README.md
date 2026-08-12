@@ -67,15 +67,19 @@ The policy document shown in step "Policy Agreement" of the application form
 is still a placeholder — send the real policy text/PDF and it'll be dropped
 into `apply.html` in place of that note.
 
-## Intensive-course audition sign-up
+## Showcase 2026 audition sign-up
 
 `audition.html` is a second sign-up form — same style as `apply.html` — for
-the two-week intensive course. It asks the same questions as the membership
-form but, instead of modules, the applicant picks one strand to audition for
-(Dance / Singing / Dancing & Singing / Acting) and is open to ages **13–24**.
-It saves to a separate `auditions` table (`POST /api/audition`) and both the
-audition sign-up and its payment appear under the "Intensive-course auditions"
-tab in `/admin`.
+the Adders Film School Showcase 2026 Audition Masterclass. It asks the same
+questions as the membership form but, instead of modules, the applicant
+picks one strand to audition for (Dance / Singing / Dancing & Singing /
+Acting) and is open to ages **13–24**. It saves to a separate `auditions`
+table (`POST /api/audition`) and both the audition sign-up and its payment
+appear under the "Intensive-course auditions" tab in `/admin`.
+
+Pricing: the £25 audition fee is fully refundable if the performer is cast.
+The total showcase package is £250, so a £225 balance is payable separately
+by performers offered a place in the final cast.
 
 Two setup steps are needed before it's live:
 
@@ -88,6 +92,11 @@ Two setup steps are needed before it's live:
 
 2. **Stripe link for the £25 audition fee.** In `audition.html`, replace the
    `AUDITION_STRIPE_LINK` placeholder with a real Stripe Payment Link for £25
-   (created exactly like the membership links). The course fee (£100) is
-   collected separately from students who are offered a place, so it needs no
-   link here.
+   (created exactly like the membership links). The £225 balance is
+   collected separately from performers who are offered a place, so it needs
+   no link here.
+
+3. **Audition times.** The home-page schedule (`index.html`) currently shows
+   placeholder times for the Audition Masterclass (13–16s / 17–24s) — replace
+   `[TIME]` with the real times once confirmed, and add the audition venue
+   address once decided.

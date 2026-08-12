@@ -47,7 +47,7 @@ function isEligibleAge(dob) {
   return age !== null && age >= 13 && age <= 17;
 }
 
-// Two-week intensive-course auditions: open to performers aged 13–24.
+// Adders Film School Showcase 2026 auditions: open to performers aged 13–24.
 function isEligibleAuditionAge(dob) {
   const age = ageInYears(dob);
   return age !== null && age >= 13 && age <= 24;
@@ -116,9 +116,10 @@ async function handleApply(request, env) {
 }
 
 /* ===========================================================================
-   INTENSIVE-COURSE AUDITION SIGN-UP — mirrors handleApply but writes to the
-   separate `auditions` table. The sign-up is for the £25 audition only; the
-   £100 course fee is handled separately for students offered a place.
+   SHOWCASE 2026 AUDITION SIGN-UP — mirrors handleApply but writes to the
+   separate `auditions` table. The sign-up is for the £25 audition masterclass
+   only (fully refundable if cast); the £225 balance of the £250 total
+   showcase package is handled separately for performers offered a place.
    =========================================================================== */
 async function handleAudition(request, env) {
   let body;
@@ -184,16 +185,19 @@ async function handleAudition(request, env) {
 async function sendAuditionReceivedEmails(env, app, origin) {
   await sendEmail(env, {
     to: app.email,
-    subject: "Your Adders Film School audition sign-up",
+    subject: "Your Adders Film School Showcase 2026 audition sign-up",
     html: `
       <p>Hi ${escapeHtml(app.guardianName)},</p>
-      <p>Thanks for signing <b>${escapeHtml(app.studentName)}</b> up to audition for our two-week
-      intensive course.</p>
+      <p>Thanks for signing <b>${escapeHtml(app.studentName)}</b> up for the Audition Masterclass — the first
+      step towards the <b>Adders Film School Showcase 2026</b>.</p>
       <p>Audition strand: <b>${escapeHtml(app.discipline)}</b></p>
+      <p>The Audition Masterclass takes place on <b>Tuesday 25th August</b> — we'll be in touch with the exact
+      time for ${escapeHtml(app.studentName)}'s age group shortly.</p>
       <p>We're sending over our <a href="${origin}/policy.pdf">policy document</a> for your reference. If you have any
       questions at all, please feel free to get in touch with us.</p>
-      <p>You're about to be taken to Stripe to pay the £25 audition fee securely. If ${escapeHtml(app.studentName)}
-      is offered a place, the £100 course fee is payable separately.</p>
+      <p>You're about to be taken to Stripe to pay the £25 audition fee securely — fully refundable if
+      ${escapeHtml(app.studentName)} is cast. If offered a place in the final Showcase cast, the remaining £225
+      balance of the £250 total package is payable separately.</p>
       <p>— Adders Film School</p>
     `,
   });
@@ -203,7 +207,7 @@ async function sendAuditionReceivedEmails(env, app, origin) {
       to: env.ADMIN_NOTIFY_EMAIL,
       subject: `New audition sign-up: ${app.studentName}`,
       html: `
-        <p>A new intensive-course audition sign-up was submitted (payment not yet confirmed).</p>
+        <p>A new Showcase 2026 audition sign-up was submitted (payment not yet confirmed).</p>
         <ul>
           <li><b>Student:</b> ${escapeHtml(app.studentName)} (DOB ${escapeHtml(app.studentDob)})</li>
           <li><b>Auditioning for:</b> ${escapeHtml(app.discipline)}</li>
@@ -397,14 +401,18 @@ async function sendPaymentConfirmedEmails(env, app, origin) {
 async function sendAuditionConfirmedEmails(env, app, origin) {
   await sendEmail(env, {
     to: app.email,
-    subject: "Your Adders Film School audition is confirmed",
+    subject: "Your Adders Film School Showcase 2026 audition is confirmed",
     html: `
       <p>Hi ${escapeHtml(app.guardian_name)},</p>
-      <p>The £25 audition fee for <b>${escapeHtml(app.student_name)}</b> has been received — the audition for our
-      two-week intensive course is confirmed.</p>
+      <p>The £25 audition fee for <b>${escapeHtml(app.student_name)}</b> has been received — the Audition
+      Masterclass slot for the <b>Adders Film School Showcase 2026</b> is confirmed.</p>
       <p>Audition strand: <b>${escapeHtml(app.discipline)}</b></p>
-      <p>We'll be in touch with the audition date, time and venue. If ${escapeHtml(app.student_name)} is offered a
-      place, the £100 course fee will be payable separately.</p>
+      <p>The Audition Masterclass takes place on <b>Tuesday 25th August</b>. We'll be in touch with the exact
+      time and venue for ${escapeHtml(app.student_name)}'s age group. This fee is fully refundable if
+      ${escapeHtml(app.student_name)} is cast, and every performer who auditions receives an exclusive 15%
+      discount on Premium Memberships, valid for two weeks after the audition date.</p>
+      <p>If ${escapeHtml(app.student_name)} is offered a place in the final cast, the remaining £225 balance of
+      the £250 total showcase package will be payable separately.</p>
       <p>If you have any questions in the meantime, just get in touch.</p>
       <p>— Adders Film School</p>
     `,

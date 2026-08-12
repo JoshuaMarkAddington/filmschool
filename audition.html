@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Audition Sign-Up — Adders Film School Intensive Course</title>
+  <title>Audition Sign-Up — Adders Film School Showcase 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -46,8 +46,8 @@
        at the bottom of the page, rather than relying on Babel's auto-runner
        (whose default JSX-runtime config conflicts with the classic runtime
        we need when running from a plain <script> tag). This mirrors the
-       membership application form in apply.html, adapted for the two-week
-       intensive-course audition. -->
+       membership application form in apply.html, adapted for the Adders
+       Film School Showcase 2026 audition masterclass. -->
   <script type="text/plain" id="form-src">
   const { useState, useEffect } = React;
 
@@ -100,13 +100,16 @@
      INTENSIVE COURSE — AUDITION SIGN-UP FORM — one question at a time
      ===================================================================== */
 
-  // Fees for the two-week intensive course. The sign-up on this page is for
-  // the AUDITION only (£25). The course fee (£100) is payable separately by
-  // students who are offered a place after a successful audition.
+  // Fees for the Adders Film School Showcase 2026. The sign-up on this page
+  // is for the AUDITION MASTERCLASS only (£25, fully refundable if cast).
+  // The remaining balance of the £250 total showcase package is payable
+  // separately by performers who are offered and accept a place in the
+  // final cast after a successful audition.
   const AUDITION_FEE = 25;
-  const COURSE_FEE = 100;
+  const TOTAL_PACKAGE_FEE = 250;
+  const BALANCE_FEE = TOTAL_PACKAGE_FEE - AUDITION_FEE;
 
-  // Real Stripe Payment Link for the £25 audition fee.
+  // Real Stripe Payment Link for the £25 audition masterclass fee.
   //
   // ⚠️ SET UP REQUIRED: replace the placeholder below with the real Stripe
   // Payment Link for the £25 audition (create it in the Stripe dashboard,
@@ -300,15 +303,16 @@
       case "intro": return (
         <div style={{ display:"flex", flexDirection:"column", alignItems:"center", textAlign:"center", maxWidth:460 }}>
           <MazeMark pair={PALETTE.filmschool} size={420} className="mz-idle" />
-          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:28, color:C.text, marginTop:22, lineHeight:1.2 }}>Two-Week Intensive Course</h2>
+          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:28, color:C.text, marginTop:22, lineHeight:1.2 }}>Adders Film School Showcase 2026</h2>
           <p style={{ color:C.muted, fontSize:14.5, lineHeight:1.75, marginTop:14 }}>
-            This sign-up secures your <b style={{ color:C.text }}>audition</b> for our two-week intensive course.
+            This sign-up secures your spot at the <b style={{ color:C.text }}>Audition Masterclass on Tuesday 25th
+            August</b> — your first step towards the red carpet, a live band, and a national broadcast.
             We'll walk you through everything we need — take your time, your progress is saved as you go.
           </p>
           <div style={{ marginTop:22, display:"flex", flexDirection:"column", gap:10, alignItems:"center" }}>
             <div style={{ display:"flex", alignItems:"center", gap:10, color:C.gold, fontSize:13, fontWeight:600,
               border:`1px solid ${C.gold}44`, padding:"10px 18px", borderRadius:30, background:`${C.gold}0E` }}>
-              🎭 Audition fee £{AUDITION_FEE} · Course fee £{COURSE_FEE} if offered a place
+              🎭 Audition fee £{AUDITION_FEE} (refundable if cast) · £{BALANCE_FEE} balance if offered a place
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:10, color:C.copper, fontSize:13, fontWeight:600,
               border:`1px solid ${C.copper}44`, padding:"10px 18px", borderRadius:30, background:`${C.copper}0E` }}>
@@ -634,7 +638,7 @@
           <MazeMark pair={PALETTE.filmschool} size={52} className="mz-idle" />
           <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:26, color:C.text, marginTop:14, marginBottom:0 }}>Confirm your audition</h2>
           <p style={{ color:C.muted, fontSize:14, lineHeight:1.6, marginTop:8 }}>
-            You're signing {firstName} up to audition for the two-week intensive course.
+            You're signing {firstName} up for the Audition Masterclass — Adders Film School Showcase 2026.
           </p>
         </div>
 
@@ -643,7 +647,7 @@
           <div style={{ padding:"22px 24px" }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
               <div>
-                <div style={{ fontFamily:"'Cinzel',serif", color:C.gold, fontWeight:700, fontSize:19 }}>Audition</div>
+                <div style={{ fontFamily:"'Cinzel',serif", color:C.gold, fontWeight:700, fontSize:19 }}>Audition Masterclass</div>
                 <div style={{ color:C.text, fontSize:13, marginTop:4 }}>Strand: <b>{d.discipline || "—"}</b></div>
               </div>
               <div style={{ textAlign:"right" }}>
@@ -651,8 +655,9 @@
               </div>
             </div>
             <div style={{ borderTop:`1px solid ${C.gold}2E`, marginTop:14, paddingTop:14, color:C.muted, fontSize:13, lineHeight:1.65 }}>
-              This payment secures your audition slot only. If {firstName} is offered a place, the
-              two-week intensive course fee of <b style={{ color:C.text }}>£{COURSE_FEE}</b> is payable separately.
+              This fee is fully refundable if {firstName} is cast. It secures your audition slot only — the
+              total showcase package is <b style={{ color:C.text }}>£{TOTAL_PACKAGE_FEE}</b>, so if offered a
+              place, a balance of <b style={{ color:C.text }}>£{BALANCE_FEE}</b> is payable separately.
             </div>
           </div>
         </div>

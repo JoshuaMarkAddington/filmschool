@@ -21,14 +21,8 @@ CREATE TABLE IF NOT EXISTS auditions (
 );
 
 -- ---------------------------------------------------------------------------
--- MIGRATION for an existing `auditions` table created by an earlier version
--- of this schema (which stored discipline/DOB/address/medical columns). Run
--- these once against a database that already has the old table. They are
--- safe to skip on a fresh database, where the CREATE above already includes
--- every column. SQLite has no "ADD COLUMN IF NOT EXISTS", so a column that
--- already exists will report "duplicate column name" — that error is fine to
--- ignore.
---   ALTER TABLE auditions ADD COLUMN age_bracket TEXT;
---   ALTER TABLE auditions ADD COLUMN audition_time TEXT;
---   ALTER TABLE auditions ADD COLUMN consent_legal INTEGER;
---   ALTER TABLE auditions ADD COLUMN emergency_phone TEXT;   -- present in the old schema
+-- NOTE: `CREATE TABLE IF NOT EXISTS` above does nothing if an `auditions`
+-- table already exists from the earlier version of the form — so it will NOT
+-- add the new age_bracket / audition_time / consent_legal columns to it.
+-- For an existing database, run migrate-auditions.sql instead:
+--   npx wrangler d1 execute filmschool --remote --file=migrate-auditions.sql

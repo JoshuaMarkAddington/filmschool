@@ -101,13 +101,12 @@
   const TOTAL_FEE = 225;
 
   /* =====================================================================
-     ⚠️  STRIPE PAYMENT LINK — SET UP REQUIRED
-     Replace the placeholder below with your real Stripe Payment Link for
-     the £25 audition fee (you said you already have this product link
-     sorted — just paste it here). Until it's a real link, the "Pay"
-     button will not reach a working checkout.
+     STRIPE PAYMENT LINK — live link for the £25 audition & masterclass fee.
+     The sign-up is saved to our records first, then the parent is sent here
+     with client_reference_id set to the audition row's id, so the Stripe
+     webhook can match the payment back to the sign-up and flip it to 'paid'.
      ===================================================================== */
-  const AUDITION_STRIPE_LINK = "https://buy.stripe.com/REPLACE_WITH_REAL_25_AUDITION_LINK";
+  const AUDITION_STRIPE_LINK = "https://buy.stripe.com/00w14pfAa7Mb37e72D2oE06";
 
   /* =====================================================================
      LEGAL DOCUMENT / PARENTAL AGREEMENT

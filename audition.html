@@ -14,7 +14,6 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    html, body { height: 100%; }
     body {
       margin: 0;
       background: #070B14;
@@ -22,7 +21,9 @@
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
-    #root { width: 100vw; height: 100vh; }
+    /* The form fills the first screen; the panel gallery sits below it. */
+    #root { width: 100%; height: 100vh; }
+    html { scroll-behavior: smooth; }
     input, textarea, button { font-family: inherit; }
 
     /* Step + element animations referenced by the form */
@@ -37,10 +38,293 @@
     /* tidy scrollbars inside the form */
     *::-webkit-scrollbar { width: 9px; height: 9px; }
     *::-webkit-scrollbar-thumb { background: #1B2440; border-radius: 8px; }
+
+    /* =================================================================
+       MEET THE PANEL — gallery below the sign-up form.
+       Cards are built from the shared list in panel.js, so adding a
+       panelist there adds them here and gives them a biography page.
+       ================================================================= */
+    .panel-section {
+      padding: 84px 24px 96px;
+      border-top: 1px solid #1B2440;
+      background:
+        radial-gradient(ellipse 70% 44% at 50% 0%, rgba(232,184,75,.07), transparent 60%),
+        #070B14;
+    }
+    .panel-inner { max-width: 1040px; margin: 0 auto; }
+    .panel-head { text-align: center; margin-bottom: 46px; }
+    .panel-head .kicker {
+      color: #E0894A;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0 0 12px;
+    }
+    .panel-head h2 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(26px, 4.4vw, 36px);
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.2;
+    }
+    .panel-head p {
+      color: #8A93A8;
+      font-size: 15px;
+      line-height: 1.7;
+      max-width: 520px;
+      margin: 14px auto 0;
+    }
+
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 240px));
+      gap: 30px;
+      justify-content: center;
+    }
+
+    .panel-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      transition: transform .28s cubic-bezier(.25,.46,.45,.94);
+    }
+    .panel-card:hover, .panel-card:focus-visible { transform: translateY(-8px); }
+    .panel-card:focus-visible { outline: none; }
+
+    .panel-shot {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #1B2440;
+      background: #0E1525;
+      box-shadow: 0 18px 40px rgba(0,0,0,.45);
+      transition: border-color .28s ease, box-shadow .28s ease;
+    }
+    .panel-card:hover .panel-shot,
+    .panel-card:focus-visible .panel-shot {
+      border-color: rgba(224,137,74,.65);
+      box-shadow: 0 26px 56px rgba(0,0,0,.6), 0 0 0 1px rgba(224,137,74,.3);
+    }
+
+    .panel-shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .5s cubic-bezier(.25,.46,.45,.94), filter .35s ease;
+      filter: saturate(.92);
+    }
+    .panel-card:hover .panel-shot img,
+    .panel-card:focus-visible .panel-shot img {
+      transform: scale(1.07);
+      filter: saturate(1.05);
+    }
+
+    /* Copper wash + "View biography" cue, revealed on hover/focus. */
+    .panel-veil {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 18px;
+      background: linear-gradient(to top, rgba(7,11,20,.92) 0%, rgba(7,11,20,.35) 42%, transparent 70%);
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+    .panel-card:hover .panel-veil,
+    .panel-card:focus-visible .panel-veil { opacity: 1; }
+    .panel-veil span {
+      color: #E8B84B;
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      transform: translateY(8px);
+      transition: transform .3s ease;
+    }
+    .panel-card:hover .panel-veil span,
+    .panel-card:focus-visible .panel-veil span { transform: none; }
+
+    .panel-name {
+      font-family: 'Cinzel', serif;
+      font-size: 19px;
+      font-weight: 700;
+      margin: 16px 0 0;
+      text-align: center;
+      transition: color .25s ease;
+    }
+    .panel-card:hover .panel-name,
+    .panel-card:focus-visible .panel-name { color: #E0894A; }
+    .panel-role {
+      color: #8A93A8;
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 6px 0 0;
+      text-align: center;
+    }
+
+    /* =================================================================
+       REHEARSAL TIMETABLE — built from the list in rehearsals.js.
+       ================================================================= */
+    .rehearsal-section {
+      padding: 78px 24px 100px;
+      border-top: 1px solid #1B2440;
+      background: #070B14;
+    }
+    .rehearsal-inner { max-width: 1040px; margin: 0 auto; }
+
+    .rehearsal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+      max-width: 880px;   /* keeps the seven days to rows of four, then three */
+      margin: 0 auto;
+    }
+    .rehearsal-day {
+      background: #0E1525;
+      border: 1px solid #1B2440;
+      border-radius: 14px;
+      padding: 20px 18px;
+      text-align: center;
+      transition: border-color .25s ease, transform .25s ease;
+    }
+    .rehearsal-day:hover { border-color: rgba(224,137,74,.45); transform: translateY(-3px); }
+    .rehearsal-day .weekday {
+      font-family: 'Cinzel', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: #F4F1EA;
+      margin: 0;
+    }
+    .rehearsal-day .date {
+      color: #8A93A8;
+      font-size: 13px;
+      margin: 5px 0 14px;
+    }
+    .rehearsal-day .times {
+      display: inline-block;
+      color: #E8B84B;
+      font-size: 13.5px;
+      font-weight: 700;
+      border: 1px solid rgba(232,184,75,.28);
+      background: rgba(232,184,75,.06);
+      border-radius: 20px;
+      padding: 7px 14px;
+    }
+    .rehearsal-day .day-note {
+      color: #8A93A8;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 10px 0 0;
+    }
+    .rehearsal-footnote {
+      margin-top: 26px;
+      color: #8A93A8;
+      font-size: 13.5px;
+      line-height: 1.75;
+      text-align: center;
+      max-width: 640px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Respect users who prefer less motion. */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .panel-card, .panel-shot img, .panel-veil, .panel-veil span, .panel-name { transition: none; }
+      .panel-card:hover, .panel-card:focus-visible { transform: none; }
+      .panel-card:hover .panel-shot img, .panel-card:focus-visible .panel-shot img { transform: none; }
+      .rehearsal-day { transition: none; }
+      .rehearsal-day:hover { transform: none; }
+    }
   </style>
 </head>
 <body>
   <div id="root"></div>
+
+  <!-- ===== Meet the audition panel ===== -->
+  <section class="panel-section" id="panel">
+    <div class="panel-inner">
+      <div class="panel-head">
+        <p class="kicker">Who you'll be performing for</p>
+        <h2>Meet the Audition Panel</h2>
+        <p>These are the people watching on the day. Click a headshot to read their biography.</p>
+      </div>
+      <div class="panel-grid" id="panel-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== Rehearsal timetable (for students offered a place) ===== -->
+  <section class="rehearsal-section" id="timetable">
+    <div class="rehearsal-inner">
+      <div class="panel-head">
+        <p class="kicker">If you're offered a place</p>
+        <h2>Rehearsal Timetable</h2>
+        <p>Rehearsals for the two-week intensive course. These dates apply to students who are
+          offered a place after a successful audition.</p>
+      </div>
+      <div class="rehearsal-grid" id="rehearsal-grid"></div>
+      <p class="rehearsal-footnote">
+        Students are expected at every rehearsal — the course builds day on day, so a missed
+        session is hard to make up. If a student can't attend a date, please let us know in
+        advance so we can plan around it.
+      </p>
+    </div>
+  </section>
+
+  <script src="panel.js"></script>
+  <script src="rehearsals.js"></script>
+  <script>
+    /* Build the rehearsal cards from the shared list in rehearsals.js. */
+    (function () {
+      var grid = document.getElementById("rehearsal-grid");
+      var days = window.REHEARSALS || [];
+
+      function esc(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+
+      grid.innerHTML = days.map(function (d) {
+        return '<div class="rehearsal-day">' +
+          '<p class="weekday">' + esc(d.weekday) + "</p>" +
+          '<p class="date">' + esc(d.date) + "</p>" +
+          '<span class="times">' + esc(d.start) + " – " + esc(d.end) + "</span>" +
+          (d.note ? '<p class="day-note">' + esc(d.note) + "</p>" : "") +
+        "</div>";
+      }).join("");
+    })();
+  </script>
+  <script>
+    /* Build the panel cards from the shared list in panel.js. */
+    (function () {
+      var grid = document.getElementById("panel-grid");
+      var list = window.PANELISTS || [];
+
+      function esc(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+
+      grid.innerHTML = list.map(function (p) {
+        return '<a class="panel-card" href="panelist.html?id=' + encodeURIComponent(p.id) + '"' +
+          ' aria-label="Read ' + esc(p.name) + "'s biography\">" +
+          '<div class="panel-shot">' +
+            '<img src="' + esc(p.photo) + '" alt="' + esc(p.name) + '" loading="lazy"' +
+              ' style="object-position:' + esc(p.focus || "center 20%") + '">' +
+            '<div class="panel-veil"><span>View biography</span></div>' +
+          "</div>" +
+          '<p class="panel-name">' + esc(p.name) + "</p>" +
+          (p.role ? '<p class="panel-role">' + esc(p.role) + "</p>" : "") +
+        "</a>";
+      }).join("");
+    })();
+  </script>
 
   <!-- Form source. Held as plain text and compiled by the bootstrap script
        at the bottom of the page, rather than relying on Babel's auto-runner
@@ -253,7 +537,7 @@
 
         {/* bottom CTA */}
         {step !== "done" && (
-          <div style={{ padding: step==="intro" ? "10px 32px 90px" : "10px 32px 30px", flexShrink:0, maxWidth:500, width:"100%", alignSelf:"center" }}>
+          <div style={{ padding: step==="intro" ? "10px 32px 34px" : "10px 32px 30px", flexShrink:0, maxWidth:500, width:"100%", alignSelf:"center" }}>
             <button onClick={handleContinue} style={{
               width:"100%", padding:"16px 20px", fontSize:16, fontWeight:700, cursor: canGo()?"pointer":"not-allowed",
               border:"none", borderRadius:13, letterSpacing:0.3, transition:"opacity .15s, transform .1s",
@@ -276,6 +560,17 @@
             )}
             {payError && (
               <div style={{ color:"#E0894A", fontSize:13, textAlign:"center", marginTop:10 }}>{payError}</div>
+            )}
+            {step==="intro" && (
+              /* Points down to the panel gallery and rehearsal timetable below the form. */
+              <div style={{ display:"flex", justifyContent:"center", gap:22, marginTop:18, flexWrap:"wrap" }}>
+                {[["#panel","Meet the audition panel ↓"],["#timetable","Rehearsal timetable ↓"]].map(([href,label])=>(
+                  <a key={href} href={href} style={{ color:C.muted, fontSize:13, fontWeight:600,
+                    textDecoration:"none", borderBottom:`1px solid ${C.line}`, paddingBottom:3 }}
+                    onMouseEnter={e=>e.currentTarget.style.color=C.copper}
+                    onMouseLeave={e=>e.currentTarget.style.color=C.muted}>{label}</a>
+                ))}
+              </div>
             )}
           </div>
         )}

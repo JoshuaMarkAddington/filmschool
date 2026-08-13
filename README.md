@@ -91,3 +91,51 @@ Two setup steps are needed before it's live:
    (created exactly like the membership links). The course fee (£100) is
    collected separately from students who are offered a place, so it needs no
    link here.
+
+## Discounts & early-access sign-up pop-up
+
+Every public page (`index.html`, `membership.html`, `masterclass.html`,
+`contact.html`) shows a centred pop-up shortly after it loads — "Sign up
+now!" / "Receive discounts and latest information", and name / email / phone
+fields (`signup-popup.js` + styles in `styles.css`). The visitor must give
+**at least one** of email or phone. On submit the logo spins and a "Thank
+you!" message confirms the sign-up. To avoid nagging, the pop-up never
+reappears after someone signs up, and waits a week after a dismissal (tracked
+in the browser's `localStorage`).
+
+Sign-ups POST to `/api/subscribe`, which stores the lead in a `subscribers`
+D1 table (created automatically on first sign-up — no manual database step
+needed) and then, best-effort:
+
+- emails the visitor a "Welcome to Adders Film School" message (if they gave an
+  email) via Resend — reuses the existing `RESEND_API_KEY` / `RESEND_FROM`
+  secrets, so no extra email setup is needed
+- texts the visitor a welcome message (if they gave a phone number) — see below
+- pings `ADMIN_NOTIFY_EMAIL` so you know a new lead came in
+
+All sign-ups appear under a new **"Discounts & News Sign-Ups"** list in
+`/admin`, alongside the membership and audition lists, with CSV export.
+
+One optional setup step:
+
+- **Welcome text via CircleLoop.** CircleLoop has no public API, but it can
+  send an SMS from a **Zapier "Send SMS" action**. "Webhooks by Zapier" (Catch
+  Hook) is a paid-plan-only trigger, so this uses **"Email by Zapier"**
+  instead — a free trigger that fires when an email lands in a
+  Zapier-provided inbox address. Wire it up once:
+
+  - In Zapier, create a Zap with an **"Email by Zapier" → "New Inbound Email"**
+    trigger. It gives you a unique address like
+    `something123@robot.zapier.com` — copy it.
+  - Add a **CircleLoop → "Send SMS"** action to that Zap. Map the recipient to
+    the trigger's **Subject** field and the message to its **Body Plain**
+    field (the Worker emails that address with the phone number as the
+    subject and the welcome message as the body — no extra parsing step
+    needed).
+  - Set that inbox address as the `ZAPIER_SMS_EMAIL` secret on the Worker,
+    either as a GitHub repository secret (the "Deploy and set secrets"
+    workflow picks it up) or via `npx wrangler secret put ZAPIER_SMS_EMAIL`.
+
+  Until `ZAPIER_SMS_EMAIL` is set, phone sign-ups are still saved and shown in
+  admin — they just won't trigger a text (the "Welcome text sent" column shows
+  "No"). Email sign-ups work with no extra setup.

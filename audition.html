@@ -182,6 +182,7 @@
       gap: 16px;
       max-width: 880px;   /* keeps the seven days to rows of four, then three */
       margin: 0 auto;
+      align-items: start; /* a two-session day stays tall without stretching its row */
     }
     .rehearsal-day {
       background: #0E1525;
@@ -203,6 +204,37 @@
       color: #8A93A8;
       font-size: 13px;
       margin: 5px 0 14px;
+    }
+    /* Show day is the one the whole timetable builds towards. */
+    .rehearsal-day.is-show {
+      border-color: rgba(232,184,75,.45);
+      background: linear-gradient(160deg, rgba(232,184,75,.10), rgba(232,184,75,.03)), #0E1525;
+    }
+    .rehearsal-day .day-tag {
+      display: inline-block;
+      color: #070B14;
+      background: linear-gradient(180deg, #E8B84B, #B8902E);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      border-radius: 20px;
+      padding: 4px 12px;
+      margin-bottom: 12px;
+    }
+    /* A day can hold more than one block — e.g. rehearsal + performance. */
+    .rehearsal-day .session + .session {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid #1B2440;
+    }
+    .rehearsal-day .session-label {
+      color: #E0894A;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      margin: 0 0 8px;
     }
     .rehearsal-day .times {
       display: inline-block;
@@ -268,9 +300,10 @@
       </div>
       <div class="rehearsal-grid" id="rehearsal-grid"></div>
       <p class="rehearsal-footnote">
-        Students are expected at every rehearsal — the course builds day on day, so a missed
-        session is hard to make up. If a student can't attend a date, please let us know in
-        advance so we can plan around it.
+        Attendance at every rehearsal is a condition of keeping a place in the show. If a student
+        cannot attend a date, we must be given notice in advance — a student who misses more than
+        one rehearsal may lose their place in the show. The full terms are set out in the policy
+        agreement on the sign-up form.
       </p>
     </div>
   </section>
@@ -290,11 +323,19 @@
       }
 
       grid.innerHTML = days.map(function (d) {
-        return '<div class="rehearsal-day">' +
+        var sessions = (d.sessions || []).map(function (s) {
+          return '<div class="session">' +
+            (s.label ? '<p class="session-label">' + esc(s.label) + "</p>" : "") +
+            '<span class="times">' + esc(s.start) + " – " + esc(s.end) + "</span>" +
+            (s.note ? '<p class="day-note">' + esc(s.note) + "</p>" : "") +
+          "</div>";
+        }).join("");
+
+        return '<div class="rehearsal-day' + (d.tag ? " is-show" : "") + '">' +
+          (d.tag ? '<span class="day-tag">' + esc(d.tag) + "</span>" : "") +
           '<p class="weekday">' + esc(d.weekday) + "</p>" +
           '<p class="date">' + esc(d.date) + "</p>" +
-          '<span class="times">' + esc(d.start) + " – " + esc(d.end) + "</span>" +
-          (d.note ? '<p class="day-note">' + esc(d.note) + "</p>" : "") +
+          sessions +
         "</div>";
       }).join("");
     })();
@@ -801,13 +842,14 @@
             </div>
             <p><b>1. Code of Conduct.</b> All members, parents and guardians are expected to treat staff, students and the studio with courtesy and respect at all times. Disruptive, abusive or unsafe behaviour may result in suspension or removal from the programme without refund.</p>
             <p><b>2. Attendance.</b> Auditions and sessions run to a fixed timetable. Persistent lateness or unexplained absence may affect a student's place on the programme. Please notify us in advance if a student cannot attend.</p>
-            <p><b>3. Health, Safety &amp; Medical Information.</b> Any allergies, additional needs or health issues declared on this form will be kept on file and used solely to keep the student safe. Parents/guardians must keep this information up to date.</p>
-            <p><b>4. Filming &amp; Use of Footage.</b> The audition and course involve filming as part of the curriculum. By submitting this form and consenting, you agree that footage of the student may be captured and used for educational purposes and, where separately consented to, promotional use by Adders Entertainment Group.</p>
-            <p><b>5. Payments &amp; Fees.</b> The audition fee is due at checkout. The course fee is payable separately by students who are offered and accept a place after a successful audition. The audition fee secures an audition slot only and does not guarantee a place on the course.</p>
-            <p><b>6. Cancellations.</b> Requests to cancel or change a booking should be sent to us in writing as early as possible. Refunds, where applicable, are handled on a case-by-case basis in line with our cancellation policy.</p>
-            <p><b>7. Safeguarding.</b> We take the welfare of all students seriously. Any safeguarding concerns will be handled in accordance with our safeguarding procedures and reported to the appropriate authorities where required.</p>
-            <p><b>8. Data Protection.</b> Information submitted on this form is stored securely and used only for the purposes of administering the programme. It is not shared with third parties except where required to deliver the service (e.g. payment processing).</p>
-            <p><b>9. Changes to this Policy.</b> Adders Entertainment Group may update these policies from time to time. Continued participation in the programme constitutes acceptance of the current policy.</p>
+            <p><b>3. Rehearsal Attendance.</b> Students who are offered a place on the intensive course are required to attend <b>all</b> rehearsals on the published rehearsal timetable, including the flash mob performance and show day. Rehearsals are cumulative and are worked around the full cast, so an absence affects every student. If a student is unable to attend a rehearsal, notice <b>must</b> be given to us in advance. A student who misses more than one rehearsal may lose their place in the show.</p>
+            <p><b>4. Health, Safety &amp; Medical Information.</b> Any allergies, additional needs or health issues declared on this form will be kept on file and used solely to keep the student safe. Parents/guardians must keep this information up to date.</p>
+            <p><b>5. Filming &amp; Use of Footage.</b> The audition and course involve filming as part of the curriculum. By submitting this form and consenting, you agree that footage of the student may be captured and used for educational purposes and, where separately consented to, promotional use by Adders Entertainment Group.</p>
+            <p><b>6. Payments &amp; Fees.</b> The audition fee is due at checkout. The course fee is payable separately by students who are offered and accept a place after a successful audition. The audition fee secures an audition slot only and does not guarantee a place on the course.</p>
+            <p><b>7. Cancellations.</b> Requests to cancel or change a booking should be sent to us in writing as early as possible. Refunds, where applicable, are handled on a case-by-case basis in line with our cancellation policy.</p>
+            <p><b>8. Safeguarding.</b> We take the welfare of all students seriously. Any safeguarding concerns will be handled in accordance with our safeguarding procedures and reported to the appropriate authorities where required.</p>
+            <p><b>9. Data Protection.</b> Information submitted on this form is stored securely and used only for the purposes of administering the programme. It is not shared with third parties except where required to deliver the service (e.g. payment processing).</p>
+            <p><b>10. Changes to this Policy.</b> Adders Entertainment Group may update these policies from time to time. Continued participation in the programme constitutes acceptance of the current policy.</p>
             <p style={{ marginTop:14 }}>
               <a href="/policy.pdf" target="_blank" rel="noopener noreferrer" style={{ color:C.blue, fontWeight:600 }}>
                 📄 Download the full policy document (PDF)

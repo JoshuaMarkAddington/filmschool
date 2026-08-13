@@ -115,13 +115,14 @@ Setup:
    is collected separately from students who are offered a place, so it needs
    no link here.
 
-Still to fill in:
+Still to fill in — these are live on the site with visible placeholders:
 
-- The rehearsal venue and the company postal address in the participation
-  agreement (`audition-signup.html`) — both still show bracketed placeholders,
-  as does the privacy-policy link in Clause 9.1.
+- The company postal address in the participation agreement
+  (`audition-signup.html`), which still shows `[Company Address]` in three
+  places, and the rehearsal venue, which shows
+  `[TO BE CONFIRMED – Milton Keynes]`.
 - The flyer image (`audition-flyer.jpg`), which `audition.html` shows a
-  placeholder for until the file is added.
+  "coming soon" placeholder for until the file is added.
 
 ## Discounts & early-access sign-up pop-up
 

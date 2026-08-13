@@ -92,6 +92,20 @@
         </table>
       </div>
     </div>
+
+    <!-- Discounts & news newsletter sign-ups (site-wide pop-up) -->
+    <div class="section">
+      <div class="section-head">
+        <h2>Discounts &amp; News Sign-Ups <span class="count" id="subscribers-count"></span></h2>
+        <button class="export-btn" data-export="subscribers">Export CSV</button>
+      </div>
+      <div class="scroll">
+        <table id="subscribers-table">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -120,6 +134,14 @@
       ["id","Audition ID"],
     ];
 
+    const SUBSCRIBER_COLUMNS = [
+      ["created_at","Signed up"],
+      ["name","Name"],["email","Email"],["phone","Phone"],
+      ["source","From page"],
+      ["email_sent","Welcome email sent"],["sms_sent","Welcome text sent"],
+      ["id","ID"],
+    ];
+
     // Each section loads independently from its own endpoint into its own table.
     const SECTIONS = {
       applications: {
@@ -132,13 +154,18 @@
         table: "auditions-table", count: "auditions-count", empty: "No audition sign-ups yet.",
         filename: "audition-signups",
       },
+      subscribers: {
+        columns: SUBSCRIBER_COLUMNS, endpoint: "/api/admin/subscribers", key: "subscribers",
+        table: "subscribers-table", count: "subscribers-count", empty: "No discounts & news sign-ups yet.",
+        filename: "discounts-news-signups",
+      },
     };
-    const BOOL_COLS = ["new_to_film","new_to_performing","emergency_same","allergies","additional_needs","health_issues","consent_filming","consent_policy","consent_legal"];
+    const BOOL_COLS = ["new_to_film","new_to_performing","emergency_same","allergies","additional_needs","health_issues","consent_filming","consent_policy","consent_legal","email_sent","sms_sent"];
 
     const loginCard = document.getElementById("login");
     const dash = document.getElementById("dash");
     const loginErr = document.getElementById("loginErr");
-    const data = { applications: [], auditions: [] };
+    const data = { applications: [], auditions: [], subscribers: [] };
 
     function fmt(col, val) {
       if (val === null || val === undefined) return "";

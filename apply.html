@@ -713,17 +713,32 @@
           </div>
         </div>
         {open && (
-          <div style={{ marginTop:10, background:C.bg2, border:`1px dashed ${C.line}`, borderRadius:12, padding:"20px 18px",
-            display:"flex", flexDirection:"column", alignItems:"center", gap:8 }}>
-            <Calendar size={28} color={C.muted} />
-            <div style={{ color:C.text, fontWeight:600, fontSize:14 }}>September–November 2026 timetable</div>
-            <div style={{ color:C.muted, fontSize:12.5, textAlign:"center", lineHeight:1.6, maxWidth:320 }}>
-              View the full weekly schedule of days, times and module names for this cycle.
+          <div style={{ marginTop:10, background:C.bg2, border:`1px dashed ${C.line}`, borderRadius:12, padding:"18px 16px",
+            display:"flex", flexDirection:"column", gap:10 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8, justifyContent:"center" }}>
+              <Calendar size={20} color={C.muted} />
+              <div style={{ color:C.text, fontWeight:600, fontSize:14 }}>October–December 2026 timetable</div>
             </div>
+            <div style={{ color:C.muted, fontSize:12.5, textAlign:"center", lineHeight:1.6 }}>
+              The full weekly schedule of days, times and modules for this cycle. Scroll each table sideways to see every time slot.
+            </div>
+            {[
+              { src:"/timetable-month1.png", label:"Month 1" },
+              { src:"/timetable-month2.png", label:"Month 2" },
+              { src:"/timetable-month3.png", label:"Month 3" },
+            ].map(t => (
+              <div key={t.label}>
+                <div style={{ color:C.copper, fontWeight:700, fontSize:12.5, textTransform:"uppercase", letterSpacing:0.5, margin:"4px 2px 6px" }}>{t.label}</div>
+                <div style={{ overflowX:"auto", WebkitOverflowScrolling:"touch", background:"#fff", borderRadius:10, border:`1px solid ${C.line}` }}>
+                  <img src={t.src} alt={`${t.label} class schedule — days, times and modules`} loading="lazy"
+                    style={{ display:"block", width:"100%", minWidth:560, height:"auto" }} />
+                </div>
+              </div>
+            ))}
             <a href="/timetable.pdf" target="_blank" rel="noopener noreferrer"
-              style={{ marginTop:4, background:"transparent", border:`1px solid ${C.blue}55`,
+              style={{ alignSelf:"center", marginTop:4, background:"transparent", border:`1px solid ${C.blue}55`,
                 color:C.blue, fontSize:12.5, fontWeight:600, padding:"6px 14px", borderRadius:20, textDecoration:"none" }}>
-              📄 Open timetable (PDF)
+              📄 Open full timetable (PDF)
             </a>
           </div>
         )}

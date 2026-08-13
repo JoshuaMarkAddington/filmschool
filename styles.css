@@ -912,3 +912,186 @@
         padding: 1rem;
       }
     }
+
+    /* ===================================================================
+       Site-wide "Sign up for discounts & early access" pop-up
+       (injected on every page by signup-popup.js)
+       =================================================================== */
+    .afs-popup-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(3, 7, 18, 0.72);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .afs-popup-overlay.is-visible {
+      opacity: 1;
+    }
+    .afs-popup {
+      position: relative;
+      width: 100%;
+      max-width: 21rem;
+      background: linear-gradient(160deg, #1e293b, #0f172a);
+      border: 1px solid #ea580c;
+      border-radius: 0.9rem;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+      padding: 1.5rem 1.35rem 1.35rem;
+      text-align: center;
+      color: #f1f5f9;
+      transform: translateY(12px) scale(0.98);
+      transition: transform 0.3s ease;
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+    }
+    .afs-popup-overlay.is-visible .afs-popup {
+      transform: translateY(0) scale(1);
+    }
+    .afs-popup-close {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.75rem;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.6rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0.2rem 0.4rem;
+      transition: color 0.2s ease;
+    }
+    .afs-popup-close:hover {
+      color: #fb923c;
+    }
+    .afs-popup-logo {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      margin: 0 auto 0.5rem;
+      display: block;
+    }
+    .afs-popup-header {
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin: 0.35rem 0 0.3rem;
+      color: #ffffff;
+    }
+    .afs-popup-sub {
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      margin: 0 0 1rem;
+    }
+    .afs-popup-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: left;
+    }
+    .afs-popup-form input {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(15, 23, 42, 0.85);
+      border: 2px solid #334155;
+      border-radius: 0.5rem;
+      padding: 0.58rem 0.75rem;
+      color: #f1f5f9;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    .afs-popup-form input::placeholder {
+      color: #94a3b8;
+    }
+    .afs-popup-form input:focus {
+      border-color: #fb923c;
+    }
+    .afs-popup-error {
+      color: #fca5a5;
+      font-size: 0.8rem;
+      min-height: 0.5rem;
+      margin: 0;
+    }
+    .afs-popup-error:empty {
+      min-height: 0;
+    }
+    .afs-popup-submit {
+      margin-top: 0.25rem;
+      width: 100%;
+      padding: 0.65rem 1rem;
+      border: none;
+      border-radius: 0.55rem;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #ffffff;
+      background: linear-gradient(135deg, #fb923c, #ea580c 55%, #dc2626);
+      box-shadow: 0 6px 20px rgba(234, 88, 12, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+    .afs-popup-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(234, 88, 12, 0.6);
+    }
+    .afs-popup-submit:disabled {
+      opacity: 0.6;
+      cursor: default;
+      transform: none;
+      box-shadow: none;
+    }
+    /* Spinning-logo "thank you" state */
+    .afs-popup-thanks {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0 0.25rem;
+    }
+    .afs-popup-thanks.is-active {
+      display: flex;
+    }
+    .afs-popup-spinner {
+      width: 92px;
+      height: 92px;
+      object-fit: contain;
+      animation: afsSpin 1s linear infinite;
+    }
+    @keyframes afsSpin {
+      to { transform: rotate(360deg); }
+    }
+    .afs-popup-thanks-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0.25rem 0 0;
+    }
+    .afs-popup-thanks-text {
+      font-size: 0.92rem;
+      color: #cbd5e1;
+      margin: 0;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .afs-popup-overlay,
+      .afs-popup { transition: none; }
+      .afs-popup-spinner { animation-duration: 2.4s; }
+    }
+    /* Light mode */
+    body.light-mode .afs-popup {
+      background: linear-gradient(160deg, #ffffff, #fff7ed);
+      color: #0f172a;
+    }
+    body.light-mode .afs-popup-header { color: #0f172a; }
+    body.light-mode .afs-popup-sub,
+    body.light-mode .afs-popup-thanks-text { color: #475569; }
+    body.light-mode .afs-popup-form input {
+      background: #ffffff;
+      border-color: #e2e8f0;
+      color: #0f172a;
+    }
+    body.light-mode .afs-popup-thanks-title { color: #0f172a; }

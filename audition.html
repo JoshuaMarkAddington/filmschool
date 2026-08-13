@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Intensive Course Auditions — Adders Film School</title>
+
+  <!-- Audition venue. Shown here, on the sign-up form and in the policy
+       agreement the parent/guardian accepts. The booking is not yet fixed, so
+       every mention of the venue is paired with VENUE_CAVEAT — change both
+       here and they update everywhere. -->
+  <script>
+    window.AUDITION_VENUE = "Milton Keynes Arts Centre, Great Linford Manor Park";
+    window.VENUE_CAVEAT = "Venue subject to change — we'll confirm before the day.";
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -108,26 +118,129 @@
     .audition-now:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 38px rgba(234,88,12,0.75); }
     .cta-note { color: var(--muted); font-size: 0.85rem; margin-top: 16px; }
 
-    /* ===== Guest audition panel ===== */
-    .guest-card {
-      display: flex; align-items: center; gap: 22px;
-      background: var(--bg2); border: 1px solid var(--line); border-left: 4px solid var(--gold);
-      border-radius: 16px; padding: 22px 24px;
+    /* =================================================================
+       MEET THE PANEL — gallery of the people watching on the day.
+       Cards are built from the shared list in panel.js, so adding a
+       panelist there adds them here and gives them a biography page.
+       ================================================================= */
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 220px));
+      gap: 26px;
+      justify-content: center;
     }
-    .guest-avatar, .guest-avatar-placeholder {
-      width: 96px; height: 96px; border-radius: 50%; flex-shrink: 0; object-fit: cover;
+    .panel-card {
+      display: block; text-decoration: none; color: inherit;
+      transition: transform .28s cubic-bezier(.25,.46,.45,.94);
     }
-    .guest-avatar-placeholder {
-      display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, #fbbf24, #ea580c);
-      color: #1e293b; font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.7rem;
+    .panel-card:hover, .panel-card:focus-visible { transform: translateY(-8px); }
+    .panel-card:focus-visible { outline: none; }
+    .panel-shot {
+      position: relative; aspect-ratio: 4 / 5; border-radius: 16px; overflow: hidden;
+      border: 1px solid var(--line); background: var(--bg2);
+      box-shadow: 0 18px 40px rgba(0,0,0,.45);
+      transition: border-color .28s ease, box-shadow .28s ease;
     }
-    .guest-name { font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 700; }
-    .guest-role {
-      color: var(--gold); font-size: 0.75rem; text-transform: uppercase;
-      letter-spacing: 0.06em; font-weight: 700; margin-top: 3px;
+    .panel-card:hover .panel-shot,
+    .panel-card:focus-visible .panel-shot {
+      border-color: rgba(224,137,74,.65);
+      box-shadow: 0 26px 56px rgba(0,0,0,.6), 0 0 0 1px rgba(224,137,74,.3);
     }
-    .guest-bio { color: var(--muted); font-size: 0.9rem; margin: 8px 0 0; }
+    .panel-shot img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform .5s cubic-bezier(.25,.46,.45,.94), filter .35s ease;
+      filter: saturate(.92);
+    }
+    .panel-card:hover .panel-shot img,
+    .panel-card:focus-visible .panel-shot img { transform: scale(1.07); filter: saturate(1.05); }
+
+    /* Copper wash + "View biography" cue, revealed on hover/focus. */
+    .panel-veil {
+      position: absolute; inset: 0; display: flex; align-items: flex-end;
+      justify-content: center; padding-bottom: 18px;
+      background: linear-gradient(to top, rgba(7,11,20,.92) 0%, rgba(7,11,20,.35) 42%, transparent 70%);
+      opacity: 0; transition: opacity .3s ease;
+    }
+    .panel-card:hover .panel-veil,
+    .panel-card:focus-visible .panel-veil { opacity: 1; }
+    .panel-veil span {
+      color: var(--gold); font-size: 12.5px; font-weight: 700; letter-spacing: 1.2px;
+      text-transform: uppercase; transform: translateY(8px); transition: transform .3s ease;
+    }
+    .panel-card:hover .panel-veil span,
+    .panel-card:focus-visible .panel-veil span { transform: none; }
+    .panel-name {
+      font-family: 'Cinzel', serif; font-size: 18px; font-weight: 700;
+      margin: 15px 0 0; text-align: center; transition: color .25s ease;
+    }
+    .panel-card:hover .panel-name,
+    .panel-card:focus-visible .panel-name { color: var(--copper); }
+    .panel-role {
+      color: var(--muted); font-size: 12.5px; line-height: 1.5; margin: 6px 0 0; text-align: center;
+    }
+
+    /* =================================================================
+       REHEARSAL TIMETABLE — built from the list in rehearsals.js.
+       ================================================================= */
+    .rehearsal-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px; align-items: start; /* a two-session day stays tall without stretching its row */
+    }
+    .rehearsal-day {
+      background: var(--bg2); border: 1px solid var(--line); border-radius: 14px;
+      padding: 18px 16px; text-align: center;
+      transition: border-color .25s ease, transform .25s ease;
+    }
+    .rehearsal-day:hover { border-color: rgba(224,137,74,.45); transform: translateY(-3px); }
+    .rehearsal-day .weekday {
+      font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700; color: var(--text); margin: 0;
+    }
+    .rehearsal-day .date { color: var(--muted); font-size: 12.5px; margin: 5px 0 14px; }
+    /* Show day is the one the whole timetable builds towards. */
+    .rehearsal-day.is-show {
+      border-color: rgba(232,184,75,.45);
+      background: linear-gradient(160deg, rgba(232,184,75,.10), rgba(232,184,75,.03)), var(--bg2);
+    }
+    .rehearsal-day .day-tag {
+      display: inline-block; color: var(--bg);
+      background: linear-gradient(180deg, var(--gold), var(--goldDeep));
+      font-size: 10.5px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+      border-radius: 20px; padding: 4px 12px; margin-bottom: 12px;
+    }
+    /* A day can hold more than one block — e.g. rehearsal + performance. */
+    .rehearsal-day .session + .session {
+      margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line);
+    }
+    .rehearsal-day .session-label {
+      color: var(--copper); font-size: 10.5px; font-weight: 700; letter-spacing: 1.1px;
+      text-transform: uppercase; margin: 0 0 8px;
+    }
+    .rehearsal-day .times {
+      display: inline-block; color: var(--gold); font-size: 13px; font-weight: 700;
+      border: 1px solid rgba(232,184,75,.28); background: rgba(232,184,75,.06);
+      border-radius: 20px; padding: 7px 13px;
+    }
+    .rehearsal-day .day-note { color: var(--muted); font-size: 11.5px; line-height: 1.5; margin: 10px 0 0; }
+    .venue-band {
+      text-align: center; color: var(--text); font-size: 14px; line-height: 1.7; margin: 0 0 22px;
+    }
+    .venue-band b { color: var(--gold); }
+    .venue-band .venue-caveat {
+      display: block; color: var(--muted); font-size: 12.5px; margin-top: 4px;
+    }
+    .rehearsal-footnote {
+      margin: 24px auto 0; color: var(--muted); font-size: 13px; line-height: 1.75;
+      text-align: center; max-width: 620px;
+    }
+
+    /* Respect users who prefer less motion. */
+    @media (prefers-reduced-motion: reduce) {
+      .panel-card, .panel-shot img, .panel-veil, .panel-veil span, .panel-name { transition: none; }
+      .panel-card:hover, .panel-card:focus-visible { transform: none; }
+      .panel-card:hover .panel-shot img, .panel-card:focus-visible .panel-shot img { transform: none; }
+      .rehearsal-day { transition: none; }
+      .rehearsal-day:hover { transform: none; }
+    }
 
     /* ===== Flyer showcase ===== */
     .flyer-card {
@@ -147,7 +260,6 @@
       .fee-divider { width: auto; height: 1px; }
       .sec-card { flex-direction: column; align-items: flex-start; gap: 8px; }
       .sec-time { text-align: left; }
-      .guest-card { flex-direction: column; text-align: center; }
     }
   </style>
 </head>
@@ -244,25 +356,13 @@
       </div>
     </section>
 
-    <!-- ===== Guest audition panel ===== -->
-    <section class="block">
-      <h2>🌟 Guest Audition Panel</h2>
-      <p class="sub">This year we're joined by a very special guest on the panel.</p>
-      <div class="guest-card">
-        <!-- Placeholder avatar — swap for:
-             <img class="guest-avatar" src="stevi-ritchie.jpg" alt="Stevi Ritchie">
-             once the headshot file has been added to the repo. -->
-        <div class="guest-avatar-placeholder">SR</div>
-        <div>
-          <div class="guest-name">Stevi Ritchie</div>
-          <div class="guest-role">Guest Star — Audition Panel</div>
-          <p class="guest-bio">
-            Stevi Ritchie joins Adders Film School as this year's guest star on the audition
-            panel, bringing real industry experience straight to our students. <em>Full bio
-            coming soon.</em>
-          </p>
-        </div>
-      </div>
+    <!-- ===== Meet the audition panel ===== -->
+    <section class="block" id="panel">
+      <h2>🌟 Meet the Audition Panel</h2>
+      <p class="sub">
+        These are the people watching on the day. Click a headshot to read their biography.
+      </p>
+      <div class="panel-grid" id="panel-grid"></div>
     </section>
 
     <!-- ===== Audition sections by age bracket ===== -->
@@ -286,6 +386,27 @@
           <div class="sec-time">3:00pm – 5:00pm <small>Section 3</small></div>
         </div>
       </div>
+    </section>
+
+    <!-- ===== Rehearsal timetable (for students offered a place) ===== -->
+    <section class="block" id="timetable">
+      <h2>📅 Rehearsal Timetable</h2>
+      <p class="sub">
+        Rehearsals for the two-week intensive course. These dates apply to students who are
+        offered a place after a successful audition.
+      </p>
+      <p class="venue-band">
+        📍 Auditions are held at <b id="venue-name"></b>
+        <span class="venue-caveat" id="venue-caveat"></span>
+      </p>
+      <div class="rehearsal-grid" id="rehearsal-grid"></div>
+      <p class="rehearsal-footnote">
+        Attendance at every rehearsal is a condition of keeping a place in the show. If a student
+        cannot attend a date, we must be given notice in advance — a student who misses more than
+        one rehearsal may lose their place in the show. Dates, times and venues are subject to
+        change — any change will be confirmed by email, with as much notice as we can give. The
+        full terms are set out in the agreement on the sign-up form.
+      </p>
     </section>
 
     <!-- ===== What to wear / bring ===== -->
@@ -341,5 +462,68 @@
       <p class="cta-note">You'll be asked to accept our terms before secure payment via Stripe.</p>
     </div>
   </div>
+
+  <script src="panel.js"></script>
+  <script src="rehearsals.js"></script>
+  <script>
+    /* Build the panel cards from the shared list in panel.js. */
+    (function () {
+      var grid = document.getElementById("panel-grid");
+      var list = window.PANELISTS || [];
+
+      function esc(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+
+      grid.innerHTML = list.map(function (p) {
+        return '<a class="panel-card" href="panelist.html?id=' + encodeURIComponent(p.id) + '"' +
+          ' aria-label="Read ' + esc(p.name) + "'s biography\">" +
+          '<div class="panel-shot">' +
+            '<img src="' + esc(p.photo) + '" alt="' + esc(p.name) + '" loading="lazy"' +
+              ' style="object-position:' + esc(p.focus || "center 20%") + '">' +
+            '<div class="panel-veil"><span>View biography</span></div>' +
+          "</div>" +
+          '<p class="panel-name">' + esc(p.name) + "</p>" +
+          (p.role ? '<p class="panel-role">' + esc(p.role) + "</p>" : "") +
+        "</a>";
+      }).join("");
+    })();
+  </script>
+  <script>
+    /* Build the rehearsal cards from the shared list in rehearsals.js. */
+    (function () {
+      var grid = document.getElementById("rehearsal-grid");
+      var days = window.REHEARSALS || [];
+
+      function esc(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+
+      /* Venue line — kept in step with the sign-up form and the agreement. */
+      document.getElementById("venue-name").textContent = window.AUDITION_VENUE || "";
+      document.getElementById("venue-caveat").textContent = window.VENUE_CAVEAT || "";
+
+      grid.innerHTML = days.map(function (d) {
+        var sessions = (d.sessions || []).map(function (s) {
+          return '<div class="session">' +
+            (s.label ? '<p class="session-label">' + esc(s.label) + "</p>" : "") +
+            '<span class="times">' + esc(s.start) + " – " + esc(s.end) + "</span>" +
+            (s.note ? '<p class="day-note">' + esc(s.note) + "</p>" : "") +
+          "</div>";
+        }).join("");
+
+        return '<div class="rehearsal-day' + (d.tag ? " is-show" : "") + '">' +
+          (d.tag ? '<span class="day-tag">' + esc(d.tag) + "</span>" : "") +
+          '<p class="weekday">' + esc(d.weekday) + "</p>" +
+          '<p class="date">' + esc(d.date) + "</p>" +
+          sessions +
+        "</div>";
+      }).join("");
+    })();
+  </script>
 </body>
 </html>

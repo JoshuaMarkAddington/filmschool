@@ -4,6 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Audition Sign-Up — Adders Film School Intensive Course</title>
+
+  <!-- Audition venue. Kept in step with audition.html, which shows the same
+       two values. The booking is not yet fixed, so every mention of the venue
+       is paired with VENUE_CAVEAT — change both here and they update
+       everywhere on this page. -->
+  <script>
+    window.AUDITION_VENUE = "Milton Keynes Arts Centre, Great Linford Manor Park";
+    window.VENUE_CAVEAT = "Venue subject to change — we'll confirm before the day.";
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -89,6 +99,15 @@
   const bracketInfo = (v) => AGE_BRACKETS.find(b => b.value === v) || null;
 
   /* =====================================================================
+     VENUE
+     Set once in the <head> so this page and audition.html show the same
+     thing. The booking is not yet fixed, so every mention of the venue is
+     paired with VENUE_CAVEAT.
+     ===================================================================== */
+  const AUDITION_VENUE = window.AUDITION_VENUE;
+  const VENUE_CAVEAT = window.VENUE_CAVEAT;
+
+  /* =====================================================================
      FEES
      Total programme fee is £225 per student. The sign-up on this page
      takes the £25 audition & masterclass fee only. For students who pass
@@ -119,8 +138,11 @@
 
      ⚠️  BRACKETED PLACEHOLDERS STILL TO FILL IN before this goes live:
        [Company Address] — postal address not yet supplied;
-       [TO BE CONFIRMED – Milton Keynes] — the audition/masterclass venue
-       and the rehearsal venue; and the privacy-policy link in Clause 9.1.
+       [Venue TBC – Milton Keynes] — the rehearsal venue; and the
+       privacy-policy link in Clause 9.1.
+     The audition/masterclass venue comes from AUDITION_VENUE, set in the
+     <head> of this page — it is named but not yet a fixed booking, which
+     Clause 2.2 covers.
      ===================================================================== */
   const LegalH = ({ children }) => (
     <div style={{ color: C.copper, fontFamily: "'Cinzel',serif", fontWeight: 700, fontSize: 14.5, marginTop: 22, marginBottom: 8 }}>
@@ -197,17 +219,17 @@
       <LegalTable
         head={["Date", "Time", "Activity", "Venue"]}
         rows={[
-          ["Fri 28 Aug 2026", "10:30am – 5:00pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
-          ["Sat 29 Aug 2026", "10:30am – 5:00pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
-          ["Sun 30 Aug 2026", "10:30am – 5:00pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
-          ["Mon 31 Aug 2026", "10:30am – 1:00pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
-          ["Mon 31 Aug 2026", "3:00pm – 4:00pm", "Promotional performance (free entry)", "Milton Keynes Shopping Centre"],
-          ["Wed 2 Sep 2026", "4:30pm – 7:30pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
-          ["Thu 3 Sep 2026", "4:30pm – 7:30pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
-          ["Sat 5 Sep 2026", "11:00am – 5:00pm", "Performance Day", "The Amphitheatre, Campbell Park, Milton Keynes"],
+          ["Fri 28 Aug 2026", "10:30am – 4:30pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
+          ["Sat 29 Aug 2026", "10:30am – 4:30pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
+          ["Sun 30 Aug 2026", "10:30am – 4:30pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
+          ["Mon 31 Aug 2026", "9:30am – 12:30pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
+          ["Mon 31 Aug 2026", "2:00pm – 3:00pm", "Promotional performance (free entry)", "Milton Keynes Shopping Centre"],
+          ["Wed 2 Sep 2026", "6:00pm – 9:00pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
+          ["Thu 3 Sep 2026", "6:00pm – 9:00pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
+          ["Sat 5 Sep 2026", "9:30am – 4:30pm", "Performance Day", "The Amphitheatre, Campbell Park, Milton Keynes"],
         ]}
       />
-      <LegalP>These dates and times are estimates only. An official timetable will be issued closer to the audition date, and may be subject to change. All elements of the Programme take place in Milton Keynes. Audition &amp; masterclass venue: [TO BE CONFIRMED – Milton Keynes]. Rehearsal venue: [TO BE CONFIRMED – Milton Keynes]. Promotional performance venue: Milton Keynes Shopping Centre. Performance Day venue: The Amphitheatre, Campbell Park, Milton Keynes.</LegalP>
+      <LegalP>These dates and times are estimates only. An official timetable will be issued closer to the audition date, and may be subject to change. All elements of the Programme take place in Milton Keynes. Audition &amp; masterclass venue: {AUDITION_VENUE} (subject to confirmation — see Clause 2.2). Rehearsal venue: [TO BE CONFIRMED – Milton Keynes]. Promotional performance venue: Milton Keynes Shopping Centre. Performance Day venue: The Amphitheatre, Campbell Park, Milton Keynes.</LegalP>
 
       <LegalH>2.2 Venues and Changes to Venue</LegalH>
       <LegalClause n="2.2.1">Where a venue is shown as "to be confirmed", the Company will confirm it to the Parent/Guardian in writing as soon as it is finalised.</LegalClause>
@@ -430,6 +452,11 @@
               border: `1px solid ${C.gold}44`, padding: "10px 18px", borderRadius: 30, background: `${C.gold}0E` }}>
               🎭 £{AUDITION_FEE} today · £{BALANCE_FEE} balance if offered a place (£{TOTAL_FEE} total)
             </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, color: C.text, fontSize: 13, fontWeight: 600,
+              border: `1px solid ${C.line}`, padding: "10px 18px", borderRadius: 30, background: C.bg2 }}>
+              📍 {AUDITION_VENUE}
+            </div>
+            <div style={{ color: C.muted, fontSize: 12, marginTop: -2 }}>{VENUE_CAVEAT}</div>
           </div>
         </div>
       );

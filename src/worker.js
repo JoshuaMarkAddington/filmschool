@@ -140,9 +140,16 @@ async function handleAudition(request, env) {
       return Response.json({ error: `Missing field: ${field}` }, { status: 400 });
     }
   }
+  // The sign-up form has the parent/guardian read and accept the agreement on
+  // screen before checkout, so a sign-up without acceptance should not exist.
+  if (!body.consentLegal) {
+    return Response.json({ error: "Terms and conditions must be accepted" }, { status: 400 });
+  }
+  // The age bracket is the eligibility check: the three brackets span 13–18,
+  // so anything outside that range has no bracket and is rejected here.
   const auditionTime = AUDITION_SECTIONS[body.ageBracket];
   if (!auditionTime) {
-    return Response.json({ error: "Invalid age bracket" }, { status: 400 });
+    return Response.json({ error: "Invalid age bracket — auditions are open to ages 13–18" }, { status: 400 });
   }
 
   const id = crypto.randomUUID();
@@ -204,6 +211,7 @@ async function sendAuditionReceivedEmails(env, app, origin) {
           <li><b>Email:</b> ${escapeHtml(app.email)}</li>
           <li><b>Phone:</b> ${escapeHtml(app.phone)}</li>
           <li><b>Emergency contact:</b> ${escapeHtml(app.emergencyPhone)}</li>
+          <li><b>Terms accepted:</b> ${app.consentLegal ? "yes" : "no"}</li>
         </ul>
         <p>View full details in the admin dashboard at /admin.</p>
       `,

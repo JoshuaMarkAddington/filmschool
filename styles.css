@@ -185,6 +185,146 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 26px rgba(245, 158, 11, 0.6);
     }
+    /* ===== Showcase 2026 — event description sections ===== */
+    .showcase-intro {
+      max-width: 50rem;
+      margin: 0 auto 2.5rem;
+      text-align: center;
+    }
+    .showcase-intro p {
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      margin: 0.75rem 0;
+    }
+    .showcase-features {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+      max-width: 60rem;
+      margin: 0 auto 2.5rem;
+    }
+    .showcase-feature {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 1px solid #334155;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: left;
+    }
+    .showcase-feature-icon {
+      font-size: 1.6rem;
+      display: block;
+      margin-bottom: 0.6rem;
+    }
+    .showcase-feature h4 {
+      color: #fb923c;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+    }
+    .showcase-feature p {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin: 0;
+    }
+    .showcase-panel {
+      max-width: 44rem;
+      margin: 0 auto 2.5rem;
+      background: linear-gradient(135deg, rgba(234, 88, 12, 0.14), rgba(194, 65, 12, 0.08));
+      border: 1px solid #ea580c;
+      border-radius: 1rem;
+      padding: 2rem 2.25rem;
+      text-align: left;
+    }
+    .showcase-panel h3 {
+      font-size: 1.35rem;
+      margin: 0 0 0.9rem;
+    }
+    .showcase-panel p {
+      color: #f8fafc;
+      font-size: 1rem;
+      line-height: 1.7;
+      margin: 0 0 0.9rem;
+    }
+    .showcase-panel p:last-child {
+      margin-bottom: 0;
+    }
+    .showcase-dates {
+      max-width: 44rem;
+      margin: 0 auto 2.5rem;
+      text-align: left;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 1px solid #334155;
+      border-radius: 1rem;
+      padding: 1.75rem 2rem;
+    }
+    .showcase-dates h3 {
+      font-size: 1.25rem;
+      margin: 0 0 1rem;
+      text-align: center;
+    }
+    .showcase-dates ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .showcase-dates li {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      border-left: 3px solid #ea580c;
+      padding-left: 1rem;
+    }
+    .showcase-dates li strong {
+      color: #f8fafc;
+      display: block;
+    }
+    .showcase-time-placeholder {
+      display: inline-block;
+      color: #fbbf24;
+      font-style: italic;
+      font-size: 0.88rem;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px dashed rgba(245, 158, 11, 0.5);
+      border-radius: 0.4rem;
+      padding: 0.1rem 0.5rem;
+      margin-top: 0.2rem;
+    }
+    body.light-mode .showcase-intro p {
+      color: #334155;
+    }
+    body.light-mode .showcase-feature {
+      background: linear-gradient(145deg, #ffffff, #f1f5f9);
+      border-color: #cbd5e1;
+    }
+    body.light-mode .showcase-feature p {
+      color: #334155;
+    }
+    body.light-mode .showcase-panel {
+      background: linear-gradient(135deg, rgba(234, 88, 12, 0.1), rgba(194, 65, 12, 0.05));
+    }
+    body.light-mode .showcase-panel p {
+      color: #1e293b;
+    }
+    body.light-mode .showcase-dates {
+      background: linear-gradient(145deg, #ffffff, #f1f5f9);
+      border-color: #cbd5e1;
+    }
+    body.light-mode .showcase-dates li {
+      color: #334155;
+    }
+    body.light-mode .showcase-dates li strong {
+      color: #0f172a;
+    }
+    @media (max-width: 640px) {
+      .showcase-features {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* ===== Two-Week Intensive Course card ===== */
     .intensive-card {
       position: relative;

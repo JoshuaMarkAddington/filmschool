@@ -8,6 +8,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
+  <!-- Audition venue. Shown on the sign-up form, in the policy agreement the
+       parent/guardian accepts, and in the timetable further down the page.
+       The venue is not yet fixed, so every mention of it is paired with
+       VENUE_CAVEAT — change both here and they update everywhere. -->
+  <script>
+    window.AUDITION_VENUE = "Milton Keynes Arts Centre, Great Linford Manor Park";
+    window.VENUE_CAVEAT = "Venue subject to change — we'll confirm before the day.";
+  </script>
+
   <!-- React + Babel via CDN (the site already loads tooling from CDNs) -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -252,6 +261,21 @@
       line-height: 1.5;
       margin: 10px 0 0;
     }
+    .venue-band {
+      max-width: 880px;
+      margin: -18px auto 26px;
+      text-align: center;
+      color: #F4F1EA;
+      font-size: 14.5px;
+      line-height: 1.7;
+    }
+    .venue-band b { color: #E8B84B; }
+    .venue-band .venue-caveat {
+      display: block;
+      color: #8A93A8;
+      font-size: 12.5px;
+      margin-top: 4px;
+    }
     .rehearsal-footnote {
       margin-top: 26px;
       color: #8A93A8;
@@ -298,12 +322,17 @@
         <p>Rehearsals for the two-week intensive course. These dates apply to students who are
           offered a place after a successful audition.</p>
       </div>
+      <p class="venue-band">
+        📍 Auditions are held at <b id="venue-name"></b>
+        <span class="venue-caveat" id="venue-caveat"></span>
+      </p>
       <div class="rehearsal-grid" id="rehearsal-grid"></div>
       <p class="rehearsal-footnote">
         Attendance at every rehearsal is a condition of keeping a place in the show. If a student
         cannot attend a date, we must be given notice in advance — a student who misses more than
-        one rehearsal may lose their place in the show. The full terms are set out in the policy
-        agreement on the sign-up form.
+        one rehearsal may lose their place in the show. Dates, times and venues are subject to
+        change — any change will be confirmed by email, with as much notice as we can give. The
+        full terms are set out in the policy agreement on the sign-up form.
       </p>
     </div>
   </section>
@@ -321,6 +350,10 @@
           return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
         });
       }
+
+      /* Venue line — kept in step with the form and the policy agreement. */
+      document.getElementById("venue-name").textContent = window.AUDITION_VENUE || "";
+      document.getElementById("venue-caveat").textContent = window.VENUE_CAVEAT || "";
 
       grid.innerHTML = days.map(function (d) {
         var sessions = (d.sessions || []).map(function (s) {
@@ -374,7 +407,7 @@
        membership application form in apply.html, adapted for the two-week
        intensive-course audition. -->
   <script type="text/plain" id="form-src">
-  const { useState, useEffect } = React;
+  const { useState, useEffect, useRef } = React;
 
   /* =====================================================================
      DESIGN TOKENS / DEPENDENCIES
@@ -431,6 +464,12 @@
   const AUDITION_FEE = 25;
   const COURSE_FEE = 100;
 
+  // Where the audition is held — defined once in the page head, so the form,
+  // the policy agreement and the timetable below always agree. Every mention
+  // is paired with VENUE_CAVEAT, because the booking is not yet fixed.
+  const AUDITION_VENUE = window.AUDITION_VENUE;
+  const VENUE_CAVEAT = window.VENUE_CAVEAT;
+
   // Real Stripe Payment Link for the £25 audition fee.
   //
   // ⚠️ SET UP REQUIRED: replace the placeholder below with the real Stripe
@@ -465,7 +504,7 @@
     allergies:null, allergiesDetail:"",
     additionalNeeds:null, additionalNeedsDetail:"",
     healthIssues:null, healthIssuesDetail:"",
-    consentFilming:false, consentPolicy:false,
+    consentFilming:false, consentPolicy:false, termsAgreedAt:"",
   };
 
   const FSTEPS = [
@@ -503,8 +542,10 @@
         case "allergies": return d.allergies !== null && (d.allergies === false || d.allergiesDetail.trim().length > 1);
         case "additionalNeeds": return d.additionalNeeds !== null && (d.additionalNeeds === false || d.additionalNeedsDetail.trim().length > 1);
         case "healthIssues": return d.healthIssues !== null && (d.healthIssues === false || d.healthIssuesDetail.trim().length > 1);
-        case "consents": return d.consentFilming && d.consentPolicy;
-        case "policy": return true;
+        case "consents": return d.consentFilming;
+        // The terms are read and accepted here, on the last screen before
+        // checkout — nobody reaches Stripe without ticking this.
+        case "policy": return d.consentPolicy;
         case "payment": return true;
         default: return true;
       }
@@ -518,6 +559,12 @@
     // takes the card details and handles the charge.
     const handlePay = async () => {
       if(!canGo()) return;
+      // Belt and braces: the policy step gates this already, but never hand
+      // anyone to Stripe without an accepted agreement on record.
+      if(!d.consentPolicy){
+        setPayError("Please accept the terms and conditions before paying.");
+        return;
+      }
       setPayError("");
       setPaying(true);
       try {
@@ -650,6 +697,11 @@
               border:`1px solid ${C.copper}44`, padding:"10px 18px", borderRadius:30, background:`${C.copper}0E` }}>
               ⚡ Open to performers aged 13–24
             </div>
+            <div style={{ display:"flex", alignItems:"center", gap:10, color:C.text, fontSize:13, fontWeight:600,
+              border:`1px solid ${C.line}`, padding:"10px 18px", borderRadius:30, background:C.bg2 }}>
+              📍 {AUDITION_VENUE}
+            </div>
+            <div style={{ color:C.muted, fontSize:12, marginTop:-2 }}>{VENUE_CAVEAT}</div>
           </div>
         </div>
       );
@@ -816,26 +868,62 @@
             <MazeMark pair={PALETTE.filmschool} size={52} />
             <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:22, color:C.text, marginTop:14, marginBottom:0 }}>Almost there</h2>
             <p style={{ color:C.muted, fontSize:14, marginTop:8, lineHeight:1.6 }}>
-              We need your agreement on two important points before we confirm your audition.
+              One consent to give here — then you'll read and accept the terms and conditions
+              before any payment is taken.
             </p>
           </div>
           <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
             <ConsentCard checked={d.consentFilming} onChange={v=>set("consentFilming",v)}
               title="Consent to film the student"
               desc="Because this is a film school, students will be filmed as part of the audition and for promotional purposes. I give consent for the student to be filmed during the audition and for appropriate footage to be used by Adders Film School." />
-            <ConsentCard checked={d.consentPolicy} onChange={v=>set("consentPolicy",v)}
-              title="I accept the terms and policy"
-              desc="I confirm I have read and understood the Adders Film School policy agreement (shown on the next screen) and I agree to abide by its terms on behalf of myself and the student." />
           </div>
         </div>
       );
 
-      case "policy": return (
+      case "policy": return <PolicyAgreement d={d} set={set} />;
+
+      case "payment": return <PaymentStep d={d} firstName={firstName} />;
+
+      default: return null;
+    }
+  }
+
+  /* ---------- terms and conditions: read, then agree ----------
+     The last screen before Stripe. The agreement is shown in full, and the
+     acceptance tick below it only becomes active once the reader has
+     reached the end of it — the Continue button stays disabled until then,
+     so nobody is sent to checkout on terms they haven't seen. */
+  function PolicyAgreement({ d, set }) {
+    const boxRef = useRef(null);
+    const [readToEnd, setReadToEnd] = useState(false);
+
+    // A short agreement on a tall screen may not scroll at all; treat that
+    // as read so the tick is never impossible to reach.
+    useEffect(() => {
+      const box = boxRef.current;
+      if (box && box.scrollHeight <= box.clientHeight + 4) setReadToEnd(true);
+    }, []);
+
+    const onScroll = (e) => {
+      const el = e.currentTarget;
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 24) setReadToEnd(true);
+    };
+
+    const accept = (v) => {
+      set("consentPolicy", v);
+      set("termsAgreedAt", v ? new Date().toISOString() : "");
+    };
+
+    return (
         <div style={{ width:"100%", maxWidth:580 }}>
-          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:22, color:C.text, textAlign:"center", marginBottom:18 }}>
-            Policy Agreement
+          <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:22, color:C.text, textAlign:"center", marginBottom:8 }}>
+            Terms &amp; Conditions
           </h2>
-          <div style={{ background:C.bg2, border:`1px solid ${C.line}`, borderRadius:14, padding:"22px 24px",
+          <p style={{ color:C.muted, fontSize:13.5, textAlign:"center", lineHeight:1.6, marginTop:0, marginBottom:18 }}>
+            Please read the agreement below. You'll be asked to accept it before any payment is taken.
+          </p>
+          <div ref={boxRef} onScroll={onScroll}
+            style={{ background:C.bg2, border:`1px solid ${C.line}`, borderRadius:14, padding:"22px 24px",
             maxHeight:360, overflowY:"auto", color:C.muted, fontSize:13.5, lineHeight:1.85 }}>
             <div style={{ color:C.copper, fontFamily:"'Cinzel',serif", fontWeight:700, fontSize:16, marginBottom:16 }}>
               Adders Entertainment Group — Policies
@@ -843,29 +931,38 @@
             <p><b>1. Code of Conduct.</b> All members, parents and guardians are expected to treat staff, students and the studio with courtesy and respect at all times. Disruptive, abusive or unsafe behaviour may result in suspension or removal from the programme without refund.</p>
             <p><b>2. Attendance.</b> Auditions and sessions run to a fixed timetable. Persistent lateness or unexplained absence may affect a student's place on the programme. Please notify us in advance if a student cannot attend.</p>
             <p><b>3. Rehearsal Attendance.</b> Students who are offered a place on the intensive course are required to attend <b>all</b> rehearsals on the published rehearsal timetable, including the flash mob performance and show day. Rehearsals are cumulative and are worked around the full cast, so an absence affects every student. If a student is unable to attend a rehearsal, notice <b>must</b> be given to us in advance. A student who misses more than one rehearsal may lose their place in the show.</p>
-            <p><b>4. Health, Safety &amp; Medical Information.</b> Any allergies, additional needs or health issues declared on this form will be kept on file and used solely to keep the student safe. Parents/guardians must keep this information up to date.</p>
-            <p><b>5. Filming &amp; Use of Footage.</b> The audition and course involve filming as part of the curriculum. By submitting this form and consenting, you agree that footage of the student may be captured and used for educational purposes and, where separately consented to, promotional use by Adders Entertainment Group.</p>
-            <p><b>6. Payments &amp; Fees.</b> The audition fee is due at checkout. The course fee is payable separately by students who are offered and accept a place after a successful audition. The audition fee secures an audition slot only and does not guarantee a place on the course.</p>
-            <p><b>7. Cancellations.</b> Requests to cancel or change a booking should be sent to us in writing as early as possible. Refunds, where applicable, are handled on a case-by-case basis in line with our cancellation policy.</p>
-            <p><b>8. Safeguarding.</b> We take the welfare of all students seriously. Any safeguarding concerns will be handled in accordance with our safeguarding procedures and reported to the appropriate authorities where required.</p>
-            <p><b>9. Data Protection.</b> Information submitted on this form is stored securely and used only for the purposes of administering the programme. It is not shared with third parties except where required to deliver the service (e.g. payment processing).</p>
-            <p><b>10. Changes to this Policy.</b> Adders Entertainment Group may update these policies from time to time. Continued participation in the programme constitutes acceptance of the current policy.</p>
+            <p><b>4. Venue.</b> Auditions are scheduled to take place at <b>{AUDITION_VENUE}</b>. Venues, dates and times — including the audition venue, rehearsal venues and any performance location — are subject to change, and we reserve the right to change them where necessary. Any change will be confirmed to the email address given on this form, with as much notice as we are able to give. A change of venue, date or time does not on its own entitle you to a refund.</p>
+            <p><b>5. Health, Safety &amp; Medical Information.</b> Any allergies, additional needs or health issues declared on this form will be kept on file and used solely to keep the student safe. Parents/guardians must keep this information up to date.</p>
+            <p><b>6. Filming &amp; Use of Footage.</b> The audition and course involve filming as part of the curriculum. By submitting this form and consenting, you agree that footage of the student may be captured and used for educational purposes and, where separately consented to, promotional use by Adders Entertainment Group.</p>
+            <p><b>7. Payments &amp; Fees.</b> The audition fee is due at checkout. The course fee is payable separately by students who are offered and accept a place after a successful audition. The audition fee secures an audition slot only and does not guarantee a place on the course.</p>
+            <p><b>8. Cancellations.</b> Requests to cancel or change a booking should be sent to us in writing as early as possible. Refunds, where applicable, are handled on a case-by-case basis in line with our cancellation policy.</p>
+            <p><b>9. Safeguarding.</b> We take the welfare of all students seriously. Any safeguarding concerns will be handled in accordance with our safeguarding procedures and reported to the appropriate authorities where required.</p>
+            <p><b>10. Data Protection.</b> Information submitted on this form is stored securely and used only for the purposes of administering the programme. It is not shared with third parties except where required to deliver the service (e.g. payment processing).</p>
+            <p><b>11. Changes to this Policy.</b> Adders Entertainment Group may update these policies from time to time. Continued participation in the programme constitutes acceptance of the current policy.</p>
             <p style={{ marginTop:14 }}>
               <a href="/policy.pdf" target="_blank" rel="noopener noreferrer" style={{ color:C.blue, fontWeight:600 }}>
                 📄 Download the full policy document (PDF)
               </a>
             </p>
           </div>
+
+          {!readToEnd && (
+            <div style={{ color:C.muted, fontSize:12.5, textAlign:"center", marginTop:12 }}>
+              ↓ Scroll to the end of the agreement to accept it
+            </div>
+          )}
+
+          <div style={{ marginTop:14, opacity: readToEnd ? 1 : 0.45, transition:"opacity .25s ease" }}>
+            <ConsentCard checked={d.consentPolicy} disabled={!readToEnd} onChange={accept}
+              title="I accept the terms and conditions"
+              desc="I confirm I have read and understood the agreement above, and I agree to abide by its terms on behalf of myself and the student." />
+          </div>
+
           <div style={{ color:C.muted, fontSize:12.5, textAlign:"center", marginTop:14 }}>
-            You confirmed acceptance on the previous screen. Submitting confirms your audition sign-up.
+            You'll see the audition fee on the next screen before you are taken to our payment provider.
           </div>
         </div>
-      );
-
-      case "payment": return <PaymentStep d={d} firstName={firstName} />;
-
-      default: return null;
-    }
+    );
   }
 
   /* ---------- form helpers ---------- */
@@ -943,10 +1040,10 @@
     );
   }
 
-  function ConsentCard({ checked, onChange, title, desc }) {
+  function ConsentCard({ checked, onChange, title, desc, disabled }) {
     return (
-      <button onClick={()=>onChange(!checked)} style={{
-        padding:"18px 20px", borderRadius:16, textAlign:"left", cursor:"pointer", width:"100%",
+      <button onClick={()=>{ if(!disabled) onChange(!checked); }} disabled={disabled} style={{
+        padding:"18px 20px", borderRadius:16, textAlign:"left", cursor: disabled?"not-allowed":"pointer", width:"100%",
         border:`2px solid ${checked?C.copper:C.line}`, background:checked?`${C.copper}10`:C.bg2,
         transition:"all .18s ease", display:"flex", gap:14, alignItems:"flex-start",
       }}>
@@ -982,6 +1079,8 @@
               <div>
                 <div style={{ fontFamily:"'Cinzel',serif", color:C.gold, fontWeight:700, fontSize:19 }}>Audition</div>
                 <div style={{ color:C.text, fontSize:13, marginTop:4 }}>Strand: <b>{d.discipline || "—"}</b></div>
+                <div style={{ color:C.text, fontSize:13, marginTop:4 }}>Venue: <b>{AUDITION_VENUE}</b></div>
+                <div style={{ color:C.muted, fontSize:12, marginTop:3 }}>{VENUE_CAVEAT}</div>
               </div>
               <div style={{ textAlign:"right" }}>
                 <span style={{ color:C.gold, fontWeight:700, fontSize:30, fontFamily:"'Cinzel',serif" }}>£{AUDITION_FEE}</span>
@@ -994,7 +1093,21 @@
           </div>
         </div>
 
-        <div style={{ marginTop:20, background:C.bg2, border:`1px solid ${C.line}`, borderRadius:12, padding:"13px 18px",
+        {d.consentPolicy && (
+          <div style={{ marginTop:14, display:"flex", gap:10, alignItems:"flex-start",
+            background:C.bg2, border:`1px solid ${C.line}`, borderRadius:12, padding:"12px 16px" }}>
+            <span style={{ color:C.copper, fontSize:14, lineHeight:1.5 }}>✓</span>
+            <span style={{ color:C.muted, fontSize:12.5, lineHeight:1.6 }}>
+              You accepted the terms and conditions on the previous screen — go back to read them
+              again, or{" "}
+              <a href="/policy.pdf" target="_blank" rel="noopener noreferrer" style={{ color:C.blue, fontWeight:600 }}>
+                download the full policy (PDF)
+              </a>.
+            </span>
+          </div>
+        )}
+
+        <div style={{ marginTop:14, background:C.bg2, border:`1px solid ${C.line}`, borderRadius:12, padding:"13px 18px",
           display:"flex", justifyContent:"space-between", alignItems:"center" }}>
           <span style={{ color:C.muted, fontSize:13 }}>Due today:</span>
           <span style={{ color:C.text, fontWeight:700, fontSize:14 }}>

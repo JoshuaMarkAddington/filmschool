@@ -134,6 +134,11 @@ async function handleAudition(request, env) {
       return Response.json({ error: `Missing field: ${field}` }, { status: 400 });
     }
   }
+  // The sign-up form has the parent/guardian read and accept the terms on the
+  // screen before checkout, so a sign-up without acceptance should not exist.
+  if (!body.consentPolicy) {
+    return Response.json({ error: "Terms and conditions must be accepted" }, { status: 400 });
+  }
   const ALLOWED_DISCIPLINES = ["Dance", "Singing", "Dancing & Singing", "Acting"];
   if (!ALLOWED_DISCIPLINES.includes(body.discipline)) {
     return Response.json({ error: "Invalid discipline" }, { status: 400 });
@@ -210,6 +215,7 @@ async function sendAuditionReceivedEmails(env, app, origin) {
           <li><b>Guardian:</b> ${escapeHtml(app.guardianName)}</li>
           <li><b>Email:</b> ${escapeHtml(app.email)}</li>
           <li><b>Phone:</b> ${escapeHtml(app.phone)}</li>
+          <li><b>Terms accepted:</b> ${app.termsAgreedAt ? escapeHtml(app.termsAgreedAt) : "yes"}</li>
         </ul>
         <p>View full details (medical/emergency info, address) in the admin dashboard at /admin.</p>
       `,

@@ -378,7 +378,7 @@ async function sendPaymentConfirmedEmails(env, app, origin) {
       <p>Hi ${escapeHtml(app.guardian_name)},</p>
       <p>Payment for <b>${escapeHtml(app.student_name)}</b>'s membership is confirmed — welcome to Adders Film School!</p>
       <p>Modules: <b>${[app.month1, app.month2, app.month3].filter(Boolean).map(escapeHtml).join(" → ")}</b></p>
-      <p>Here's the <a href="${origin}/timetable.pdf">timetable for September–November 2026</a> so you know exactly
+      <p>Here's the <a href="${origin}/timetable.pdf">timetable for October–December 2026</a> so you know exactly
       when each session runs.</p>
       <p>If you have any questions before the first session, just get in touch.</p>
       <p>— Adders Film School</p>

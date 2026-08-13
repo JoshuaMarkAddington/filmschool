@@ -110,12 +110,12 @@ async function handleApply(request, env) {
 }
 
 /* ===========================================================================
-   INTENSIVE-COURSE AUDITION SIGN-UP — writes to the separate `auditions`
+   SHOWCASE 2026 AUDITION SIGN-UP — writes to the separate `auditions`
    table. The sign-up is for the £25 audition & masterclass fee only. The
    total programme fee is £225; for students offered a place that £25 is
    deducted as a goodwill gesture, leaving a £200 balance payable in two
-   £100 instalments. Auditions run in sections by age bracket, each with
-   its own time slot.
+   £100 instalments. Auditions run in sections by age bracket (13–14 /
+   15–16 / 17–18), each with its own time slot.
    =========================================================================== */
 
 // Age bracket → audition section time. The bracket is the source of truth;
@@ -180,15 +180,17 @@ async function handleAudition(request, env) {
 async function sendAuditionReceivedEmails(env, app, origin) {
   await sendEmail(env, {
     to: app.email,
-    subject: "Your Adders Film School audition sign-up",
+    subject: "Your Adders Film School Showcase 2026 audition sign-up",
     html: `
       <p>Hi ${escapeHtml(app.guardianName)},</p>
-      <p>Thanks for signing <b>${escapeHtml(app.studentName)}</b> up to audition for our two-week
-      intensive course.</p>
+      <p>Thanks for signing <b>${escapeHtml(app.studentName)}</b> up for the Audition Masterclass — the first
+      step towards the <b>Adders Film School Showcase 2026</b>.</p>
       <p>Age bracket: <b>${escapeHtml(app.ageBracket)}</b><br/>
       Audition section time: <b>${escapeHtml(app.auditionTime)}</b></p>
       <p>Please remember: wear all black clothing (no logos or patterns — small logos are fine),
       footwear appropriate for dancing, and bring water to stay hydrated.</p>
+      <p>We're sending over our <a href="${origin}/policy.pdf">policy document</a> for your reference. If you have any
+      questions at all, please feel free to get in touch with us.</p>
       <p>You're about to be taken to Stripe to pay the £25 audition &amp; masterclass fee securely.</p>
       <p>The total programme fee is £225. If ${escapeHtml(app.studentName)} is offered a place, your £25
       is deducted from that total as a goodwill gesture, leaving a £200 balance — payable as £100 within
@@ -202,7 +204,7 @@ async function sendAuditionReceivedEmails(env, app, origin) {
       to: env.ADMIN_NOTIFY_EMAIL,
       subject: `New audition sign-up: ${app.studentName}`,
       html: `
-        <p>A new intensive-course audition sign-up was submitted (payment not yet confirmed).</p>
+        <p>A new Showcase 2026 audition sign-up was submitted (payment not yet confirmed).</p>
         <ul>
           <li><b>Student:</b> ${escapeHtml(app.studentName)}</li>
           <li><b>Age bracket:</b> ${escapeHtml(app.ageBracket)}</li>
@@ -399,19 +401,21 @@ async function sendPaymentConfirmedEmails(env, app, origin) {
 async function sendAuditionConfirmedEmails(env, app, origin) {
   await sendEmail(env, {
     to: app.email,
-    subject: "Your Adders Film School audition is confirmed",
+    subject: "Your Adders Film School Showcase 2026 audition is confirmed",
     html: `
       <p>Hi ${escapeHtml(app.guardian_name)},</p>
       <p>The £25 audition &amp; masterclass fee for <b>${escapeHtml(app.student_name)}</b> has been received —
-      the audition for our two-week intensive course is confirmed.</p>
+      the Audition Masterclass slot for the <b>Adders Film School Showcase 2026</b> is confirmed.</p>
       <p>Age bracket: <b>${escapeHtml(app.age_bracket)}</b><br/>
       Audition section time: <b>${escapeHtml(app.audition_time)}</b></p>
       <p>Please remember on the day: all black clothing (no logos or patterns — small logos are fine),
       footwear appropriate for dancing, and bring water to stay hydrated.</p>
-      <p>We'll be in touch with the audition date and venue. If ${escapeHtml(app.student_name)} is offered a
-      place, the total programme fee is £225 — your £25 is deducted from that as a goodwill gesture,
-      leaving a £200 balance. That can be spread across two payments: £100 within 48 hours of the
-      successful audition email, and £100 by 11:59pm on Thursday 3 September 2026.</p>
+      <p>Every performer who auditions also receives a 10% discount on a Premium Membership, whether or
+      not they make the final cast.</p>
+      <p>If ${escapeHtml(app.student_name)} is offered a place, the total programme fee is £225 — your £25 is
+      deducted from that as a goodwill gesture, leaving a £200 balance. That can be spread across two
+      payments: £100 within 48 hours of the successful audition email, and £100 by 11:59pm on
+      Thursday 3 September 2026.</p>
       <p>If you have any questions in the meantime, just get in touch.</p>
       <p>— Adders Film School</p>
     `,

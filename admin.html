@@ -112,16 +112,11 @@
 
     const AUDITION_COLUMNS = [
       ["created_at","Submitted"],["status","Status"],
-      ["student_name","Student"],["student_dob","Student DOB"],
-      ["discipline","Auditioning for"],["new_to_performing","New to performing"],
-      ["guardian_name","Guardian"],["guardian_dob","Guardian DOB"],
-      ["address_line1","Address 1"],["address_line2","Address 2"],["city","City"],["county","County"],["postcode","Postcode"],
-      ["email","Email"],["phone","Phone"],
-      ["emergency_same","Emergency = guardian"],["emergency_name","Emergency name"],["emergency_phone","Emergency phone"],["emergency_relation","Emergency relation"],
-      ["allergies","Allergies"],["allergies_detail","Allergies detail"],
-      ["additional_needs","Additional needs"],["additional_needs_detail","Additional needs detail"],
-      ["health_issues","Health issues"],["health_issues_detail","Health issues detail"],
-      ["consent_filming","Consent: filming"],["consent_policy","Consent: policy"],
+      ["student_name","Student"],
+      ["age_bracket","Age bracket"],["audition_time","Section time"],
+      ["guardian_name","Parent / responsible adult"],
+      ["email","Email"],["phone","Phone"],["emergency_phone","Emergency contact"],
+      ["consent_legal","Agreement accepted"],
       ["id","Audition ID"],
     ];
 
@@ -138,7 +133,7 @@
         filename: "audition-signups",
       },
     };
-    const BOOL_COLS = ["new_to_film","new_to_performing","emergency_same","allergies","additional_needs","health_issues","consent_filming","consent_policy"];
+    const BOOL_COLS = ["new_to_film","new_to_performing","emergency_same","allergies","additional_needs","health_issues","consent_filming","consent_policy","consent_legal"];
 
     const loginCard = document.getElementById("login");
     const dash = document.getElementById("dash");

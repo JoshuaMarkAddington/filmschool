@@ -67,17 +67,38 @@ The policy document shown in step "Policy Agreement" of the application form
 is still a placeholder — send the real policy text/PDF and it'll be dropped
 into `apply.html` in place of that note.
 
-## Intensive-course audition sign-up
+## Showcase 2026 audition sign-up
 
 `audition.html` is a second sign-up form — same style as `apply.html` — for
-the two-week intensive course. It asks the same questions as the membership
-form but, instead of modules, the applicant picks one strand to audition for
-(Dance / Singing / Dancing & Singing / Acting) and is open to ages **13–24**.
+the Adders Film School Showcase 2026 Audition Masterclass. It is open to
+ages **13–18**, split into three audition sections by age bracket (13–14 /
+15–16 / 17–18), each with its own time slot.
+
+The audition is spread across two pages:
+
+- **`audition.html`** — the event information page: fees, what you'll learn,
+  the audition panel (built from `panel.js`, one biography page per panelist
+  via `panelist.html`), the audition sections, the rehearsal timetable (built
+  from `rehearsals.js`), what to wear and bring, and the flyer.
+- **`audition-signup.html`** — the sign-up questionnaire and the full
+  participation agreement, which the parent/guardian must accept before the
+  Stripe checkout unlocks. `audition-success.html` handles the return from
+  Stripe.
+
 It saves to a separate `auditions` table (`POST /api/audition`) and both the
 audition sign-up and its payment appear under the "Intensive-course auditions"
 tab in `/admin`.
 
-Two setup steps are needed before it's live:
+Pricing: £225 total per student. The £25 audition & masterclass fee is taken
+at sign-up and deducted from the total as a goodwill gesture for students
+offered a place, leaving a £200 balance payable as two £100 instalments.
+
+The audition venue is set once, as `window.AUDITION_VENUE` in the `<head>` of
+both `audition.html` and `audition-signup.html`, alongside `VENUE_CAVEAT` —
+the booking is not yet fixed, so every mention of the venue is shown with the
+caveat.
+
+Setup:
 
 1. **Database table.** Create the `auditions` table once (already created on
    the production D1, but re-run any time you rebuild the database):
@@ -86,8 +107,18 @@ Two setup steps are needed before it's live:
    npx wrangler d1 execute filmschool --remote --file=schema-auditions.sql
    ```
 
-2. **Stripe link for the £25 audition fee.** In `audition.html`, replace the
-   `AUDITION_STRIPE_LINK` placeholder with a real Stripe Payment Link for £25
-   (created exactly like the membership links). The course fee (£100) is
-   collected separately from students who are offered a place, so it needs no
-   link here.
+   If the table already exists from the earlier discipline-based sign-up, run
+   `migrate-auditions.sql` instead to move it to the age-bracket columns.
+
+2. **Stripe link.** `AUDITION_STRIPE_LINK` in `audition-signup.html` is the
+   live Payment Link for the £25 audition & masterclass fee. The £200 balance
+   is collected separately from students who are offered a place, so it needs
+   no link here.
+
+Still to fill in before it goes live:
+
+- The rehearsal venue and the company postal address in the participation
+  agreement (`audition-signup.html`) — both still show bracketed placeholders,
+  as does the privacy-policy link in Clause 9.1.
+- The flyer image (`audition-flyer.jpg`), which `audition.html` shows a
+  placeholder for until the file is added.

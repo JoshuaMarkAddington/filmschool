@@ -1,6 +1,7 @@
--- Storage for the two-week intensive-course audition sign-ups (audition.html →
--- POST /api/audition). Mirrors the `applications` table but drops the
--- membership-specific module/plan columns and adds the audition `discipline`.
+-- Storage for the two-week intensive-course audition sign-ups
+-- (audition-signup.html → POST /api/audition). Auditions run in sections by
+-- age bracket, each with its own time slot; the £25 audition fee is taken via
+-- Stripe, and the £100 course fee is handled separately for offered places.
 --
 -- Apply against the D1 database bound as DB (see wrangler.jsonc):
 --   npx wrangler d1 execute filmschool --remote --file=schema-auditions.sql
@@ -8,30 +9,20 @@ CREATE TABLE IF NOT EXISTS auditions (
   id TEXT PRIMARY KEY,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   status TEXT NOT NULL DEFAULT 'pending_payment',
-  discipline TEXT,                 -- Dance | Singing | Dancing & Singing | Acting
+  age_bracket TEXT,                -- 13-14 | 15-16 | 17-18
+  audition_time TEXT,              -- section time derived from the age bracket
   student_name TEXT,
-  student_dob TEXT,
-  new_to_performing INTEGER,
-  guardian_name TEXT,
-  guardian_dob TEXT,
-  address_line1 TEXT,
-  address_line2 TEXT,
-  city TEXT,
-  county TEXT,
-  postcode TEXT,
+  guardian_name TEXT,              -- parent / responsible adult
   email TEXT,
   phone TEXT,
-  emergency_same INTEGER,
-  emergency_name TEXT,
-  emergency_phone TEXT,
-  emergency_relation TEXT,
-  allergies INTEGER,
-  allergies_detail TEXT,
-  additional_needs INTEGER,
-  additional_needs_detail TEXT,
-  health_issues INTEGER,
-  health_issues_detail TEXT,
-  consent_filming INTEGER,
-  consent_policy INTEGER,
+  emergency_phone TEXT,            -- emergency contact number
+  consent_legal INTEGER,           -- parental / responsible-adult agreement accepted
   stripe_client_reference_id TEXT
 );
+
+-- ---------------------------------------------------------------------------
+-- NOTE: `CREATE TABLE IF NOT EXISTS` above does nothing if an `auditions`
+-- table already exists from the earlier version of the form — so it will NOT
+-- add the new age_bracket / audition_time / consent_legal columns to it.
+-- For an existing database, run migrate-auditions.sql instead:
+--   npx wrangler d1 execute filmschool --remote --file=migrate-auditions.sql

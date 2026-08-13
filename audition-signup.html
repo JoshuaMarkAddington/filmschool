@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audition Sign-Up — Adders Film School Intensive Course</title>
+
+  <!-- Audition venue. Kept in step with audition.html, which shows the same
+       two values. The booking is not yet fixed, so every mention of the venue
+       is paired with VENUE_CAVEAT — change both here and they update
+       everywhere on this page. -->
+  <script>
+    window.AUDITION_VENUE = "Milton Keynes Arts Centre, Great Linford Manor Park";
+    window.VENUE_CAVEAT = "Venue subject to change — we'll confirm before the day.";
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- React + Babel via CDN (the site already loads tooling from CDNs) -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: #070B14;
+      color: #F4F1EA;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    #root { width: 100vw; height: 100vh; }
+    input, textarea, button { font-family: inherit; }
+
+    /* Step + element animations referenced by the form */
+    @keyframes stepFwd { from { opacity:0; transform:translateX(34px); } to { opacity:1; transform:none; } }
+    @keyframes stepBk  { from { opacity:0; transform:translateX(-34px); } to { opacity:1; transform:none; } }
+    @keyframes spinR { to { transform: rotate(360deg); } }
+    @keyframes fade { from { opacity:0; } to { opacity:1; } }
+    @keyframes mzFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .mz-idle { animation: mzFloat 3.4s ease-in-out infinite; }
+
+    /* tidy scrollbars inside the form */
+    *::-webkit-scrollbar { width: 9px; height: 9px; }
+    *::-webkit-scrollbar-thumb { background: #1B2440; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- Form source. Held as plain text and compiled by the bootstrap script
+       at the bottom of the page, rather than relying on Babel's auto-runner
+       (whose default JSX-runtime config conflicts with the classic runtime
+       we need when running from a plain <script> tag). This is the audition
+       sign-up for the two-week intensive course. -->
+  <script type="text/plain" id="form-src">
+  const { useState } = React;
+
+  /* =====================================================================
+     DESIGN TOKENS
+     Cinematic dark palette — copper/gold to match the Adders brand.
+     ===================================================================== */
+  const C = {
+    bg:        "#070B14",
+    bg2:       "#0E1525",
+    text:      "#F4F1EA",
+    muted:     "#8A93A8",
+    line:      "#1B2440",
+    copper:    "#E0894A",
+    copperDeep:"#B5651D",
+    gold:      "#E8B84B",
+    goldDeep:  "#B8902E",
+    blue:      "#5B8DEF",
+  };
+
+  // Logo mark — renders the Adders Film School logo image.
+  function MazeMark({ size = 80, className, style }) {
+    return (
+      <img src="Adders Film School Logo 110825.png" alt="Adders Film School"
+        className={className}
+        style={{ width: size, height: size, objectFit: "contain", display: "block", ...style }} />
+    );
+  }
+
+  /* =====================================================================
+     AUDITION SECTIONS BY AGE BRACKET
+     The age bracket the student falls into decides which section (time
+     slot) they audition in. These labels are shown on selection and on
+     the confirmation screen, and the time is saved with the sign-up.
+     ===================================================================== */
+  const AGE_BRACKETS = [
+    { value: "13-14", label: "13–14", time: "10:00am – 12:00pm", section: "Section 1" },
+    { value: "15-16", label: "15–16", time: "12:30pm – 2:30pm", section: "Section 2" },
+    { value: "17-18", label: "17–18", time: "3:00pm – 5:00pm",  section: "Section 3" },
+  ];
+  const bracketInfo = (v) => AGE_BRACKETS.find(b => b.value === v) || null;
+
+  /* =====================================================================
+     VENUE
+     Set once in the <head> so this page and audition.html show the same
+     thing. The booking is not yet fixed, so every mention of the venue is
+     paired with VENUE_CAVEAT.
+     ===================================================================== */
+  const AUDITION_VENUE = window.AUDITION_VENUE;
+  const VENUE_CAVEAT = window.VENUE_CAVEAT;
+
+  /* =====================================================================
+     FEES
+     Total programme fee is £225 per student. The sign-up on this page
+     takes the £25 audition & masterclass fee only. For students who pass
+     the audition, that £25 is deducted from the £225 as a goodwill
+     gesture, leaving a £200 balance payable separately (£100 deposit +
+     £100 final balance). See Clause 3 of the agreement below.
+     ===================================================================== */
+  const AUDITION_FEE = 25;
+  const BALANCE_FEE = 200;
+  const TOTAL_FEE = 225;
+
+  /* =====================================================================
+     STRIPE PAYMENT LINK — live link for the £25 audition & masterclass fee.
+     The sign-up is saved to our records first, then the parent is sent here
+     with client_reference_id set to the audition row's id, so the Stripe
+     webhook can match the payment back to the sign-up and flip it to 'paid'.
+     ===================================================================== */
+  const AUDITION_STRIPE_LINK = "https://buy.stripe.com/00w14pfAa7Mb37e72D2oE06";
+
+  /* =====================================================================
+     LEGAL DOCUMENT / PARENTAL AGREEMENT
+     Full text of the Adders Film School Participation Agreement & Terms
+     and Conditions, shown to the parent/responsible adult in a scrollable
+     panel. The parent MUST tick "I have read and accept" before the Pay
+     button unlocks (see the "legal" step below) — the gate does not
+     depend on this wording, only on the checkbox, so this content can be
+     edited freely at any time.
+
+     ⚠️  BRACKETED PLACEHOLDERS STILL TO FILL IN before this goes live:
+       [Company Address] — postal address not yet supplied;
+       [Venue TBC – Milton Keynes] — the rehearsal venue; and the
+       privacy-policy link in Clause 9.1.
+     The audition/masterclass venue comes from AUDITION_VENUE, set in the
+     <head> of this page — it is named but not yet a fixed booking, which
+     Clause 2.2 covers.
+     ===================================================================== */
+  const LegalH = ({ children }) => (
+    <div style={{ color: C.copper, fontFamily: "'Cinzel',serif", fontWeight: 700, fontSize: 14.5, marginTop: 22, marginBottom: 8 }}>
+      {children}
+    </div>
+  );
+  const LegalP = ({ children }) => <p style={{ margin: "0 0 12px" }}>{children}</p>;
+  const LegalClause = ({ n, children }) => (
+    <p style={{ margin: "0 0 10px", display: "flex", gap: 8 }}>
+      <b style={{ color: C.text, flexShrink: 0 }}>{n}</b>
+      <span>{children}</span>
+    </p>
+  );
+  const LegalTable = ({ head, rows }) => (
+    <div style={{ overflowX: "auto", margin: "10px 0 16px" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12.5 }}>
+        <thead>
+          <tr>
+            {head.map((h, i) => (
+              <th key={i} style={{ textAlign: "left", color: C.copper, borderBottom: `1px solid ${C.line}`, padding: "6px 8px", whiteSpace: "nowrap" }}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr key={i}>
+              {r.map((c, j) => (
+                <td key={j} style={{ borderBottom: `1px solid ${C.line}`, padding: "6px 8px", verticalAlign: "top" }}>{c}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  const LEGAL_DOCUMENT = (
+    <React.Fragment>
+      <div style={{ textAlign: "center", marginBottom: 6 }}>
+        <div style={{ color: C.muted, fontSize: 12 }}>A trading name of Adders Entertainment Group Ltd</div>
+        <div style={{ color: C.muted, fontSize: 11.5, marginTop: 2 }}>
+          Company No. 16003448 · office@addersentertainment.org · 01908 464331
+        </div>
+        <div style={{ color: C.muted, fontSize: 11.5, fontStyle: "italic", marginTop: 2 }}>
+          [Company Address]
+        </div>
+      </div>
+      <div style={{ textAlign: "center", color: C.text, fontWeight: 700, fontSize: 12.5, marginTop: 14, marginBottom: 2 }}>
+        PARTICIPATION AGREEMENT &amp; TERMS AND CONDITIONS
+      </div>
+      <div style={{ textAlign: "center", color: C.muted, fontSize: 11.5, fontStyle: "italic", marginBottom: 18 }}>
+        Adders Film School Showcase 2026 — Audition, Masterclass, Rehearsals and Performances
+      </div>
+
+      <LegalH>1. Parties and Definitions</LegalH>
+      <LegalP>This Participation Agreement ("the Agreement") is made between Adders Film School, a trading name of Adders Entertainment Group Ltd (registered in England and Wales, company number 16003448), of [Company Address] ("the Company") and the parent or legal guardian of the Student named in the signature section below ("the Parent/Guardian"), who enters into this Agreement on behalf of the Student.</LegalP>
+      <LegalClause n="1.1">"Programme" means the audition, masterclass, rehearsals and performances for Adders Film School Showcase 2026, described in Clause 2.</LegalClause>
+      <LegalClause n="1.2">"Student" means the child named in the signature section, on whose behalf the Parent/Guardian is entering into this Agreement.</LegalClause>
+      <LegalClause n="1.3">By signing this Agreement — or, where this Agreement is accepted online, by ticking to confirm acceptance — the Parent/Guardian confirms they are the parent or legal guardian of the Student and have authority to agree to these terms on the Student's behalf.</LegalClause>
+
+      <LegalH>2. Key Dates and the Programme</LegalH>
+      <LegalP>The Programme runs according to the schedule below.</LegalP>
+      <LegalTable
+        head={["Event", "Date"]}
+        rows={[
+          ["Audition & Masterclass", "Tuesday 25 August 2026"],
+          ["Deposit (£100) deadline", "Within 48 hours of the successful audition email"],
+          ["Rehearsals & performances", "28 August – 5 September 2026 — see Clause 2.1"],
+          ["Final balance (£100) deadline", "11:59pm, Thursday 3 September 2026"],
+        ]}
+      />
+      <LegalH>2.1 Rehearsal and Performance Schedule</LegalH>
+      <LegalP>The Student is required to attend the sessions below. The rehearsal venue will be confirmed by the Company in due course (within Milton Keynes).</LegalP>
+      <LegalTable
+        head={["Date", "Time", "Activity", "Venue"]}
+        rows={[
+          ["Fri 28 Aug 2026", "10:30am – 4:30pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
+          ["Sat 29 Aug 2026", "10:30am – 4:30pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
+          ["Sun 30 Aug 2026", "10:30am – 4:30pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
+          ["Mon 31 Aug 2026", "9:30am – 12:30pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
+          ["Mon 31 Aug 2026", "2:00pm – 3:00pm", "Promotional performance (free entry)", "Milton Keynes Shopping Centre"],
+          ["Wed 2 Sep 2026", "6:00pm – 9:00pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
+          ["Thu 3 Sep 2026", "6:00pm – 9:00pm", "Rehearsal", "[Venue TBC – Milton Keynes]"],
+          ["Sat 5 Sep 2026", "9:30am – 4:30pm", "Performance Day", "The Amphitheatre, Campbell Park, Milton Keynes"],
+        ]}
+      />
+      <LegalP>These dates and times are estimates only. An official timetable will be issued closer to the audition date, and may be subject to change. All elements of the Programme take place in Milton Keynes. Audition &amp; masterclass venue: {AUDITION_VENUE} (subject to confirmation — see Clause 2.2). Rehearsal venue: [TO BE CONFIRMED – Milton Keynes]. Promotional performance venue: Milton Keynes Shopping Centre. Performance Day venue: The Amphitheatre, Campbell Park, Milton Keynes.</LegalP>
+
+      <LegalH>2.2 Venues and Changes to Venue</LegalH>
+      <LegalClause n="2.2.1">Where a venue is shown as "to be confirmed", the Company will confirm it to the Parent/Guardian in writing as soon as it is finalised.</LegalClause>
+      <LegalClause n="2.2.2">The Company reserves the right to change the venue for any part of the Programme, including the audition, masterclass, rehearsals or performances, where this is necessary due to unforeseen circumstances (including but not limited to venue unavailability, safety concerns, extreme weather, or other events outside the Company's reasonable control). Where a venue changes, the Company will notify the Parent/Guardian of the new venue in writing as soon as reasonably practicable. Any replacement venue will be within Milton Keynes or the surrounding area unless otherwise agreed with the Parent/Guardian.</LegalClause>
+
+      <LegalH>3. Fees and Payment</LegalH>
+      <LegalClause n="3.1">Total Programme fee: £225 per Student. This covers the audition and masterclass, all rehearsals, and both performances described in Clause 2.</LegalClause>
+      <LegalClause n="3.2">Audition &amp; masterclass fee: £25, payable at the time of booking the audition. This fee includes attendance at the masterclass held on the same day. The audition fee is non-refundable, except as set out in Clause 4.</LegalClause>
+      <LegalClause n="3.3">Goodwill deduction: for Students who are successful at audition and are offered a place in the Programme, the £25 audition and masterclass fee already paid is deducted from the total Programme fee as a goodwill gesture. This leaves a remaining balance of £200, which may be spread across the two instalments set out in Clauses 3.4 and 3.5.</LegalClause>
+      <LegalClause n="3.4">First instalment (deposit): following a successful audition, a deposit of £100 (being the first instalment of the £200 balance) is required to secure the Student's place in the Programme. This must be received within 48 hours of the Parent/Guardian receiving the Company's successful audition email. The deposit is non-refundable, except as set out in Clause 4.</LegalClause>
+      <LegalClause n="3.5">Second instalment (final balance): the remaining £100 must be received by 11:59pm on Thursday 3 September 2026. The Parent/Guardian may pay this earlier, or pay the full £200 balance in a single payment, if they prefer.</LegalClause>
+      <LegalClause n="3.6">Non-payment: if the deposit and/or final balance is not received by the applicable deadline, the Student will not be permitted to take part in rehearsals or perform, and the Company reserves the right to offer the Student's place to another participant. Any sums already paid remain non-refundable, except as set out in Clause 4.</LegalClause>
+      <LegalClause n="3.7">Except as set out in Clause 4, all fees paid under this Agreement are non-refundable, including where the Student withdraws, is withdrawn, or is unable to attend rehearsals or perform for any reason.</LegalClause>
+
+      <LegalH>4. Cancellation and Refunds</LegalH>
+      <LegalClause n="4.1">If the audition and/or masterclass is cancelled by the Company due to unforeseen circumstances, all Parents/Guardians who have paid the audition fee will be refunded in full within 10 working days of the original audition/masterclass date.</LegalClause>
+      <LegalClause n="4.2">If the Company is required to cancel or reschedule any rehearsal, the Milton Keynes Shopping Centre performance, or the main performance due to circumstances beyond its reasonable control (including illness, venue unavailability, extreme weather, or other events outside its control), the Company will use reasonable endeavours to reschedule. Where rescheduling is not possible, the Company will consider refunds on a case-by-case basis.</LegalClause>
+
+      <LegalH>5. Performance Rights and Rehearsal Attendance</LegalH>
+      <LegalClause n="5.1">By signing this Agreement and securing the Student's place through payment of the deposit, the Parent/Guardian grants the Company the right for the Student to take part in and perform at both: (a) the promotional performance at Milton Keynes Shopping Centre on Monday 31 August 2026, which is free to attend with no admission charge; and (b) the main performance at The Amphitheatre, Campbell Park, Milton Keynes on Saturday 5 September 2026.</LegalClause>
+      <LegalClause n="5.2">The Parent/Guardian will ensure the Student attends all rehearsals and sessions set out in the Rehearsal &amp; Performance Schedule (Clause 2.1), as updated by the Company's official timetable. Failure to attend required rehearsals may affect the Student's ability to take part in the performances.</LegalClause>
+
+      <LegalH>6. Photography, Filming and Use of Images</LegalH>
+      <LegalClause n="6.1">The Company (and/or persons authorised by it) may take behind-the-scenes photographs and/or video during rehearsals and performances, which may include images of the Student.</LegalClause>
+      <LegalClause n="6.2">By signing this Agreement, the Parent/Guardian consents to the Company using such images, which may feature the Student, on the Company's social media channels and other promotional materials, for the purpose of promoting the Programme and the Company.</LegalClause>
+      <LegalClause n="6.3">The Parent/Guardian may withdraw this consent at any time by notifying the Company in writing. This will not affect any images already published before the Company receives the withdrawal.</LegalClause>
+
+      <LegalH>7. Health, Safety and Liability</LegalH>
+      <LegalClause n="7.1">The Company maintains public liability insurance and carries out risk assessments for all rehearsals and performances, and follows procedures intended to provide a safe environment for Students and staff.</LegalClause>
+      <LegalClause n="7.2">Participation in rehearsals and performances carries an inherent degree of risk, as with any physical or performing activity. The Company will take reasonable care of the Student while under its supervision. The Company does not accept liability for injury, loss or damage arising during the Programme except to the extent this is caused by the negligence of the Company, its employees, or its agents. Nothing in this Agreement excludes or limits liability for death or personal injury caused by the Company's negligence, or for any other liability that cannot be excluded or limited under English law.</LegalClause>
+      <LegalClause n="7.3">A copy of the risk assessment for the Programme will be provided to the Parent/Guardian on request.</LegalClause>
+      <LegalClause n="7.4">The Company maintains a detailed emergency procedure for all rehearsals and performances involving Students. A copy of this procedure will be provided to the Parent/Guardian upon signing this Agreement.</LegalClause>
+
+      <LegalH>8. Child Performance Licensing and Chaperones</LegalH>
+      <LegalClause n="8.1">The Company holds, or has applied for, a Body of Persons Approval (BOPA) and/or other necessary licence or exemption confirmation from the relevant local authority covering the Programme, and will ensure appropriately licensed chaperones are present as required by law.</LegalClause>
+      <LegalClause n="8.2">The Parent/Guardian agrees to promptly provide any information reasonably requested by the Company for the purpose of a child performance licence or BOPA application (for example, the Student's date of birth, school, and local authority area).</LegalClause>
+      <LegalClause n="8.3">The Company will provide chaperones at a ratio of at least 1 chaperone to every 12 children (1:12) for all rehearsals and performances involving minors. Chaperones will be aged 18 or over and will act in loco parentis to safeguard the Student's welfare, in accordance with the Children (Performances and Activities) (England) Regulations 2014.</LegalClause>
+      <LegalClause n="8.4">All staff, contractors and volunteers working directly with children on the Programme will hold a valid Disclosure and Barring Service (DBS) check appropriate to their role.</LegalClause>
+
+      <LegalH>9. Data Protection</LegalH>
+      <LegalClause n="9.1">The Company will process personal data provided under this Agreement (including the Student's and Parent/Guardian's details) in accordance with UK data protection law (including the UK GDPR) and the Company's privacy policy, available at [INSERT LINK/REFERENCE].</LegalClause>
+      <LegalClause n="9.2">The Parent/Guardian may withdraw consent for the processing of the Student's personal data at any time by notifying the Company in writing, save where the Company is required or permitted by law to continue processing or retaining that data.</LegalClause>
+
+      <LegalH>10. Parent/Guardian Responsibilities</LegalH>
+      <LegalClause n="10.1">The Parent/Guardian will ensure the Student attends all scheduled sessions in accordance with Clause 5.2.</LegalClause>
+      <LegalClause n="10.2">The Parent/Guardian will provide the Company with accurate and up-to-date medical information and emergency contact details for the Student, and will inform the Company promptly, in writing, of any change to this information or any change in circumstances that could affect the Student's participation in the Programme.</LegalClause>
+
+      <LegalH>11. General</LegalH>
+      <LegalClause n="11.1">This Agreement is governed by the laws of England and Wales, and the courts of England and Wales will have jurisdiction over any dispute.</LegalClause>
+      <LegalClause n="11.2">This Agreement, together with any documents referred to in it, forms the entire agreement between the parties regarding the Programme.</LegalClause>
+      <LegalClause n="11.3">If any provision of this Agreement is found to be unenforceable, the remaining provisions will continue in full force and effect.</LegalClause>
+
+      <LegalH>Signature</LegalH>
+      <LegalP>By ticking "I have read and accept this agreement" below, the Parent/Guardian confirms that they have read, understood, and agree to be bound by this Agreement on behalf of the Student. A full copy with signature fields is available on request.</LegalP>
+    </React.Fragment>
+  );
+
+  const EMPTY = {
+    studentName: "",
+    ageBracket: "",
+    guardianName: "",
+    email: "",
+    phone: "",
+    emergencyPhone: "",
+    consentLegal: false,
+  };
+
+  const FSTEPS = [
+    "intro", "studentName", "ageBracket", "guardianName",
+    "email", "phone", "emergencyPhone", "legal", "payment",
+  ];
+
+  function AuditionForm({ onBack }) {
+    const [idx, setIdx] = useState(0);
+    const [dir, setDir] = useState("fwd");
+    const [ak, setAk] = useState(0);
+    const [d, setD] = useState(EMPTY);
+    const [paying, setPaying] = useState(false);
+    const [payError, setPayError] = useState("");
+    const set = (k, v) => setD(p => ({ ...p, [k]: v }));
+
+    const total = FSTEPS.length;
+    const step = FSTEPS[idx];
+    const pct = Math.round((idx / (total - 1)) * 100);
+
+    const canGo = () => {
+      switch (step) {
+        case "intro": return true;
+        case "studentName": return d.studentName.trim().length > 1;
+        case "ageBracket": return !!d.ageBracket;
+        case "guardianName": return d.guardianName.trim().length > 1;
+        case "email": return /\S+@\S+\.\S+/.test(d.email);
+        case "phone": return d.phone.trim().length > 7;
+        case "emergencyPhone": return d.emergencyPhone.trim().length > 7;
+        case "legal": return d.consentLegal === true;
+        case "payment": return true;
+        default: return true;
+      }
+    };
+
+    const next = () => { if (!canGo()) return; setDir("fwd"); setAk(k => k + 1); setIdx(i => Math.min(i + 1, total - 1)); };
+    const prev = () => { setDir("bk"); setAk(k => k + 1); setIdx(i => Math.max(i - 1, 0)); };
+
+    // Save the audition sign-up to our records, then hand off to the real
+    // Stripe Payment Link for the £25 audition fee. Stripe — not this page —
+    // takes the card details and handles the charge.
+    const handlePay = async () => {
+      if (!canGo()) return;
+      setPayError("");
+      setPaying(true);
+      try {
+        const b = bracketInfo(d.ageBracket);
+        const res = await fetch("/api/audition", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...d, auditionTime: b ? b.time : "" }),
+        });
+        if (!res.ok) throw new Error("save_failed");
+        const { id } = await res.json();
+        if (!AUDITION_STRIPE_LINK || AUDITION_STRIPE_LINK.includes("REPLACE_WITH_REAL")) throw new Error("no_link");
+        const url = new URL(AUDITION_STRIPE_LINK);
+        url.searchParams.set("client_reference_id", id);
+        if (d.email) url.searchParams.set("prefilled_email", d.email);
+        window.location.href = url.toString();
+      } catch (e) {
+        setPaying(false);
+        setPayError("We couldn't save your audition sign-up — please check your connection and try again.");
+      }
+    };
+
+    const btnLabel = step === "intro" ? "Begin audition sign-up"
+      : step === "legal" ? "Continue to payment →"
+      : step === "payment" ? `Pay £${AUDITION_FEE} — secure checkout`
+      : "Continue →";
+
+    const handleContinue = step === "payment" ? handlePay : next;
+    const firstName = d.studentName ? d.studentName.split(" ")[0] : "the student";
+
+    return (
+      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column",
+        background: step === "payment"
+          ? `radial-gradient(ellipse 90% 50% at 50% -10%, ${C.gold}18, ${C.copper}10, transparent 60%), ${C.bg}`
+          : `radial-gradient(ellipse 80% 40% at 50% -5%, ${C.copper}1A, transparent 55%), ${C.bg}` }}>
+
+        {/* top bar: back + subtle progress */}
+        <div style={{ display: "flex", alignItems: "center", padding: "18px 28px 0", gap: 14, flexShrink: 0 }}>
+          <button onClick={idx === 0 ? onBack : prev}
+            style={{ background: "transparent", border: `1px solid ${C.line}`, color: C.muted,
+              borderRadius: 9, padding: "7px 14px", cursor: "pointer", fontSize: 14, fontWeight: 600, flexShrink: 0 }}>
+            ‹ {idx === 0 ? "Event info" : "Prev"}
+          </button>
+          <div style={{ flex: 1, height: 3, background: "#1B2440", borderRadius: 4, overflow: "hidden" }}>
+            <div style={{ width: `${pct}%`, height: "100%", borderRadius: 4, transition: "width .45s ease",
+              background: `linear-gradient(90deg,${C.copperDeep},${C.copper})` }} />
+          </div>
+          <div style={{ width: 50, flexShrink: 0 }} />
+        </div>
+
+        {/* animated step content */}
+        <div key={ak} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+          justifyContent: "center", padding: "24px 32px", overflowY: "auto",
+          animation: `${dir === "fwd" ? "stepFwd" : "stepBk"} .3s cubic-bezier(.25,.46,.45,.94) both` }}>
+          <FormContent step={step} d={d} set={set} firstName={firstName} />
+        </div>
+
+        {/* bottom CTA */}
+        <div style={{ padding: step === "intro" ? "10px 32px 60px" : "10px 32px 30px", flexShrink: 0, maxWidth: 500, width: "100%", alignSelf: "center" }}>
+          <button onClick={handleContinue} style={{
+            width: "100%", padding: "16px 20px", fontSize: 16, fontWeight: 700, cursor: canGo() ? "pointer" : "not-allowed",
+            border: "none", borderRadius: 13, letterSpacing: 0.3, transition: "opacity .15s, transform .1s",
+            opacity: canGo() ? 1 : 0.3,
+            background: canGo()
+              ? step === "payment"
+                ? `linear-gradient(180deg,${C.gold},${C.goldDeep})`
+                : `linear-gradient(180deg,${C.copper},${C.copperDeep})`
+              : "#2A3650",
+            color: "#070B14",
+          }}
+            onMouseDown={e => e.currentTarget.style.transform = "scale(.98)"}
+            onMouseUp={e => e.currentTarget.style.transform = "scale(1)"}
+            onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+          >{btnLabel}</button>
+          {step === "payment" && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 10, color: C.muted, fontSize: 12.5 }}>
+              <span>🔒</span> Secured by Stripe — your card details never touch our servers
+            </div>
+          )}
+          {payError && (
+            <div style={{ color: "#E0894A", fontSize: 13, textAlign: "center", marginTop: 10 }}>{payError}</div>
+          )}
+        </div>
+
+        {/* Stripe processing overlay */}
+        {paying && <PayingOverlay />}
+      </div>
+    );
+  }
+
+  /* ---------- step renderer ---------- */
+  function FormContent({ step, d, set, firstName }) {
+    const Q = ({ children, sub }) => (
+      <div style={{ textAlign: "center", marginBottom: 28, maxWidth: 520 }}>
+        <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 26, lineHeight: 1.25, color: C.text, fontWeight: 700, margin: 0 }}>{children}</h2>
+        {sub && <p style={{ color: C.muted, fontSize: 14, lineHeight: 1.6, marginTop: 10 }}>{sub}</p>}
+      </div>
+    );
+
+    switch (step) {
+
+      case "intro": return (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", maxWidth: 460 }}>
+          <MazeMark size={300} className="mz-idle" />
+          <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 28, color: C.text, marginTop: 22, lineHeight: 1.2 }}>Audition Sign-Up</h2>
+          <p style={{ color: C.muted, fontSize: 14.5, lineHeight: 1.75, marginTop: 14 }}>
+            This secures the student's <b style={{ color: C.text }}>audition</b> for our two-week intensive course.
+            It only takes a minute — we'll ask a few quick details, then take you to secure payment.
+          </p>
+          <div style={{ marginTop: 22, display: "flex", flexDirection: "column", gap: 10, alignItems: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, color: C.gold, fontSize: 13, fontWeight: 600,
+              border: `1px solid ${C.gold}44`, padding: "10px 18px", borderRadius: 30, background: `${C.gold}0E` }}>
+              🎭 £{AUDITION_FEE} today · £{BALANCE_FEE} balance if offered a place (£{TOTAL_FEE} total)
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, color: C.text, fontSize: 13, fontWeight: 600,
+              border: `1px solid ${C.line}`, padding: "10px 18px", borderRadius: 30, background: C.bg2 }}>
+              📍 {AUDITION_VENUE}
+            </div>
+            <div style={{ color: C.muted, fontSize: 12, marginTop: -2 }}>{VENUE_CAVEAT}</div>
+          </div>
+        </div>
+      );
+
+      case "studentName": return (
+        <div style={{ width: "100%", maxWidth: 460 }}>
+          <Q>What is the student's full name?</Q>
+          <FInput value={d.studentName} onChange={e => set("studentName", e.target.value)} placeholder="e.g. Jamie Rivers" autoFocus />
+        </div>
+      );
+
+      case "ageBracket": return (
+        <div style={{ width: "100%", maxWidth: 480 }}>
+          <Q sub="Auditions run in sections by age — this decides the student's audition time.">
+            Which age bracket is {firstName} in?
+          </Q>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {AGE_BRACKETS.map(b => {
+              const selected = d.ageBracket === b.value;
+              return (
+                <button key={b.value} onClick={() => set("ageBracket", b.value)} style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14,
+                  padding: "16px 20px", borderRadius: 14, cursor: "pointer", textAlign: "left",
+                  border: `2px solid ${selected ? C.copper : C.line}`,
+                  background: selected ? `${C.copper}18` : C.bg2, transition: "all .15s ease",
+                }}>
+                  <div>
+                    <div style={{ fontFamily: "'Cinzel',serif", fontSize: 20, fontWeight: 700, color: selected ? C.copper : C.text }}>
+                      {b.label}
+                    </div>
+                    <div style={{ color: C.muted, fontSize: 12, marginTop: 2 }}>{b.section}</div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ color: selected ? C.gold : C.text, fontWeight: 700, fontSize: 15 }}>{b.time}</div>
+                    <div style={{ color: C.muted, fontSize: 11.5, marginTop: 2 }}>Audition time</div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      );
+
+      case "guardianName": return (
+        <div style={{ width: "100%", maxWidth: 460 }}>
+          <Q sub="The parent, guardian or responsible adult for the student.">Parent or responsible adult's name</Q>
+          <FInput value={d.guardianName} onChange={e => set("guardianName", e.target.value)} placeholder="Full name" autoFocus />
+        </div>
+      );
+
+      case "email": return (
+        <div style={{ width: "100%", maxWidth: 460 }}>
+          <Q sub="We'll send your audition confirmation and details here.">Best email to reach you?</Q>
+          <FInput type="email" value={d.email} onChange={e => set("email", e.target.value)} placeholder="your@email.com" autoFocus />
+        </div>
+      );
+
+      case "phone": return (
+        <div style={{ width: "100%", maxWidth: 460 }}>
+          <Q>And your contact phone number?</Q>
+          <FInput type="tel" value={d.phone} onChange={e => set("phone", e.target.value)} placeholder="+44 7700 900000" autoFocus />
+        </div>
+      );
+
+      case "emergencyPhone": return (
+        <div style={{ width: "100%", maxWidth: 460 }}>
+          <Q sub="A number we can reach in an emergency during the audition — ideally different from the one above.">
+            Emergency contact number
+          </Q>
+          <FInput type="tel" value={d.emergencyPhone} onChange={e => set("emergencyPhone", e.target.value)} placeholder="+44 7700 900000" autoFocus />
+        </div>
+      );
+
+      case "legal": return (
+        <div style={{ width: "100%", maxWidth: 580 }}>
+          <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 22, color: C.text, textAlign: "center", marginBottom: 8 }}>
+            Parental Agreement
+          </h2>
+          <p style={{ color: C.muted, fontSize: 13.5, textAlign: "center", marginTop: 0, marginBottom: 18 }}>
+            Please read the agreement below. You must accept it before payment.
+          </p>
+          <div style={{ background: C.bg2, border: `1px solid ${C.line}`, borderRadius: 14, padding: "22px 24px",
+            maxHeight: 300, overflowY: "auto", color: C.muted, fontSize: 13.5, lineHeight: 1.85 }}>
+            <div style={{ color: C.copper, fontFamily: "'Cinzel',serif", fontWeight: 700, fontSize: 16, marginBottom: 16 }}>
+              Adders Film School — Parental / Responsible-Adult Agreement
+            </div>
+            {LEGAL_DOCUMENT}
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <ConsentCard checked={d.consentLegal} onChange={v => set("consentLegal", v)}
+              title="I have read and accept this agreement"
+              desc="I am the parent or responsible adult for the student and I accept the terms of the agreement above on behalf of myself and the student." />
+          </div>
+        </div>
+      );
+
+      case "payment": return <PaymentStep d={d} firstName={firstName} />;
+
+      default: return null;
+    }
+  }
+
+  /* ---------- form helpers ---------- */
+  const FI = {
+    width: "100%", boxSizing: "border-box", background: C.bg2, border: `2px solid ${C.line}`,
+    borderRadius: 12, padding: "16px 18px", color: C.text, fontSize: 16, outline: "none",
+  };
+  const FInput = (props) => (
+    <input {...props} style={FI}
+      onFocus={e => { e.target.style.borderColor = C.copper }}
+      onBlur={e => { e.target.style.borderColor = C.line }} />
+  );
+
+  function ConsentCard({ checked, onChange, title, desc }) {
+    return (
+      <button onClick={() => onChange(!checked)} style={{
+        padding: "18px 20px", borderRadius: 16, textAlign: "left", cursor: "pointer", width: "100%",
+        border: `2px solid ${checked ? C.copper : C.line}`, background: checked ? `${C.copper}10` : C.bg2,
+        transition: "all .18s ease", display: "flex", gap: 14, alignItems: "flex-start",
+      }}>
+        <div style={{ width: 22, height: 22, borderRadius: 6, flexShrink: 0, marginTop: 2,
+          border: `2px solid ${checked ? C.copper : C.muted}`, background: checked ? C.copper : "transparent",
+          display: "grid", placeItems: "center" }}>
+          {checked && <span style={{ color: "#070B14", fontSize: 13, fontWeight: 900, lineHeight: 1 }}>✓</span>}
+        </div>
+        <div>
+          <div style={{ color: checked ? C.copper : C.text, fontWeight: 700, fontSize: 15, marginBottom: 6 }}>{title}</div>
+          <div style={{ color: C.muted, fontSize: 13, lineHeight: 1.65 }}>{desc}</div>
+        </div>
+      </button>
+    );
+  }
+
+  /* ---------- payment step ---------- */
+  function PaymentStep({ d, firstName }) {
+    const b = bracketInfo(d.ageBracket);
+    return (
+      <div style={{ width: "100%", maxWidth: 560 }}>
+        <div style={{ textAlign: "center", marginBottom: 28 }}>
+          <MazeMark size={52} className="mz-idle" />
+          <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 26, color: C.text, marginTop: 14, marginBottom: 0 }}>Confirm your audition</h2>
+          <p style={{ color: C.muted, fontSize: 14, lineHeight: 1.6, marginTop: 8 }}>
+            You're signing {firstName} up to audition for the two-week intensive course.
+          </p>
+        </div>
+
+        <div style={{ borderRadius: 18, border: `2px solid ${C.gold}`, overflow: "hidden",
+          background: `linear-gradient(135deg,${C.gold}16,${C.gold}08)` }}>
+          <div style={{ padding: "22px 24px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+              <div>
+                <div style={{ fontFamily: "'Cinzel',serif", color: C.gold, fontWeight: 700, fontSize: 19 }}>Audition</div>
+                <div style={{ color: C.text, fontSize: 13, marginTop: 4 }}>Age bracket: <b>{b ? b.label : "—"}</b></div>
+                {b && <div style={{ color: C.text, fontSize: 13, marginTop: 3 }}>Audition time: <b>{b.time}</b></div>}
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <span style={{ color: C.gold, fontWeight: 700, fontSize: 30, fontFamily: "'Cinzel',serif" }}>£{AUDITION_FEE}</span>
+              </div>
+            </div>
+            <div style={{ borderTop: `1px solid ${C.gold}2E`, marginTop: 14, paddingTop: 14, color: C.muted, fontSize: 13, lineHeight: 1.65 }}>
+              This payment secures your audition slot only. If {firstName} is offered a place, the
+              remaining balance of <b style={{ color: C.text }}>£{BALANCE_FEE}</b> is payable separately —
+              £100 within 48 hours of the successful audition email, and £100 by 11:59pm on
+              Thursday 3 September 2026. Your £{AUDITION_FEE} today counts towards the
+              £{TOTAL_FEE} total.
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 20, background: C.bg2, border: `1px solid ${C.line}`, borderRadius: 12, padding: "13px 18px",
+          display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ color: C.muted, fontSize: 13 }}>Due today:</span>
+          <span style={{ color: C.text, fontWeight: 700, fontSize: 14 }}>
+            Audition fee — <span style={{ color: C.gold }}>£{AUDITION_FEE}</span>
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  /* ---------- paying overlay ---------- */
+  function PayingOverlay() {
+    return (
+      <div style={{ position: "absolute", inset: 0, zIndex: 50, display: "flex", flexDirection: "column",
+        alignItems: "center", justifyContent: "center",
+        background: `rgba(7,11,20,.92)`, backdropFilter: "blur(8px)",
+        animation: "fade .25s ease both" }}>
+        <MazeMark size={100}
+          style={{ animation: "spinR 1s linear infinite", transformOrigin: "50% 50%" }} />
+        <div style={{ marginTop: 28, fontFamily: "'Cinzel',serif", fontSize: 18, color: C.copper, fontWeight: 700 }}>
+          Saving your audition sign-up…
+        </div>
+        <div style={{ marginTop: 8, color: C.muted, fontSize: 13 }}>Taking you to Stripe to complete payment</div>
+        <div style={{ marginTop: 14, color: C.muted, fontSize: 13 }}>Audition fee · £{AUDITION_FEE}</div>
+      </div>
+    );
+  }
+
+  /* ---------- mount ---------- */
+  const goInfo = () => { window.location.href = "audition.html"; };
+  ReactDOM.createRoot(document.getElementById("root"))
+    .render(<AuditionForm onBack={goInfo} />);
+  </script>
+
+  <!-- Bootstrap: compile the JSX above with the classic runtime (so the output
+       calls the global React.createElement) and run it. -->
+  <script>
+    (function () {
+      try {
+        var src = document.getElementById("form-src").textContent;
+        var out = Babel.transform(src, { presets: [["react", { runtime: "classic" }]] }).code;
+        var s = document.createElement("script");
+        s.textContent = out;
+        document.body.appendChild(s);
+      } catch (e) {
+        console.error(e);
+        document.getElementById("root").innerHTML =
+          '<div style="color:#F4F1EA;font-family:sans-serif;padding:48px;text-align:center;max-width:480px;margin:0 auto;">' +
+          "<h2 style=\"font-family:'Cinzel',serif\">We hit a snag loading the form</h2>" +
+          '<p style="color:#8A93A8;line-height:1.6">Please refresh the page. If it keeps happening, get in touch and we\'ll sort it.</p>' +
+          '<p style="margin-top:24px"><a href="audition.html" style="color:#E0894A">‹ Back to the event info</a></p></div>';
+      }
+    })();
+  </script>
+</body>
+</html>

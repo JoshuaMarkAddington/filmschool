@@ -72,7 +72,7 @@ into `apply.html` in place of that note.
 `audition.html` is a second sign-up form — same style as `apply.html` — for
 the two-week intensive course. It asks the same questions as the membership
 form but, instead of modules, the applicant picks one strand to audition for
-(Dance / Singing / Dancing & Singing / Acting) and is open to ages **13–24**.
+(Dance / Singing / Dancing & Singing / Acting) and is open to ages **13–18**.
 It saves to a separate `auditions` table (`POST /api/audition`) and both the
 audition sign-up and its payment appear under the "Intensive-course auditions"
 tab in `/admin`.

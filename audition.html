@@ -123,10 +123,10 @@
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) age--;
     return age;
   }
-  // The intensive course is open to performers aged 13–24.
+  // The intensive course is open to performers aged 13–18.
   function isEligibleAge(dob) {
     const age = ageInYears(dob);
-    return age !== null && age >= 13 && age <= 24;
+    return age !== null && age >= 13 && age <= 18;
   }
 
   const EMPTY = {
@@ -312,7 +312,7 @@
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:10, color:C.copper, fontSize:13, fontWeight:600,
               border:`1px solid ${C.copper}44`, padding:"10px 18px", borderRadius:30, background:`${C.copper}0E` }}>
-              ⚡ Open to performers aged 13–24
+              ⚡ Open to performers aged 13–18
             </div>
           </div>
         </div>
@@ -327,11 +327,11 @@
 
       case "studentDob": return (
         <div style={{ width:"100%", maxWidth:460 }}>
-          <Q sub="The intensive course is open to performers aged 13–24.">When was {firstName} born?</Q>
+          <Q sub="The intensive course is open to performers aged 13–18.">When was {firstName} born?</Q>
           <FInput type="date" value={d.studentDob} onChange={e=>set("studentDob",e.target.value)} />
           {d.studentDob && !isEligibleAge(d.studentDob) && (
             <div style={{ color:C.copper, fontSize:13, marginTop:10 }}>
-              Sorry — the intensive course is only open to performers aged 13 to 24. Please double-check the date entered.
+              Sorry — the intensive course is only open to performers aged 13 to 18. Please double-check the date entered.
             </div>
           )}
         </div>

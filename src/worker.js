@@ -47,10 +47,10 @@ function isEligibleAge(dob) {
   return age !== null && age >= 13 && age <= 17;
 }
 
-// Two-week intensive-course auditions: open to performers aged 13–24.
+// Two-week intensive-course auditions: open to performers aged 13–18.
 function isEligibleAuditionAge(dob) {
   const age = ageInYears(dob);
-  return age !== null && age >= 13 && age <= 24;
+  return age !== null && age >= 13 && age <= 18;
 }
 
 async function handleApply(request, env) {
@@ -139,7 +139,7 @@ async function handleAudition(request, env) {
     return Response.json({ error: "Invalid discipline" }, { status: 400 });
   }
   if (!isEligibleAuditionAge(body.studentDob)) {
-    return Response.json({ error: "Student must be between 13 and 24 years old" }, { status: 400 });
+    return Response.json({ error: "Student must be between 13 and 18 years old" }, { status: 400 });
   }
 
   const id = crypto.randomUUID();

@@ -63,6 +63,12 @@ window.REHEARSALS = [
     weekday: "Saturday",
     date: "5 September 2026",
     tag: "Show day",
-    sessions: [{ start: "9.30am", end: "4.30pm" }],
+    sessions: [
+      {
+        start: "9.30am",
+        end: "4.30pm",
+        note: "Milton Keynes — venue to be confirmed",
+      },
+    ],
   },
 ];

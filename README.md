@@ -98,6 +98,12 @@ both `audition.html` and `audition-signup.html`, alongside `VENUE_CAVEAT` —
 the booking is not yet fixed, so every mention of the venue is shown with the
 caveat.
 
+The show venue is not booked either. Show Day is still **Saturday 5th
+September 2026 in Milton Keynes**, but the venue is described as "to be
+confirmed" everywhere it appears — `index.html`, `audition.html`,
+`rehearsals.js` and the participation agreement in `audition-signup.html`.
+Keep those in step when the venue is finally booked.
+
 Setup:
 
 1. **Database table.** Create the `auditions` table once (already created on
@@ -119,8 +125,8 @@ Still to fill in — these are live on the site with visible placeholders:
 
 - The company postal address in the participation agreement
   (`audition-signup.html`), which still shows `[Company Address]` in three
-  places, and the rehearsal venue, which shows
-  `[TO BE CONFIRMED – Milton Keynes]`.
+  places, and the rehearsal and Performance Day venues, which show
+  `[TO BE CONFIRMED – Milton Keynes]` and `[Venue TBC – Milton Keynes]`.
 - The flyer image (`audition-flyer.jpg`), which `audition.html` shows a
   "coming soon" placeholder for until the file is added.
 

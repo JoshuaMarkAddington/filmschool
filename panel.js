@@ -42,7 +42,7 @@ window.PANELISTS = [
     bio: [
       "Joshua Addington is the founder of Adders Film School, which he set up on a simple conviction: young creatives deserve better than a watered-down experience. Rather than treating filmmaking as an after-school hobby club, the school trains students on the same class of industry-standard gear and software used on professional productions.",
       "That approach runs from the first draft of a script through to the final 4K HDR master — scriptwriting, directing, performance, cinematography and post-production, taught as the single craft it really is.",
-      "As a director, his own short film has gone on to win awards at film festivals. In that same spirit of bringing world-class film culture to a wider audience, Joshua was the first person to host his own international film festival at Odeon Cinemas, showcasing films from all over the world.",
+      "As a director, his own short films have gone on to win awards at film festivals. In that same spirit of bringing world-class film culture to a wider audience, Joshua created and hosted the Adders Entertainment International Film Festival at Odeon Cinemas, showcasing films from all over the world.",
       "On the audition panel, Joshua looks for the instinct and the appetite to learn that a two-week intensive can build on — not a finished performer, but a student ready to be one.",
     ],
   },

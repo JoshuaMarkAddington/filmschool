@@ -703,11 +703,16 @@ async function handleAdminSubscribers(request, env) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await ensureSubscribersTable(env);
+  try {
+    await ensureSubscribersTable(env);
 
-  const { results } = await env.DB.prepare(
-    `SELECT * FROM subscribers ORDER BY created_at DESC`
-  ).all();
+    const { results } = await env.DB.prepare(
+      `SELECT * FROM subscribers ORDER BY created_at DESC`
+    ).all();
 
-  return Response.json({ subscribers: results });
+    return Response.json({ subscribers: results });
+  } catch (err) {
+    console.error("admin subscribers query failed", err);
+    return Response.json({ error: err.message }, { status: 500 });
+  }
 }

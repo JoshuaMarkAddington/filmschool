@@ -116,7 +116,7 @@ async function handleApply(request, env) {
 }
 
 /* ===========================================================================
-   SHOWCASE 2026 AUDITION SIGN-UP — writes to the separate `auditions`
+   SHOW EM WHAT YOU'RE MADE OF. — AUDITION SIGN-UP — writes to the separate `auditions`
    table. The sign-up is for the £25 audition & masterclass fee only. The
    total programme fee is £225; for students offered a place that £25 is
    deducted as a goodwill gesture, leaving a £200 balance payable in two
@@ -186,11 +186,11 @@ async function handleAudition(request, env) {
 async function sendAuditionReceivedEmails(env, app, origin) {
   await sendEmail(env, {
     to: app.email,
-    subject: "Your Adders Film School Showcase 2026 audition sign-up",
+    subject: "Your SHOW EM WHAT YOU'RE MADE OF. audition sign-up",
     html: `
       <p>Hi ${escapeHtml(app.guardianName)},</p>
       <p>Thanks for signing <b>${escapeHtml(app.studentName)}</b> up for the Audition Masterclass — the first
-      step towards the <b>Adders Film School Showcase 2026</b>.</p>
+      step towards <b>SHOW EM WHAT YOU'RE MADE OF.</b></p>
       <p>Age bracket: <b>${escapeHtml(app.ageBracket)}</b><br/>
       Audition section time: <b>${escapeHtml(app.auditionTime)}</b></p>
       <p>Please remember: wear all black clothing (no logos or patterns — small logos are fine),
@@ -210,7 +210,7 @@ async function sendAuditionReceivedEmails(env, app, origin) {
       to: env.ADMIN_NOTIFY_EMAIL,
       subject: `New audition sign-up: ${app.studentName}`,
       html: `
-        <p>A new Showcase 2026 audition sign-up was submitted (payment not yet confirmed).</p>
+        <p>A new SHOW EM WHAT YOU'RE MADE OF. audition sign-up was submitted (payment not yet confirmed).</p>
         <ul>
           <li><b>Student:</b> ${escapeHtml(app.studentName)}</li>
           <li><b>Age bracket:</b> ${escapeHtml(app.ageBracket)}</li>
@@ -559,11 +559,11 @@ async function sendPaymentConfirmedEmails(env, app, origin) {
 async function sendAuditionConfirmedEmails(env, app, origin) {
   await sendEmail(env, {
     to: app.email,
-    subject: "Your Adders Film School Showcase 2026 audition is confirmed",
+    subject: "Your SHOW EM WHAT YOU'RE MADE OF. audition is confirmed",
     html: `
       <p>Hi ${escapeHtml(app.guardian_name)},</p>
       <p>The £25 audition &amp; masterclass fee for <b>${escapeHtml(app.student_name)}</b> has been received —
-      the Audition Masterclass slot for the <b>Adders Film School Showcase 2026</b> is confirmed.</p>
+      the Audition Masterclass slot for <b>SHOW EM WHAT YOU'RE MADE OF.</b> is confirmed.</p>
       <p>Age bracket: <b>${escapeHtml(app.age_bracket)}</b><br/>
       Audition section time: <b>${escapeHtml(app.audition_time)}</b></p>
       <p>Please remember on the day: all black clothing (no logos or patterns — small logos are fine),

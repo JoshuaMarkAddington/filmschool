@@ -238,19 +238,12 @@ async function sendAuditionReceivedEmails(env, app, origin) {
 // Creates the `subscribers` table on first use so there's no manual D1 setup
 // step — CREATE TABLE IF NOT EXISTS is cheap and idempotent, safe to run on
 // every request that touches this table.
+// D1's exec() splits its input on newlines and runs each line as its own
+// statement, so this must stay on a single line.
 async function ensureSubscribersTable(env) {
-  await env.DB.exec(`
-    CREATE TABLE IF NOT EXISTS subscribers (
-      id TEXT PRIMARY KEY,
-      created_at TEXT NOT NULL DEFAULT (datetime('now')),
-      name TEXT,
-      email TEXT,
-      phone TEXT,
-      source TEXT,
-      email_sent INTEGER NOT NULL DEFAULT 0,
-      sms_sent INTEGER NOT NULL DEFAULT 0
-    )
-  `.trim());
+  await env.DB.exec(
+    "CREATE TABLE IF NOT EXISTS subscribers (id TEXT PRIMARY KEY, created_at TEXT NOT NULL DEFAULT (datetime('now')), name TEXT, email TEXT, phone TEXT, source TEXT, email_sent INTEGER NOT NULL DEFAULT 0, sms_sent INTEGER NOT NULL DEFAULT 0)"
+  );
 }
 
 async function handleSubscribe(request, env) {

@@ -213,12 +213,21 @@
 
     // Loads every section. Returns false if the session is not (or no longer) valid.
     async function loadAll() {
-      for (const name of Object.keys(SECTIONS)) {
-        const res = await fetch(SECTIONS[name].endpoint, { credentials: "same-origin" });
-        if (res.status === 401) { showLogin(); return false; }
-        const body = await res.json();
-        data[name] = body[SECTIONS[name].key] || [];
-        render(name);
+      try {
+        for (const name of Object.keys(SECTIONS)) {
+          const res = await fetch(SECTIONS[name].endpoint, { credentials: "same-origin" });
+          if (res.status === 401) { showLogin(); return false; }
+          if (!res.ok) {
+            throw new Error(`${SECTIONS[name].endpoint} failed with status ${res.status}`);
+          }
+          const body = await res.json();
+          data[name] = body[SECTIONS[name].key] || [];
+          render(name);
+        }
+      } catch (err) {
+        loginErr.textContent = `Couldn't load the dashboard: ${err.message}`;
+        showLogin();
+        return false;
       }
       showDash();
       return true;

@@ -218,7 +218,12 @@
           const res = await fetch(SECTIONS[name].endpoint, { credentials: "same-origin" });
           if (res.status === 401) { showLogin(); return false; }
           if (!res.ok) {
-            throw new Error(`${SECTIONS[name].endpoint} failed with status ${res.status}`);
+            let detail = `status ${res.status}`;
+            try {
+              const errBody = await res.json();
+              if (errBody?.error) detail = errBody.error;
+            } catch {}
+            throw new Error(`${SECTIONS[name].endpoint} — ${detail}`);
           }
           const body = await res.json();
           data[name] = body[SECTIONS[name].key] || [];

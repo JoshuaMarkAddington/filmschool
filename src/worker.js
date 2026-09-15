@@ -200,7 +200,7 @@ async function sendAuditionReceivedEmails(env, app, origin) {
       <p>You're about to be taken to Stripe to pay the £25 audition &amp; masterclass fee securely.</p>
       <p>The total programme fee is £225. If ${escapeHtml(app.studentName)} is offered a place, your £25
       is deducted from that total as a goodwill gesture, leaving a £200 balance — payable as £100 within
-      48 hours of the successful audition email, and £100 by 11:59pm on Thursday 3 September 2026.</p>
+      48 hours of the successful audition email, and £100 by 11:59pm on Thursday 3 September 2027.</p>
       <p>— Adders Film School</p>
     `,
   });
@@ -533,7 +533,7 @@ async function sendPaymentConfirmedEmails(env, app, origin) {
       <p>Hi ${escapeHtml(app.guardian_name)},</p>
       <p>Payment for <b>${escapeHtml(app.student_name)}</b>'s membership is confirmed — welcome to Adders Film School!</p>
       <p>Modules: <b>${[app.month1, app.month2, app.month3].filter(Boolean).map(escapeHtml).join(" → ")}</b></p>
-      <p>Here's the <a href="${origin}/timetable.pdf">timetable for October–December 2026</a> so you know exactly
+      <p>Here's the <a href="${origin}/timetable.pdf">timetable for April–June 2027</a> so you know exactly
       when each session runs.</p>
       <p>If you have any questions before the first session, just get in touch.</p>
       <p>— Adders Film School</p>
@@ -566,7 +566,7 @@ async function sendAuditionConfirmedEmails(env, app, origin) {
       <p>If ${escapeHtml(app.student_name)} is offered a place, the total programme fee is £225 — your £25 is
       deducted from that as a goodwill gesture, leaving a £200 balance. That can be spread across two
       payments: £100 within 48 hours of the successful audition email, and £100 by 11:59pm on
-      Thursday 3 September 2026.</p>
+      Thursday 3 September 2027.</p>
       <p>If you have any questions in the meantime, just get in touch.</p>
       <p>— Adders Film School</p>
     `,

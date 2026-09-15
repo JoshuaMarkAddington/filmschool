@@ -11,7 +11,7 @@
 
    Fields
      weekday  — day name, shown large on the card
-     date     — the calendar date, e.g. "28 August 2026"
+     date     — the calendar date, e.g. "28 August 2027"
      tag      — optional badge across the top of the card, e.g. "Show day"
      sessions — one or more blocks for that day. Each has:
                   start  — e.g. "10.30am"
@@ -23,22 +23,22 @@
 window.REHEARSALS = [
   {
     weekday: "Friday",
-    date: "28 August 2026",
+    date: "28 August 2027",
     sessions: [{ start: "10.30am", end: "4.30pm" }],
   },
   {
     weekday: "Saturday",
-    date: "29 August 2026",
+    date: "29 August 2027",
     sessions: [{ start: "10.30am", end: "4.30pm" }],
   },
   {
     weekday: "Sunday",
-    date: "30 August 2026",
+    date: "30 August 2027",
     sessions: [{ start: "10.30am", end: "4.30pm" }],
   },
   {
     weekday: "Monday",
-    date: "31 August 2026",
+    date: "31 August 2027",
     sessions: [
       { start: "9.30am", end: "12.30pm", label: "Rehearsal" },
       {
@@ -51,17 +51,17 @@ window.REHEARSALS = [
   },
   {
     weekday: "Wednesday",
-    date: "2 September 2026",
+    date: "2 September 2027",
     sessions: [{ start: "6pm", end: "9pm" }],
   },
   {
     weekday: "Thursday",
-    date: "3 September 2026",
+    date: "3 September 2027",
     sessions: [{ start: "6pm", end: "9pm" }],
   },
   {
     weekday: "Saturday",
-    date: "5 September 2026",
+    date: "5 September 2027",
     tag: "Show day",
     sessions: [
       {

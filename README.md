@@ -67,10 +67,10 @@ The policy document shown in step "Policy Agreement" of the application form
 is still a placeholder — send the real policy text/PDF and it'll be dropped
 into `apply.html` in place of that note.
 
-## Showcase 2026 audition sign-up
+## Showcase 2027 audition sign-up
 
 `audition.html` is a second sign-up form — same style as `apply.html` — for
-the Adders Film School Showcase 2026 Audition Masterclass. It is open to
+the Adders Film School Showcase 2027 Audition Masterclass. It is open to
 ages **13–18**, split into three audition sections by age bracket (13–14 /
 15–16 / 17–18), each with its own time slot.
 
@@ -99,7 +99,7 @@ the booking is not yet fixed, so every mention of the venue is shown with the
 caveat.
 
 The show venue is not booked either. Show Day is still **Saturday 5th
-September 2026 in Milton Keynes**, but the venue is described as "to be
+September 2027 in Milton Keynes**, but the venue is described as "to be
 confirmed" everywhere it appears — `index.html`, `audition.html`,
 `rehearsals.js` and the participation agreement in `audition-signup.html`.
 Keep those in step when the venue is finally booked.
